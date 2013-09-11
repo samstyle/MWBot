@@ -23,7 +23,7 @@ MWBotWin::MWBotWin() {
 	ui.setupUi(this);
 	frm = ui.browser->page()->mainFrame();
 	opt = FL_ATACK | FL_MONIA | FL_MONIA_BILET | FL_MONIA_BUY | FL_PETRIK; // | FL_DIG | FL_DIGRAT;
-	flag = FL_FIRST | FL_ATACK | FL_MONIA;
+	flag = FL_FIRST | FL_ATACK | FL_MONIA | FL_TRAIN | FL_TR_RUDA | FL_TR_OIL;
 	atackType = ATACK_WEAK;
 	atackType2 = ATACK_VICTIM;
 	minLev = 0;
@@ -32,6 +32,7 @@ MWBotWin::MWBotWin() {
 
 	ptrTime = QDateTime::currentDateTime();
 	ratTime = ptrTime;
+	trnTime = ptrTime;
 
 	ui.cbAtackType->addItem(trUtf8("Слабых"),ATACK_WEAK);
 	ui.cbAtackType->addItem(trUtf8("Равных"),ATACK_EQUAL);
@@ -67,6 +68,7 @@ MWBotWin::MWBotWin() {
 	connect(ui.tbThimble,SIGNAL(clicked()),this,SLOT(goMonia()));
 	connect(ui.tbDig,SIGNAL(clicked()),this,SLOT(dig()));
 	connect(ui.tbBaraban,SIGNAL(clicked()),this,SLOT(playKub()));
+	connect(ui.tbTrainPet,SIGNAL(clicked()),this,SLOT(trainPet()));
 
 //	loadCookies();
 //	loadPage("player");
@@ -79,6 +81,8 @@ void MWBotWin::timerEvent(QTimerEvent*) {
 	if ((flag & FL_DIGGING) && (digTime < curTime)) digEnd();
 
 	if (~flag & FL_BOT) return;
+
+	if ((opt & FL_TRAIN) && (flag & FL_TRAIN) && (curTime > trnTime)) trainPet();
 
 	if ((opt & FL_KUB) && (~flag & FL_KUB)) {
 		elm = frm->findFirstElement("div.side-fractionwar");
@@ -863,6 +867,9 @@ void MWBotWin::loadOpts() {
 					if (statPrc > 2) statPrc = 2;
 				}
 				if ((pars.first() == "checknpc") && (pars.last() == "no")) opt |= FL_NONPC;
+				if ((pars.first() == "trainpet") && (pars.last() == "yes")) opt |= FL_TRAIN;
+				if ((pars.first() == "tp-ruda") && (pars.last() == "yes")) opt |= FL_TR_RUDA;
+				if ((pars.first() == "tp-neft") && (pars.last() == "yes")) opt |= FL_TR_OIL;
 			}
 		}
 		if (minLev > maxLev) {
@@ -895,6 +902,9 @@ void MWBotWin::saveOpts() {
 		file.write(QString("maxlev:").append(QString::number(maxLev)).append("\n").toUtf8());
 		file.write(QString("statprc:").append(QString::number(statPrc)).append("\n").toUtf8());
 		file.write(QString("checknpc:").append((opt & FL_NONPC) ? "no" : "yes").append("\n").toUtf8());
+		file.write(QString("trainpet:").append((opt & FL_TRAIN) ? "yes" : "no").append("\n").toUtf8());
+		file.write(QString("tp-ruda:").append((opt & FL_TR_RUDA) ? "yes" : "no").append("\n").toUtf8());
+		file.write(QString("tp-oil:").append((opt & FL_TR_OIL) ? "yes" : "no").append("\n").toUtf8());
 	}
 }
 
@@ -918,6 +928,9 @@ void MWBotWin::apply() {
 	maxLev = ui.sbMaxLev->value();
 	statPrc = ui.sbStatCheck->value();
 	if (ui.cbNPCheck->isChecked()) opt |= FL_NONPC;
+	if (ui.cbTrain->isChecked()) opt |= FL_TRAIN;
+	if (ui.cbTrainRuda->isChecked()) opt |= FL_TR_RUDA;
+	if (ui.cbTrainNeft->isChecked()) opt |= FL_TR_OIL;
 	saveOpts();
 }
 
@@ -940,6 +953,9 @@ void MWBotWin::setOpts() {
 	ui.sbMaxLev->setValue(maxLev);
 	ui.sbStatCheck->setValue(statPrc);
 	ui.cbNPCheck->setChecked(opt & FL_NONPC);
+	ui.cbTrain->setChecked(opt & FL_TRAIN);
+	ui.cbTrainRuda->setChecked(opt & FL_TR_RUDA);
+	ui.cbTrainNeft->setChecked(opt & FL_TR_OIL);
 }
 
 int main(int ac,char** av) {

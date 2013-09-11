@@ -185,6 +185,13 @@
            </property>
           </widget>
          </item>
+         <item>
+          <widget class="QToolButton" name="tbTrainPet">
+           <property name="text">
+            <string>Tr</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
       </item>
@@ -558,6 +565,44 @@
               </item>
               <item>
                <spacer name="horizontalSpacer_8">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_11">
+              <item>
+               <widget class="QCheckBox" name="cbTrain">
+                <property name="text">
+                 <string>Тренировать боевого пета</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="cbTrainRuda">
+                <property name="text">
+                 <string>за руду</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="cbTrainNeft">
+                <property name="text">
+                 <string>за нефть</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_10">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>

@@ -14,7 +14,8 @@ SOURCES += main.cpp \
     atack.cpp \
     thimble.cpp \
     gipsy.cpp \
-    log.cpp
+    log.cpp \
+    pet-trainer.cpp
 
 FORMS += \
     mainwindow.ui

@@ -71,6 +71,9 @@ struct CharBox{
 #define	FL_DIGRAT	(1<<14)		// atack rats during dig
 #define	FL_KUB		(1<<15)		// play baraban
 #define	FL_NONPC	(1<<16)		// don't check npc stats
+#define	FL_TRAIN	(1<<17)		// train fight pet
+#define	FL_TR_RUDA	(1<<18)
+#define	FL_TR_OIL	(1<<19)
 
 #define	ATACK_EQUAL	1
 #define	ATACK_WEAK	2
@@ -109,6 +112,7 @@ class MWBotWin : public QMainWindow {
 		QDateTime ataTime;
 		QDateTime ptrTime;
 		QDateTime digTime;
+		QDateTime trnTime;
 
 		struct {
 			int nextRat;
@@ -150,6 +154,7 @@ class MWBotWin : public QMainWindow {
 		void dig();
 		void digEnd();
 		void playKub();
+		void trainPet();
 
 		void apply();
 
