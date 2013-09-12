@@ -10,7 +10,7 @@ void MWBotWin::trainPet() {
 	elm = frm->findFirstElement("dl#equipment-accordion");
 	QWebElementCollection pets = elm.findAll("dd div.object-thumbs div.object-thumb");
 	if (pets.count() == 0) {
-		flag &= ~FL_TRAIN;
+		flag |= FL_TRAIN;
 	} else {
 		elm = pets.last();
 		elm = elm.findFirst("div.padding div.action");
@@ -53,13 +53,13 @@ void MWBotWin::trainPet() {
 				ResBox rbox = getResources();
 				if (rbox.money < (tgr + 1000)) {
 					log(trUtf8("не хватает денег на тренировки"));
-					flag &= ~FL_TRAIN;
+					flag |= FL_TRAIN;
 				} else if ((rbox.ruda < (rud + 6)) || (rud && (~opt & FL_TR_RUDA))) {
 					log(trUtf8("не хватает руды на тренировки"));
-					flag &= ~FL_TRAIN;
+					flag |= FL_TRAIN;
 				} else if ((rbox.neft < (nef + 50)) || (nef && (~opt & FL_TR_OIL))) {
 					log(trUtf8("не хватает нефти на тренировки"));
-					flag &= ~FL_TRAIN;
+					flag |= FL_TRAIN;
 				} else {
 					clk.append(" span.f div.c");
 					clickElement(clk,0);

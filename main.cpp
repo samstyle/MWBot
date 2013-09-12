@@ -82,7 +82,7 @@ void MWBotWin::timerEvent(QTimerEvent*) {
 
 	if (~flag & FL_BOT) return;
 
-	if ((opt & FL_TRAIN) && (flag & FL_TRAIN) && (curTime > trnTime)) trainPet();
+	if ((opt & FL_TRAIN) && (~flag & FL_TRAIN) && (curTime > trnTime)) trainPet();
 
 	if ((opt & FL_KUB) && (~flag & FL_KUB)) {
 		elm = frm->findFirstElement("div.side-fractionwar");
