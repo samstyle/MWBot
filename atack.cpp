@@ -27,12 +27,13 @@ void MWBotWin::atack() {
 						break;
 					case AT_BUSY:
 						log(trUtf8("Вы заняты и не можете атаковать"));
+						asel = AT_STOP;
 						flag |= FL_STOP;
 						break;
 				}
-			} while ((asel != AT_OK) || (~flag & FL_STOP));
+			} while ((asel != AT_OK) && (asel != AT_STOP));
 			if (flag & FL_STOP) {
-				tim = 2;
+				tim = AT_STOP;
 				break;
 			}
 			tim = atackCheck(enstat, at ? atackType : atackType2);			// AT_OK:victim found; AT_ERR:error; AT_STOP:stop
