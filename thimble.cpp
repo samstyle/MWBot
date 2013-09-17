@@ -26,7 +26,8 @@ void MWBotWin::goMonia() {
 		playMonia();
 	} else {
 		if (opt & FL_MONIA_BUY) {
-			loadPage("/berezka/");
+			loadPage("berezka");
+			loadPage("berezka/section/mixed");
 			rbox = getBerezkaRes();
 			if (opt & FL_MONIA_STAR) {
 				if (rbox.star > 0) {
