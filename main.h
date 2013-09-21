@@ -74,6 +74,7 @@ struct CharBox{
 #define	FL_TRAIN	(1<<17)		// train fight pet
 #define	FL_TR_RUDA	(1<<18)
 #define	FL_TR_OIL	(1<<19)
+#define FL_RUN		(1<<20)
 
 #define	ATACK_EQUAL	1
 #define	ATACK_WEAK	2
@@ -113,6 +114,7 @@ class MWBotWin : public QMainWindow {
 		QDateTime ptrTime;
 		QDateTime digTime;
 		QDateTime trnTime;
+		QDateTime runTime;
 
 		struct {
 			int nextRat;
@@ -155,6 +157,7 @@ class MWBotWin : public QMainWindow {
 		void digEnd();
 		void playKub();
 		void trainPet();
+		void arena();
 
 		void apply();
 

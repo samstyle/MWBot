@@ -15,7 +15,8 @@ SOURCES += main.cpp \
     thimble.cpp \
     gipsy.cpp \
     log.cpp \
-    pet-trainer.cpp
+    pet-trainer.cpp \
+    arena.cpp
 
 FORMS += \
     mainwindow.ui

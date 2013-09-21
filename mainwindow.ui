@@ -187,8 +187,29 @@
          </item>
          <item>
           <widget class="QToolButton" name="tbTrainPet">
+           <property name="toolTip">
+            <string>Тренировка боевого пета</string>
+           </property>
            <property name="text">
             <string>Tr</string>
+           </property>
+           <property name="icon">
+            <iconset resource="resources.qrc">
+             <normaloff>:/images/bone.png</normaloff>:/images/bone.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="tbArena">
+           <property name="toolTip">
+            <string>Забег на арене</string>
+           </property>
+           <property name="text">
+            <string>Arena</string>
+           </property>
+           <property name="icon">
+            <iconset resource="resources.qrc">
+             <normaloff>:/images/bilet.png</normaloff>:/images/bilet.png</iconset>
            </property>
           </widget>
          </item>
@@ -603,6 +624,30 @@
               </item>
               <item>
                <spacer name="horizontalSpacer_10">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_12">
+              <item>
+               <widget class="QCheckBox" name="cbRunner">
+                <property name="text">
+                 <string>Записывать на бега</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_11">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>

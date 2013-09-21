@@ -33,6 +33,7 @@ MWBotWin::MWBotWin() {
 	ptrTime = QDateTime::currentDateTime();
 	ratTime = ptrTime;
 	trnTime = ptrTime;
+	runTime = ptrTime;
 
 	ui.cbAtackType->addItem(trUtf8("Слабых"),ATACK_WEAK);
 	ui.cbAtackType->addItem(trUtf8("Равных"),ATACK_EQUAL);
@@ -69,6 +70,7 @@ MWBotWin::MWBotWin() {
 	connect(ui.tbDig,SIGNAL(clicked()),this,SLOT(dig()));
 	connect(ui.tbBaraban,SIGNAL(clicked()),this,SLOT(playKub()));
 	connect(ui.tbTrainPet,SIGNAL(clicked()),this,SLOT(trainPet()));
+	connect(ui.tbArena,SIGNAL(clicked()),this,SLOT(arena()));
 
 //	loadCookies();
 //	loadPage("player");
@@ -83,6 +85,7 @@ void MWBotWin::timerEvent(QTimerEvent*) {
 	if (~flag & FL_BOT) return;
 
 	if ((opt & FL_TRAIN) && (~flag & FL_TRAIN) && (curTime > trnTime)) trainPet();
+	if ((opt & FL_RUN) && (curTime > runTime)) arena();
 
 	if ((opt & FL_KUB) && (~flag & FL_KUB)) {
 		elm = frm->findFirstElement("div.side-fractionwar");
@@ -870,6 +873,7 @@ void MWBotWin::loadOpts() {
 				if ((pars.first() == "trainpet") && (pars.last() == "yes")) opt |= FL_TRAIN;
 				if ((pars.first() == "tp-ruda") && (pars.last() == "yes")) opt |= FL_TR_RUDA;
 				if ((pars.first() == "tp-neft") && (pars.last() == "yes")) opt |= FL_TR_OIL;
+				if ((pars.first() == "runner") && (pars.last() == "yes")) opt |= FL_RUN;
 			}
 		}
 		if (minLev > maxLev) {
@@ -905,6 +909,7 @@ void MWBotWin::saveOpts() {
 		file.write(QString("trainpet:").append((opt & FL_TRAIN) ? "yes" : "no").append("\n").toUtf8());
 		file.write(QString("tp-ruda:").append((opt & FL_TR_RUDA) ? "yes" : "no").append("\n").toUtf8());
 		file.write(QString("tp-oil:").append((opt & FL_TR_OIL) ? "yes" : "no").append("\n").toUtf8());
+		file.write(QString("runner:").append((opt & FL_RUN) ? "yes" : "no").append("\n").toUtf8());
 	}
 }
 
@@ -931,6 +936,7 @@ void MWBotWin::apply() {
 	if (ui.cbTrain->isChecked()) opt |= FL_TRAIN;
 	if (ui.cbTrainRuda->isChecked()) opt |= FL_TR_RUDA;
 	if (ui.cbTrainNeft->isChecked()) opt |= FL_TR_OIL;
+	if (ui.cbRunner->isChecked()) opt |= FL_RUN;
 	saveOpts();
 }
 
@@ -956,6 +962,7 @@ void MWBotWin::setOpts() {
 	ui.cbTrain->setChecked(opt & FL_TRAIN);
 	ui.cbTrainRuda->setChecked(opt & FL_TR_RUDA);
 	ui.cbTrainNeft->setChecked(opt & FL_TR_OIL);
+	ui.cbRunner->setChecked(opt & FL_RUN);
 }
 
 int main(int ac,char** av) {
