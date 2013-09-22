@@ -61,7 +61,7 @@
         <file>images/kirka.png</file>
         <file>images/baraban.png</file>
         <file>images/sparkle.png</file>
-        <file>images/bilet.png</file>
         <file>images/bone.png</file>
+        <file>images/medal.png</file>
     </qresource>
 </RCC>

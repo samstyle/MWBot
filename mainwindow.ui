@@ -209,7 +209,7 @@
            </property>
            <property name="icon">
             <iconset resource="resources.qrc">
-             <normaloff>:/images/bilet.png</normaloff>:/images/bilet.png</iconset>
+             <normaloff>:/images/medal.png</normaloff>:/images/medal.png</iconset>
            </property>
           </widget>
          </item>
