@@ -1,6 +1,7 @@
 #include "main.h"
 
 void MWBotWin::arena() {
+	setBusy(true);
 	loadPath(QStringList() << "tverskaya" << "petrun");
 	QWebElementCollection pets;
 	QWebElement elm,pet;
@@ -45,4 +46,5 @@ void MWBotWin::arena() {
 			}
 		}
 	}
+	setBusy(false);
 }
