@@ -3,6 +3,7 @@
 void MWBotWin::arena() {
 	setBusy(true);
 	loadPath(QStringList() << "tverskaya" << "petrun");
+	curTime = QDateTime::currentDateTime();
 	QWebElementCollection pets;
 	QWebElement elm,pet;
 // rewind record
@@ -42,7 +43,7 @@ void MWBotWin::arena() {
 			}
 			if (wtime != 0) {
 				log(trUtf8("До забегов ").append(QString::number(wtime)).append(trUtf8(" мин")));
-				runTime = curTime.addSecs(wtime * 60);
+				runTime = curTime.addSecs(wtime * 180);		// 3min = 1%
 			}
 		}
 	}
