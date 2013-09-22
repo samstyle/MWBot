@@ -31,11 +31,25 @@ void MWBotWin::arena() {
 				elm = pet.findFirst("span.percent");
 				prc = elm.attribute("style").split(QRegExp("[:%;]"),QString::SkipEmptyParts).last().toInt();
 				if (prc > 19) {
-					log(pet.attribute("data-pet-name").append(trUtf8(" записан на забег")));
 					clickElement(QString("ul.lenta li.pet-object[data-id='").append(pet.attribute("data-id")).append("']"),0);
 					clickElement("div.center button#checkInEnabled div.c",0);
-					runTime = curTime.addSecs(600);		// +10 min
-					wtime = 0;
+					elm = frm->findFirstElement("div.alert div#alert-text");
+					if (elm.isNull()) {
+						log(pet.attribute("data-pet-name").append(trUtf8(" записан на забег")));
+						runTime = curTime.addSecs(600);		// +10 min
+						wtime = 0;
+					} else {
+						clickElement("div.alert div.button div.c",0);
+						clickElement("input[value=ticket]",0);	// select ticket
+						clickElement(QString("ul.lenta li.pet-object[data-id='").append(pet.attribute("data-id")).append("']"),0);
+						clickElement("div.center button#checkInEnabled div.c",0);
+						elm = frm->findFirstElement("div.alert div#alert-text");
+						if (elm.isNull()) {
+							log(pet.attribute("data-pet-name").append(trUtf8(" записан на забег")));
+							runTime = curTime.addSecs(600);		// +10 min
+							wtime = 0;
+						}
+					}
 					break;				// break foreach
 				} else {
 					if (wtime > (21 - prc)) wtime = 21 - prc;
