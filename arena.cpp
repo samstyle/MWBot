@@ -34,7 +34,7 @@ void MWBotWin::arena() {
 					clickElement(QString("ul.lenta li.pet-object[data-id='").append(pet.attribute("data-id")).append("']"),0);
 					clickElement("div.center button#checkInEnabled div.c",0);
 					elm = frm->findFirstElement("div.alert div#alert-text");
-					if (!elm.isNull()) {
+					if (elm.toPlainText().contains(trUtf8("нужен билет"))) {
 						clickElement("div.alert div.button div.c",0);
 						clickElement("input[value=ticket]",100);	// select ticket
 						clickElement(QString("ul.lenta li.pet-object[data-id='").append(pet.attribute("data-id")).append("']"),100);
