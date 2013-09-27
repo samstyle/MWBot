@@ -3,10 +3,10 @@
 ######################################################################
 
 TEMPLATE = app
-TARGET = 
+TARGET =
 DEPENDPATH += .
 INCLUDEPATH += .
-QT += webkit
+QT += webkit network
 
 # Input
 HEADERS += main.h
@@ -16,7 +16,8 @@ SOURCES += main.cpp \
     gipsy.cpp \
     log.cpp \
     pet-trainer.cpp \
-    arena.cpp
+    arena.cpp \
+    cookies.cpp
 
 FORMS += \
     mainwindow.ui
