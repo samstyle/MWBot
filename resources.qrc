@@ -63,5 +63,11 @@
         <file>images/sparkle.png</file>
         <file>images/bone.png</file>
         <file>images/medal.png</file>
+        <file>images/badge.png</file>
+        <file>images/mobila.png</file>
+        <file>images/party-signature.png</file>
+        <file>images/yes.png</file>
+        <file>images/no.png</file>
+        <file>images/cancel.png</file>
     </qresource>
 </RCC>

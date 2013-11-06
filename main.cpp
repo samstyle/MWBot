@@ -352,11 +352,14 @@ Object namIcon[] = {
 	{QObject::trUtf8("Каучук"),":/images/parts/7.png",0},
 	{QObject::trUtf8("Плавильная печь"),":/images/parts/8.png",0},
 	{QObject::trUtf8("Насос"),":/images/parts/9.png",0},
+	{QObject::trUtf8("Чертёж"),":/images/parts/10.png",0},
+	{QObject::trUtf8("Болт"),":/images/parts/11.png",0},
 	{QObject::trUtf8("Напильник"),":/images/parts/12.png",0},
 
 	{QObject::trUtf8("Апельсин"),":/images/fruit/fruit1.png",0},
 	{QObject::trUtf8("Лимон"),":/images/fruit/fruit2.png",0},
 	{QObject::trUtf8("Яблоко"),":/images/fruit/fruit3.png",0},
+	{QObject::trUtf8("Мандарин"),":/images/fruit/fruit4.png",0},
 	{QObject::trUtf8("Ананас"),":/images/fruit/fruit5.png",0},
 	{QObject::trUtf8("Банан"),":/images/fruit/fruit6.png",0},
 	{QObject::trUtf8("Арбуз"),":/images/fruit/fruit7.png",0},
@@ -381,7 +384,15 @@ FightBox MWBotWin::getResult() {
 
 	obj.name = trUtf8("деньги");
 	obj.icon = ":/images/money.png";
-	obj.count = frm->findFirstElement("li.result span.tugriki").attribute("title").split(":").last().trimmed().toInt();
+	obj.count = 0;
+	coll=frm->findAllElements("li.result span.tugriki");
+	foreach(elm,coll) {
+		if (elm.attribute("title").isNull()) {
+			if (res.result == 1) obj.count += elm.toPlainText().trimmed().toInt();
+		} else {
+			obj.count += elm.attribute("title").split(":").last().trimmed().toInt();
+		}
+	}
 	if (obj.count != 0) res.items.append(obj);
 
 	if (res.result == 1) {			// check all only if win
@@ -406,7 +417,21 @@ FightBox MWBotWin::getResult() {
 		obj.count = frm->findFirstElement("li.result span.sparkles").toPlainText().toInt();
 		if (obj.count != 0) res.items.append(obj);
 
-		//	obj.icon.clear();
+		obj.name = trUtf8("жетоны");
+		obj.icon = ":/images/badge.png";
+		obj.count = frm->findFirstElement("li.result span.badge").toPlainText().toInt();
+		if (obj.count != 0) res.items.append(obj);
+
+		obj.name = trUtf8("мобила");
+		obj.icon = ":/images/mobila.png";
+		obj.count = frm->findFirstElement("li.result span.mobila").isNull() ? 0 : 1;
+		if (obj.count != 0) res.items.append(obj);
+
+		obj.name = trUtf8("подписи");
+		obj.icon = ":/images/party-signature.png";
+		obj.count = frm->findFirstElement("li.result span.party_signature").toPlainText().toInt();
+		if (obj.count != 0) res.items.append(obj);
+
 		coll = frm->findAllElements("li.result span.object-thumb");
 		int idx;
 		foreach(elm, coll) {
@@ -622,12 +647,12 @@ int MWBotWin::fightResult() {
 //	frm->evaluateJavaScript("fightForward();");
 	FightBox res = getResult();
 	if (res.result == 2) {
-		tolog = trUtf8("<font style=background-color:#e0e020>Нападение на ").append(enname).append(trUtf8(" закончилось ничьей</font>"));
+		tolog = trUtf8("<font style=background-color:#e0e020><img src=:/images/cancel.png>&nbsp;").append(enname).append(trUtf8("</font>"));
 	} else {
 		if (res.result == 1) {
-			tolog = trUtf8("<font style=background-color:#20e020>Победа над ");
+			tolog = trUtf8("<font style=background-color:#20e020><img src=:/images/yes.png>&nbsp;");
 		} else {
-			tolog = trUtf8("<font style=background-color:#e02020>Поражение от ");
+			tolog = trUtf8("<font style=background-color:#e02020><img src=:/images/no.png>&nbsp;");
 		}
 		tolog.append(enname).append("</font>&nbsp;");
 		QString fightres;
@@ -755,6 +780,7 @@ void MWBotWin::playKub() {
 			clickElement("button#button-change-ore div.c",0);
 		}
 	}
+	/*
 	loadPage("/casino/kubovich/");
 	int caps;
 	int ncaps;
@@ -791,6 +817,7 @@ void MWBotWin::playKub() {
 		waitLoading(0);
 //		log("----");
 	} while (caps >= needCaps);
+	*/
 	setBusy(false);
 }
 
