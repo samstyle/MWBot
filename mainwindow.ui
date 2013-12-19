@@ -559,33 +559,16 @@
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_5">
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_8">
+             <layout class="QHBoxLayout" name="horizontalLayout_12">
               <item>
-               <widget class="QCheckBox" name="cbRoll">
+               <widget class="QCheckBox" name="cbRunner">
                 <property name="text">
-                 <string>Крутить барабан на все и покупать</string>
+                 <string>Записывать на бега</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QSpinBox" name="sbCaps">
-                <property name="minimum">
-                 <number>0</number>
-                </property>
-                <property name="maximum">
-                 <number>20</number>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label">
-                <property name="text">
-                 <string>фишек</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_8">
+               <spacer name="horizontalSpacer_11">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>
@@ -638,16 +621,60 @@
              </layout>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_12">
+             <layout class="QHBoxLayout" name="horizontalLayout_8">
               <item>
-               <widget class="QCheckBox" name="cbRunner">
+               <widget class="QCheckBox" name="cbRoll">
                 <property name="text">
-                 <string>Записывать на бега</string>
+                 <string>Крутить барабан на все и покупать</string>
                 </property>
                </widget>
               </item>
               <item>
-               <spacer name="horizontalSpacer_11">
+               <widget class="QSpinBox" name="sbCaps">
+                <property name="minimum">
+                 <number>0</number>
+                </property>
+                <property name="maximum">
+                 <number>20</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label">
+                <property name="text">
+                 <string>фишек</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_8">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_13">
+              <item>
+               <widget class="QCheckBox" name="cbGypsy">
+                <property name="text">
+                 <string>Играть с цыганкой</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="boxGypsy"/>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_12">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>
@@ -669,7 +696,7 @@
               <property name="sizeHint" stdset="0">
                <size>
                 <width>20</width>
-                <height>303</height>
+                <height>40</height>
                </size>
               </property>
              </spacer>

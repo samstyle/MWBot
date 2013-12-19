@@ -69,5 +69,6 @@
         <file>images/yes.png</file>
         <file>images/no.png</file>
         <file>images/cancel.png</file>
+        <file>images/snow.png</file>
     </qresource>
 </RCC>

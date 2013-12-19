@@ -97,6 +97,7 @@ class MWBotWin : public QMainWindow {
 	private:
 		int atackType;
 		int atackType2;
+		int goldType;
 		int opt;
 		int flag;
 		int minLev;

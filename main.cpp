@@ -29,6 +29,7 @@ MWBotWin::MWBotWin() {
 	minLev = 0;
 	maxLev = 99;
 	statPrc = 0.9;
+	goldType=25;
 
 	ptrTime = QDateTime::currentDateTime();
 	ratTime = ptrTime;
@@ -50,6 +51,11 @@ MWBotWin::MWBotWin() {
 	ui.cbAType2->addItem(trUtf8("Врагов"),ATACK_ENEMY);
 	ui.cbAType2->addItem(trUtf8("по уровню"),ATACK_LEVEL);
 	ui.cbAType2->setCurrentIndex(ui.cbAtackType->findData(atackType2));
+
+	ui.boxGypsy->addItem(QIcon(":/images/gold.png"),"25",25);
+	ui.boxGypsy->addItem(QIcon(":/images/gold.png"),"75",75);
+//	ui.boxGypsy->addItem(QIcon(":/images/gold.png"),"150 + 2",150);
+	ui.boxGypsy->setCurrentIndex(ui.boxGypsy->findData(goldType));
 
 	connect(ui.pbOptSave,SIGNAL(clicked()),this,SLOT(apply()));
 
@@ -415,6 +421,11 @@ FightBox MWBotWin::getResult() {
 		obj.name = trUtf8("звездочки");
 		obj.icon = ":/images/sparkle.png";
 		obj.count = frm->findFirstElement("li.result span.sparkles").toPlainText().toInt();
+		if (obj.count != 0) res.items.append(obj);
+
+		obj.name = trUtf8("снежинки");
+		obj.icon = ":/images/snow.png";
+		obj.count = frm->findFirstElement("li.result span.snowflake").toPlainText().toInt();
 		if (obj.count != 0) res.items.append(obj);
 
 		obj.name = trUtf8("жетоны");
@@ -874,6 +885,7 @@ void MWBotWin::loadOpts() {
 				if ((pars.first() == "tp-ruda") && (pars.last() == "yes")) opt |= FL_TR_RUDA;
 				if ((pars.first() == "tp-neft") && (pars.last() == "yes")) opt |= FL_TR_OIL;
 				if ((pars.first() == "runner") && (pars.last() == "yes")) opt |= FL_RUN;
+				if (pars.first() == "goldplay") goldType = pars.last().toInt();
 			}
 		}
 		if (minLev > maxLev) {
@@ -910,6 +922,7 @@ void MWBotWin::saveOpts() {
 		file.write(QString("tp-ruda:").append((opt & FL_TR_RUDA) ? "yes" : "no").append("\n").toUtf8());
 		file.write(QString("tp-oil:").append((opt & FL_TR_OIL) ? "yes" : "no").append("\n").toUtf8());
 		file.write(QString("runner:").append((opt & FL_RUN) ? "yes" : "no").append("\n").toUtf8());
+		file.write(QString("goldplay:").append(QString::number(goldType)).append("\n").toUtf8());
 	}
 }
 
@@ -918,6 +931,7 @@ void MWBotWin::apply() {
 	if (ui.cbAtack->isChecked()) opt |= FL_ATACK;
 	atackType = ui.cbAtackType->itemData(ui.cbAtackType->currentIndex()).toInt();
 	atackType2 = ui.cbAType2->itemData(ui.cbAType2->currentIndex()).toInt();
+	goldType = ui.boxGypsy->itemData(ui.boxGypsy->currentIndex()).toInt();
 	if (ui.cbPetrik->isChecked()) opt |= FL_PETRIK;
 	if (ui.cbMonia->isChecked()) opt |= FL_MONIA;
 	playSum = ui.sbMoniaCoins->value();
@@ -944,6 +958,7 @@ void MWBotWin::setOpts() {
 	ui.cbAtack->setChecked(opt & FL_ATACK);
 	ui.cbAtackType->setCurrentIndex(ui.cbAtackType->findData(atackType));
 	ui.cbAType2->setCurrentIndex(ui.cbAType2->findData(atackType2));
+	ui.boxGypsy->setCurrentIndex(ui.boxGypsy->findData(goldType));
 	ui.cbPetrik->setChecked(opt & FL_PETRIK);
 	ui.cbMonia->setChecked(opt & FL_MONIA);
 	ui.sbMoniaCoins->setValue(playSum);
