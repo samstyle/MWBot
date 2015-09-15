@@ -70,5 +70,12 @@
         <file>images/no.png</file>
         <file>images/cancel.png</file>
         <file>images/snow.png</file>
+        <file>images/ratTail.png</file>
+        <file>images/tooth.png</file>
+        <file>images/toothGold.png</file>
+        <file>images/unknown.png</file>
+        <file>images/npc.png</file>
+        <file>images/resident.png</file>
+        <file>images/arrived.png</file>
     </qresource>
 </RCC>

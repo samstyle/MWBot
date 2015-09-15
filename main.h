@@ -2,38 +2,21 @@
 #define _MAIN_H
 
 #include <QtGui>
+#include <QNetworkCookie>
 #include <QtWebKit>
+#include <QDate>
 
 #include "ui_mainwindow.h"
 
-struct Object {
+struct mwItem {
 	QString name;
-	QString icon;
+	QString icn;
 	int count;
 };
 
 struct FightBox {
 	int result;	// 0:lost 1:win 2:draw
-	QList<Object> items;
-};
-
-struct ResBox {
-	int curhp;
-	int maxhp;
-	int curtonus;
-	int maxtonus;
-	int wanted;
-	int money;
-	int ruda;
-	int neft;
-	int med;
-	int gtooth;
-	int wtooth;
-	int star;
-	int badge;
-	int mobila;
-	int ipoints;
-	int medals;
+	QList<mwItem> items;
 };
 
 struct CharBox{
@@ -54,16 +37,42 @@ struct CharBox{
 	int statsum;
 };
 
-#define	FL_FIRST	1
-#define	FL_PETRIK	(1<<1)		// make petriks
-#define	FL_ATACK	(1<<2)		// atack enemies
-#define	FL_BOT		(1<<3)
-#define	FL_RAT		(1<<4)		// atack rats
+// new
+
+struct CharInfo {
+	QString name;
+	int level;
+	int hp;
+	int maxhp;
+	int tonus;
+	int maxtonus;
+	int wanted;
+	int money;
+	int ore;
+	int oil;
+	int honey;
+	int tooth;
+	int goldtooth;
+	int star;
+	int badge;
+	int mobile;
+	int medal;
+	int power;
+};
+
+
+// end new
+
+//#define	FL_FIRST	1
+//#define	FL_PETRIK	(1<<1)		// make petriks
+//#define	FL_ATACK	(1<<2)		// atack enemies
+//#define	FL_BOT		(1<<3)
+//#define	FL_RAT		(1<<4)		// atack rats
 #define	FL_OIL		(1<<5)
-#define	FL_MONIA	(1<<6)		// play with monia
-#define	FL_MONIA_BILET	(1<<7)		// ...use tickets
-#define	FL_MONIA_BUY	(1<<8)		// ...buy tickets
-#define FL_MONIA_STAR	(1<<9)		// ...by stars (else by teeths)
+//#define	FL_MONIA	(1<<6)		// play with monia
+//#define	FL_MONIA_BILET	(1<<7)		// ...use tickets
+//#define	FL_MONIA_BUY	(1<<8)		// ...buy tickets
+//#define FL_MONIA_STAR	(1<<9)		// ...by stars (else by teeths)
 #define	FL_SCAN		(1<<10)
 #define	FL_STOP		(1<<11)
 #define	FL_DIG		(1<<12)		// do dig
@@ -71,17 +80,17 @@ struct CharBox{
 #define	FL_DIGRAT	(1<<14)		// atack rats during dig
 #define	FL_KUB		(1<<15)		// play baraban
 #define	FL_NONPC	(1<<16)		// don't check npc stats
-#define	FL_TRAIN	(1<<17)		// train fight pet
-#define	FL_TR_RUDA	(1<<18)
-#define	FL_TR_OIL	(1<<19)
-#define FL_RUN		(1<<20)
+// #define	FL_TRAIN	(1<<17)		// train fight pet
+// #define	FL_TR_RUDA	(1<<18)
+// #define	FL_TR_OIL	(1<<19)
+// #define FL_RUN		(1<<20)
 
-#define	ATACK_EQUAL	1
-#define	ATACK_WEAK	2
-#define	ATACK_STRONG	3
-#define ATACK_ENEMY	4
-#define	ATACK_VICTIM	5
-#define	ATACK_LEVEL	6
+#define	ATK_EQUAL	1
+#define	ATK_WEAK	2
+#define	ATK_STRONG	3
+#define ATK_ENEMY	4
+#define	ATK_VICTIM	5
+#define	ATK_LEVEL	6
 
 class MWBotWin : public QMainWindow {
 	Q_OBJECT
@@ -95,43 +104,90 @@ class MWBotWin : public QMainWindow {
 		void loadOpts();
 		void saveOpts();
 	private:
-		int atackType;
-		int atackType2;
-		int goldType;
-		int opt;
-		int flag;
-		int minLev;
-		int maxLev;
-		double statPrc;
+		struct {
+			unsigned petRun:1;
+			struct {
+				unsigned enabled:1;
+				int typeA;
+				int typeB;
+				int minLev;
+				int maxLev;
+				double statPrc;
+				QDateTime time;
+			} atk;
+			struct {
+				unsigned enabled:1;
+				unsigned block:1;
+				int ratlev;
+				QDateTime time;
+			} ratk;
+			struct {
+				unsigned make:1;
+				int money;
+				int ore;
+				QDateTime time;
+			} petrik;
+			struct {
+				unsigned block:1;
+				unsigned play:1;
+				unsigned tickets:1;
+				unsigned buy:1;
+				unsigned stars:1;
+				QDate date;
+			} monya;
+			struct {
+				unsigned block:1;
+				unsigned play:1;
+				int rolls;
+				QDate date;
+			} kub;
+			struct {
+				unsigned block:1;
+				unsigned train:1;
+				unsigned useOre:1;
+				unsigned useOil:1;
+				int money;
+				int ore;
+				int oil;
+				QDateTime time;
+			} bPet;		// battle pet
+		} opt;
+		struct {
+			unsigned loading:1;
+			unsigned botWork:1;
+			unsigned firstRun:1;
+//			unsigned atkChillout:1;
+		} state;
 
-		bool loading;
+		QString getItemIcon(QString);
+
+		CharInfo info;
+		void getFastRes();
+		void getBerezkaRes();
+
+		int goldType;
+		int options;
+		int flag;
+		int playSum;
+		int buyCaps;
+
 		Ui::MainWin ui;
 		QEventLoop evloop;
 		QWebFrame* frm;
 
 		QDateTime curTime;
-		QDateTime ratTime;
-		QDateTime ataTime;
-		QDateTime ptrTime;
 		QDateTime digTime;
-		QDateTime trnTime;
 		QDateTime runTime;
 
-		struct {
-			int nextRat;
-			int lev;
-		} pers;
-
 		CharBox getStat(QString,QString);
-		ResBox getResources();
-		ResBox getBerezkaRes();
+
 		FightBox getResult();
 		int fightResult();
 
 		bool loadPath(QStringList);
-		void clickElement(QString,int);
+		void clickElement(QString);
 
-		void waitLoading(int);
+		void waitLoading();
 		void waitDropDown();
 		int getAtackTimer();
 		int getRatTimer();
@@ -143,12 +199,12 @@ class MWBotWin : public QMainWindow {
 		void log(QString);
 
 	private slots:
-		void atack();
-		int atackSel(int);
-		int atackCheck(CharBox&,int);
-		bool atackResult();
+		void attack();
+		int atkSelect(int);
+		int atkCheck(CharBox&,int);
+		bool atkResult();
 
-		void atackRat();
+		void atkRat();
 		void atackOil();
 		void goMonia();
 		void makePetrik();

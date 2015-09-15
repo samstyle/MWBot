@@ -6,69 +6,96 @@
 #include "main.h"
 
 QApplication* app;
-MWBotWin* mwbot;
-//int atackType = ATACK_LEVEL;
-//int atackType2 = ATACK_VICTIM;
-int playSum = 30000;
-int buyCaps = 0;
-//int opt = FL_ATACK | FL_MONIA | FL_MONIA_BILET | FL_MONIA_BUY | FL_PETRIK | FL_NONPC;
-//int flag = 0;
-//int minLev = 0;
-//int maxLev = 99;
-//double statPrc = 0.9;
 
 QString clickq = "var evt=document.createEvent('MouseEvents'); evt.initMouseEvent('click',true,true,window,0,0,0,0,0,false,false,false,false,0,null); document.getElementById('samdaboom').dispatchEvent(evt);";
 
 MWBotWin::MWBotWin() {
 	ui.setupUi(this);
 	frm = ui.browser->page()->mainFrame();
-	opt = FL_ATACK | FL_MONIA | FL_MONIA_BILET | FL_MONIA_BUY | FL_PETRIK; // | FL_DIG | FL_DIGRAT;
-	flag = FL_FIRST | FL_ATACK | FL_MONIA | FL_TRAIN | FL_TR_RUDA | FL_TR_OIL;
-	atackType = ATACK_WEAK;
-	atackType2 = ATACK_VICTIM;
-	minLev = 0;
-	maxLev = 99;
-	statPrc = 0.9;
-	goldType=25;
+	options = 0;
+	flag = 0;//FL_TR_RUDA | FL_TR_OIL;
 
-	ptrTime = QDateTime::currentDateTime();
-	ratTime = ptrTime;
-	trnTime = ptrTime;
-	runTime = ptrTime;
+	curTime = QDateTime::currentDateTime();
 
-	ui.cbAtackType->addItem(trUtf8("Слабых"),ATACK_WEAK);
-	ui.cbAtackType->addItem(trUtf8("Равных"),ATACK_EQUAL);
-	ui.cbAtackType->addItem(trUtf8("Сильных"),ATACK_STRONG);
-	ui.cbAtackType->addItem(trUtf8("Жертв"),ATACK_VICTIM);
-	ui.cbAtackType->addItem(trUtf8("Врагов"),ATACK_ENEMY);
-	ui.cbAtackType->addItem(trUtf8("по уровню"),ATACK_LEVEL);
-	ui.cbAtackType->setCurrentIndex(ui.cbAtackType->findData(atackType));
+	opt.atk.enabled = 1;
+	opt.atk.typeA = ATK_WEAK;
+	opt.atk.typeB = ATK_VICTIM;
+	opt.atk.minLev = 0;
+	opt.atk.maxLev = 2;
+	opt.atk.statPrc = 0.85;
 
-	ui.cbAType2->addItem(trUtf8("Слабых"),ATACK_WEAK);
-	ui.cbAType2->addItem(trUtf8("Равных"),ATACK_EQUAL);
-	ui.cbAType2->addItem(trUtf8("Сильных"),ATACK_STRONG);
-	ui.cbAType2->addItem(trUtf8("Жертв"),ATACK_VICTIM);
-	ui.cbAType2->addItem(trUtf8("Врагов"),ATACK_ENEMY);
-	ui.cbAType2->addItem(trUtf8("по уровню"),ATACK_LEVEL);
-	ui.cbAType2->setCurrentIndex(ui.cbAtackType->findData(atackType2));
+	opt.ratk.enabled = 1;
+	opt.ratk.block = 0;
+	opt.ratk.ratlev = 0;
+	opt.ratk.time = curTime;
 
-	ui.boxGypsy->addItem(QIcon(":/images/gold.png"),"25",25);
-	ui.boxGypsy->addItem(QIcon(":/images/gold.png"),"75",75);
+	opt.petrik.make = 1;
+	opt.petrik.money = 0;
+	opt.petrik.ore = 0;
+	opt.petrik.time = curTime;
+
+	opt.petRun = 1;
+
+	opt.monya.play = 1;
+	opt.monya.buy = 1;
+	opt.monya.stars = 0;
+	opt.monya.block = 0;
+	opt.monya.date = curTime.date();
+
+	opt.kub.date = opt.monya.date;
+
+	opt.bPet.train = 1;
+	opt.bPet.useOre = 1;
+	opt.bPet.useOil = 0;
+	opt.bPet.block = 0;
+	opt.bPet.money = 0;
+	opt.bPet.ore = 0;
+	opt.bPet.oil = 0;
+	opt.bPet.time = curTime;
+
+	state.botWork = 0;
+	state.firstRun = 1;
+
+	goldType = 250;
+
+	runTime = curTime;
+
+	ui.cbAtackType->addItem(trUtf8("Слабых"),ATK_WEAK);
+	ui.cbAtackType->addItem(trUtf8("Равных"),ATK_EQUAL);
+	ui.cbAtackType->addItem(trUtf8("Сильных"),ATK_STRONG);
+	ui.cbAtackType->addItem(trUtf8("Жертв"),ATK_VICTIM);
+	ui.cbAtackType->addItem(trUtf8("Врагов"),ATK_ENEMY);
+	ui.cbAtackType->addItem(trUtf8("по уровню"),ATK_LEVEL);
+	ui.cbAtackType->setCurrentIndex(ui.cbAtackType->findData(opt.atk.typeA));
+
+	ui.cbAType2->addItem(trUtf8("Слабых"),ATK_WEAK);
+	ui.cbAType2->addItem(trUtf8("Равных"),ATK_EQUAL);
+	ui.cbAType2->addItem(trUtf8("Сильных"),ATK_STRONG);
+	ui.cbAType2->addItem(trUtf8("Жертв"),ATK_VICTIM);
+	ui.cbAType2->addItem(trUtf8("Врагов"),ATK_ENEMY);
+	ui.cbAType2->addItem(trUtf8("по уровню"),ATK_LEVEL);
+	ui.cbAType2->setCurrentIndex(ui.cbAtackType->findData(opt.atk.typeB));
+
+	ui.boxGypsy->addItem(QIcon(":/images/gold.png"),"250",250);
+	ui.boxGypsy->addItem(QIcon(":/images/gold.png"),"750",750);
 //	ui.boxGypsy->addItem(QIcon(":/images/gold.png"),"150 + 2",150);
 	ui.boxGypsy->setCurrentIndex(ui.boxGypsy->findData(goldType));
+
+	ui.browser->setZoomFactor(0.75);
 
 	connect(ui.pbOptSave,SIGNAL(clicked()),this,SLOT(apply()));
 
 	connect(ui.browser,SIGNAL(loadStarted()),this,SLOT(onStart()));
 	connect(ui.browser,SIGNAL(loadProgress(int)),ui.progress,SLOT(setValue(int)));
 	connect(ui.browser,SIGNAL(loadFinished(bool)),this,SLOT(onLoad(bool)));
+	connect(ui.browser,SIGNAL(titleChanged(QString)),this,SLOT(setWindowTitle(QString)));
 
 	connect(ui.tbStop,SIGNAL(clicked()),this,SLOT(stop()));
 	connect(ui.tbStart,SIGNAL(clicked()),this,SLOT(start()));
 
 	connect(ui.tbGipsy,SIGNAL(clicked()),this,SLOT(gipsy()));
-	connect(ui.tbAtack,SIGNAL(clicked()),this,SLOT(atack()));
-//	connect(ui.tbRat,SIGNAL(clicked()),this,SLOT(atackRat()));
+	connect(ui.tbAtack,SIGNAL(clicked()),this,SLOT(attack()));
+	connect(ui.tbRat,SIGNAL(clicked()),this,SLOT(atkRat()));
 //	connect(ui.tbOil,SIGNAL(clicked()),this,SLOT(atackOil()));
 	connect(ui.tbPetrik,SIGNAL(clicked()),this,SLOT(makePetrik()));
 	connect(ui.tbSellLot,SIGNAL(clicked()),this,SLOT(sellLots()));
@@ -84,40 +111,57 @@ MWBotWin::MWBotWin() {
 
 void MWBotWin::timerEvent(QTimerEvent*) {
 	curTime = QDateTime::currentDateTime();
-	QWebElement elm;
 
-	if ((flag & FL_DIGGING) && (digTime < curTime)) digEnd();
+	if (!state.botWork) return;
 
-	if (~flag & FL_BOT) return;
+	if (state.firstRun) {
+		getAtackTimer();
+		state.firstRun = 0;
+	}
 
-	if ((opt & FL_TRAIN) && (~flag & FL_TRAIN) && (curTime > trnTime)) trainPet();
-	if ((opt & FL_RUN) && (curTime > runTime)) arena();
-
-	if ((opt & FL_KUB) && (~flag & FL_KUB)) {
+	getFastRes();
+// train battle pet
+	if (opt.bPet.train && \
+		(info.money >= opt.bPet.money + 200) && \
+		(info.ore >= opt.bPet.ore) && \
+		(info.oil >= opt.bPet.oil) && \
+		(curTime > opt.bPet.time)) {
+		trainPet();
+	}
+// send pet to arena
+	if (opt.petRun && (curTime > runTime)) {
+		arena();
+	}
+// play baraban
+/*
+	if ((options & FL_KUB) && (~flag & FL_KUB)) {
 		elm = frm->findFirstElement("div.side-fractionwar");
 		if (!elm.isNull()) {
 			if (elm.toPlainText().contains(trUtf8("Приз в студию")))
 				playKub();
 		}
 	}
-
-	if (flag & FL_FIRST) {
-		getAtackTimer();
-//		if (opt & FL_RAT) getRatTimer();
-//		if (opt & FL_PETRIK) makePetrik();
-		flag &= ~FL_FIRST;
+*/
+// make petriks
+	if (opt.petrik.make && \
+		(info.money > (opt.petrik.money + 200)) && \
+		(info.ore > opt.petrik.ore) && \
+		(opt.petrik.time < curTime)) {
+		makePetrik();
 	}
-
-	if ((opt & FL_PETRIK) && (ptrTime < curTime)) makePetrik();
-	if ((opt & FL_ATACK) && (ataTime < curTime) && (~flag & FL_DIGGING)) {
-//		if ((opt & FL_RAT) && (ratTime < curTime)) atackRat();
-		atack();
-		ResBox rbox = getResources();
-		if ((opt & FL_MONIA) && (rbox.money > playSum)) {
-			goMonia();
+// attack
+	if (opt.atk.time < curTime) {
+		if (!opt.ratk.block && opt.ratk.enabled && (opt.ratk.time < curTime)) {
+			atkRat();
+		}
+		if (opt.atk.enabled) {
+			attack();
 		}
 	}
-	if ((opt & FL_DIG) && (~flag & FL_DIGGING) && (curTime.addSecs(420) > ataTime)) dig();
+// play with monya
+	if (!opt.monya.block && opt.monya.play && (info.money > playSum)) {
+		goMonia();
+	}
 }
 
 // dig
@@ -125,7 +169,7 @@ void MWBotWin::timerEvent(QTimerEvent*) {
 void MWBotWin::dig() {
 	setBusy(true);
 	loadPath(QStringList() << "square" << "metro");
-	clickElement("div.button[onclick='metroWork();'] div.c",0);
+	clickElement("div.button[onclick='metroWork();'] div.c");
 	QWebElement elm = frm->findFirstElement("td#metrodig");
 	int sec = elm.attribute("timer").toInt() + 2;
 	curTime = QDateTime::currentDateTime();
@@ -144,28 +188,28 @@ void MWBotWin::digEnd() {
 	if (elm.isNull()) {
 		QWebElementCollection elms = frm->findAllElements("button.button[onclick] div.c");
 		foreach(elm,elms) {
-			if ((opt & FL_DIGRAT) && (elm.toPlainText().contains(trUtf8("Напасть")))) {
+			if ((options & FL_DIGRAT) && (elm.toPlainText().contains(trUtf8("Напасть")))) {
 				log(trUtf8("Атакуем крысу"));
 				restoreHP();
 				elm.setAttribute("id","clickthis");
-				clickElement("div#clickthis",0);
+				clickElement("div#clickthis");
 				int res = fightResult();
 				switch (res) {
-					case 0: opt &= ~FL_DIG; break;		// lose, don't dig anymore
+					case 0: options &= ~FL_DIG; break;		// lose, don't dig anymore
 					case 1: break;
 					case 2: break;
 				}
 			}
-			if ((~opt & FL_DIGRAT) && (elm.toPlainText().contains(trUtf8("убежать")))) {	// don't atack rat, don't dig
+			if ((~options & FL_DIGRAT) && (elm.toPlainText().contains(trUtf8("убежать")))) {	// don't atack rat, don't dig
 				log(trUtf8("Убегаем от крысы"));
 				elm.setAttribute("id","clickthis");
-				clickElement("div#clickthis",0);
+				clickElement("div#clickthis");
 				digEnd();
-				opt &= ~FL_DIG;
+				options &= ~FL_DIG;
 			}
 		}
 	} else {
-		clickElement("button.button[onclick='metroDig();'] div.c",0);
+		clickElement("button.button[onclick='metroDig();'] div.c");
 		elm = frm->findFirstElement("div#content div.report div.success");
 		if (elm.isNull()) {
 			log(trUtf8("Ничего не выкопано"));
@@ -218,22 +262,24 @@ void MWBotWin::scan() {
 */
 
 void MWBotWin::onLoad(bool) {
-	loading = false;
+	state.loading = 0;
 }
 
 void MWBotWin::onStart() {
-	loading = true;
+	state.loading = 1;
 }
 
 void MWBotWin::start() {
 	log(trUtf8("Бот запущен"));
 	ui.tbStart->setEnabled(false);
-	flag = (FL_BOT | FL_FIRST);
+	flag = 0;
+	state.botWork = 1;
+	state.firstRun = 1;
 }
 
 void MWBotWin::stop() {
 	if (!ui.browser->isEnabled()) flag |= FL_STOP;
-	flag &= ~FL_BOT;
+	state.botWork = 0;
 	log(trUtf8("Бот остановлен"));
 	ui.tbStart->setEnabled(true);
 }
@@ -259,15 +305,16 @@ bool MWBotWin::loadPath(QStringList pth) {
 bool MWBotWin::loadPage(QString pth) {
 	pth.prepend("http://www.moswar.ru/");
 	if (!pth.endsWith("/")) pth.append("/");
-//	if (ui.browser->page()->mainFrame()->url() == QUrl(pth)) return true;
-	mwbot->ui.browser->load(QUrl(pth));
-	waitLoading(0);
+	if (ui.browser->page()->mainFrame()->url() == pth) return true;
+	ui.browser->load(QUrl(pth));
+	waitLoading();
 	return (ui.browser->page()->mainFrame()->url() == QUrl(pth));
 }
 
-void MWBotWin::clickElement(QString quer,int wait) {
+void MWBotWin::clickElement(QString quer) {
 	QWebElement elm = frm->findFirstElement(quer);
 	if (elm.isNull()) {
+		qDebug() << QString("элемент '%0' не найден").arg(quer);
 		log(trUtf8("DEBUG: элемент <b>").append(quer).append(trUtf8("</b> не найден")));
 		return;
 	}
@@ -280,29 +327,21 @@ void MWBotWin::clickElement(QString quer,int wait) {
 		frm->evaluateJavaScript(quer);
 		elm.removeAttribute("id");
 	}
-	if (wait < 0) {
-		waitDropDown();
-	} else {
-		waitLoading(wait);
-	}
+	waitLoading();
 }
 
-void MWBotWin::waitLoading(int wait) {
-	if (wait < 1) wait = 1000;
+void MWBotWin::waitLoading() {
 	QWebElement elm;
 	do {
-		usleep(10000);
-		app->processEvents();
-	} while (loading);
-	do {
-		usleep(10000);
+		usleep(1000);
 		app->processEvents();
 		elm = frm->findFirstElement("div.loading-top");
-	} while (!(elm.isNull() || elm.attribute("style").contains("none")));
+	} while (state.loading || !elm.attribute("style").contains("none"));
 	int sleeptime = 500 + (rand() % 1000);
-	for (int i = 0; i < sleeptime; i++) {
+	while (sleeptime > 0) {
+		usleep(1000);
 		app->processEvents();
-		usleep(wait);
+		sleeptime--;
 	}
 }
 
@@ -310,20 +349,17 @@ void MWBotWin::waitLoading(int wait) {
 
 int MWBotWin::getAtackTimer() {
 	int res;
-	QWebElement elm = frm->findFirstElement("form#searchForm span.timer");
-	ataTime = QDateTime::currentDateTime();
+	loadPage("alley/");
+	QWebElement elm = frm->findFirstElement("div.need-some-rest div.holders span.timer");
+	opt.atk.time = QDateTime::currentDateTime();
 	if (elm.isNull()) {
-		flag |= FL_ATACK;
 		res = -1;
 	} else {
 		res = elm.attribute("timer").toInt();
-		if (res < 1) {
-			flag |= FL_ATACK;
-		} else {
-			flag &= ~FL_ATACK;
+		if (res > 0) {
 			res += (5 + (rand() % 10));
-			ataTime = ataTime.addSecs(res);
-//			log(QString::number(res).append(trUtf8(" сек. до следующего нападения")));
+			opt.atk.time = opt.atk.time.addSecs(res);
+			log(QString::number(res).append(trUtf8(" сек. до следующего нападения")));
 		}
 	}
 	return res;
@@ -331,67 +367,97 @@ int MWBotWin::getAtackTimer() {
 
 int MWBotWin::getRatTimer() {
 	loadPath(QStringList() << "square" << "metro");
-	int time = frm->findFirstElement("td#ratfight").attribute("timer").toInt();
-	ratTime = QDateTime::currentDateTime();
+	QWebElement elm = frm->findFirstElement("div#timer-rat-fight td#ratfight");
+	int time = elm.attribute("timer").toInt();
+	opt.ratk.time = QDateTime::currentDateTime();
+
 	if (time > 0) {
-		time += (10 + (rand() % 40));
-		ratTime = ratTime.addSecs(time);
-//		ratTimer.singleShot(time * 1000,this,SLOT(switchRat()));
-		flag &= ~FL_RAT;
-		log(trUtf8("До спуска в метро примерно ").append(QString::number(time/60)).append(trUtf8(" мин.")));
-		pers.nextRat = frm->findFirstElement("div#timer-rat-fight td.label").toPlainText().mid(9,2).toInt();
+		time += 60;
+		opt.ratk.time = curTime.addSecs(time);
+		log(trUtf8("До спуска в метро примерно %0 мин.").arg(time / 60));
 	} else {
-		pers.nextRat = frm->findFirstElement("div#action-rat-fight div.holders").toPlainText().split(":").at(1).split(trUtf8("До")).first().trimmed().toInt();
-		flag |= FL_RAT;
+		elm = frm->findFirstElement("div#action-rat-fight div.holders");
+		opt.ratk.ratlev = elm.toPlainText().split(":").at(1).left(3).trimmed().toInt();
 	}
-	log(trUtf8("Следующая крыса уровня ").append(QString::number(pers.nextRat)));
 	return time;
 }
 
-Object namIcon[] = {
-	{QObject::trUtf8("Стеклопакет"),":/images/parts/1.png",0},
-	{QObject::trUtf8("Стеклорез"),":/images/parts/2.png",0},
-	{QObject::trUtf8("Балка"),":/images/parts/3.png",0},
-	{QObject::trUtf8("Кирпич"),":/images/parts/4.png",0},
-	{QObject::trUtf8("Цемент"),":/images/parts/5.png",0},
-	{QObject::trUtf8("Краска"),":/images/parts/6.png",0},
-	{QObject::trUtf8("Каучук"),":/images/parts/7.png",0},
-	{QObject::trUtf8("Плавильная печь"),":/images/parts/8.png",0},
-	{QObject::trUtf8("Насос"),":/images/parts/9.png",0},
-	{QObject::trUtf8("Чертёж"),":/images/parts/10.png",0},
-	{QObject::trUtf8("Болт"),":/images/parts/11.png",0},
-	{QObject::trUtf8("Напильник"),":/images/parts/12.png",0},
+mwItem namIcon[] = {
+	{QObject::trUtf8("стеклопакет"),":/images/parts/1.png",0},
+	{QObject::trUtf8("стеклорез"),":/images/parts/2.png",0},
+	{QObject::trUtf8("балка"),":/images/parts/3.png",0},
+	{QObject::trUtf8("кирпич"),":/images/parts/4.png",0},
+	{QObject::trUtf8("цемент"),":/images/parts/5.png",0},
+	{QObject::trUtf8("краска"),":/images/parts/6.png",0},
+	{QObject::trUtf8("каучук"),":/images/parts/7.png",0},
+	{QObject::trUtf8("плавильная печь"),":/images/parts/8.png",0},
+	{QObject::trUtf8("насос"),":/images/parts/9.png",0},
+	{QObject::trUtf8("чертёж"),":/images/parts/10.png",0},
+	{QObject::trUtf8("болт"),":/images/parts/11.png",0},
+	{QObject::trUtf8("напильник"),":/images/parts/12.png",0},
 
-	{QObject::trUtf8("Апельсин"),":/images/fruit/fruit1.png",0},
-	{QObject::trUtf8("Лимон"),":/images/fruit/fruit2.png",0},
-	{QObject::trUtf8("Яблоко"),":/images/fruit/fruit3.png",0},
-	{QObject::trUtf8("Мандарин"),":/images/fruit/fruit4.png",0},
-	{QObject::trUtf8("Ананас"),":/images/fruit/fruit5.png",0},
-	{QObject::trUtf8("Банан"),":/images/fruit/fruit6.png",0},
-	{QObject::trUtf8("Арбуз"),":/images/fruit/fruit7.png",0},
-	{QObject::trUtf8("Киви"),":/images/fruit/fruit8.png",0},
-	{QObject::trUtf8("Малина"),":/images/fruit/fruit9.png",0},
-	{QObject::trUtf8("Манго"),":/images/fruit/fruit10.png",0},
-	{QObject::trUtf8("Дыня"),":/images/fruit/fruit11.png",0},
-	{QObject::trUtf8("Персик"),":/images/fruit/fruit12.png",0},
-	{QObject::trUtf8("Виноград"),":/images/fruit/fruit13.png",0},
+	{QObject::trUtf8("апельсин"),":/images/fruit/fruit1.png",0},
+	{QObject::trUtf8("лимон"),":/images/fruit/fruit2.png",0},
+	{QObject::trUtf8("яблоко"),":/images/fruit/fruit3.png",0},
+	{QObject::trUtf8("мандарин"),":/images/fruit/fruit4.png",0},
+	{QObject::trUtf8("ананас"),":/images/fruit/fruit5.png",0},
+	{QObject::trUtf8("банан"),":/images/fruit/fruit6.png",0},
+	{QObject::trUtf8("арбуз"),":/images/fruit/fruit7.png",0},
+	{QObject::trUtf8("киви"),":/images/fruit/fruit8.png",0},
+	{QObject::trUtf8("малина"),":/images/fruit/fruit9.png",0},
+	{QObject::trUtf8("манго"),":/images/fruit/fruit10.png",0},
+	{QObject::trUtf8("дыня"),":/images/fruit/fruit11.png",0},
+	{QObject::trUtf8("персик"),":/images/fruit/fruit12.png",0},
+	{QObject::trUtf8("виноград"),":/images/fruit/fruit13.png",0},
+
+	{QObject::trUtf8("опыт"),":/images/lamp.png",0},
+	{QObject::trUtf8("деньги"),":/images/money.png",0},
+	{QObject::trUtf8("руда"),":/images/ruda.png",0},
+	{QObject::trUtf8("нефть"),":/images/neft.png",0},
+	{QObject::trUtf8("зубы"),":/images/tooth.png",0},
+	{QObject::trUtf8("золотые зубы"),":/images/toothGold.png",0},
+	{QObject::trUtf8("пули"),":/images/bullet.png",0},
+	{QObject::trUtf8("звездочки"),":/images/sparkle.png",0},
+	{QObject::trUtf8("искра"),":/images/sparkle.png",0},
+	{QObject::trUtf8("снежинки"),":/images/snow.png",0},
+	{QObject::trUtf8("жетоны"),":/images/badge.png",0},
+	{QObject::trUtf8("мобила"),":/images/mobila.png",0},
+	{QObject::trUtf8("подписи"),":/images/party-signature.png",0},
+	{QObject::trUtf8("хвост крысомахи"),":/images/ratTail.png",0},
+
+	{QObject::trUtf8("npc"),":/images/npc.png",0},
+	{QObject::trUtf8("arrived"),":/images/arrived.png",0},
+	{QObject::trUtf8("resident"),":/images/resident.png",0},
 
 	{"","",-1}
 };
 
+QString MWBotWin::getItemIcon(QString name) {
+	int idx = 0;
+	QString res;
+	name = name.toLower();
+	while (namIcon[idx].count != -1) {
+		if (namIcon[idx].name == name)
+			res = namIcon[idx].icn;
+		idx++;
+	}
+	return res;
+}
+
 FightBox MWBotWin::getResult() {
 	FightBox res;
 	QWebElement elm;
-	Object obj;
+	mwItem obj;
 	QWebElementCollection coll;
 	int mylife = frm->findFirstElement("span#fighter1-life").toPlainText().split("/").first().trimmed().toInt();
 	int enlife = frm->findFirstElement("span#fighter2-life").toPlainText().split("/").first().trimmed().toInt();
 	res.result = (mylife > 0) ? 1 : ((enlife > 0) ? 0 : 2);
 
 	obj.name = trUtf8("деньги");
-	obj.icon = ":/images/money.png";
 	obj.count = 0;
+
 	coll=frm->findAllElements("li.result span.tugriki");
+
 	foreach(elm,coll) {
 		if (elm.attribute("title").isNull()) {
 			if (res.result == 1) obj.count += elm.toPlainText().trimmed().toInt();
@@ -404,57 +470,51 @@ FightBox MWBotWin::getResult() {
 	if (res.result == 1) {			// check all only if win
 
 		obj.name = trUtf8("опыт");
-		obj.icon = ":/images/lamp.png";
 		obj.count = frm->findFirstElement("li.result span.expa").attribute("title").split(":").last().trimmed().toInt();
 		if (obj.count != 0) res.items.append(obj);
 
 		obj.name = trUtf8("нефть");
-		obj.icon = ":/images/neft.png";
 		obj.count = frm->findFirstElement("li.result span.neft").attribute("title").split(":").last().trimmed().toInt();
 		if (obj.count != 0) res.items.append(obj);
 
 		obj.name = trUtf8("пули");
-		obj.icon = ":/images/bullet.png";
 		obj.count = frm->findFirstElement("li.result span.bullet").toPlainText().toInt();
 		if (obj.count != 0) res.items.append(obj);
 
 		obj.name = trUtf8("звездочки");
-		obj.icon = ":/images/sparkle.png";
 		obj.count = frm->findFirstElement("li.result span.sparkles").toPlainText().toInt();
 		if (obj.count != 0) res.items.append(obj);
 
 		obj.name = trUtf8("снежинки");
-		obj.icon = ":/images/snow.png";
 		obj.count = frm->findFirstElement("li.result span.snowflake").toPlainText().toInt();
 		if (obj.count != 0) res.items.append(obj);
 
 		obj.name = trUtf8("жетоны");
-		obj.icon = ":/images/badge.png";
 		obj.count = frm->findFirstElement("li.result span.badge").toPlainText().toInt();
 		if (obj.count != 0) res.items.append(obj);
 
 		obj.name = trUtf8("мобила");
-		obj.icon = ":/images/mobila.png";
 		obj.count = frm->findFirstElement("li.result span.mobila").isNull() ? 0 : 1;
 		if (obj.count != 0) res.items.append(obj);
 
 		obj.name = trUtf8("подписи");
-		obj.icon = ":/images/party-signature.png";
 		obj.count = frm->findFirstElement("li.result span.party_signature").toPlainText().toInt();
 		if (obj.count != 0) res.items.append(obj);
 
+		obj.name = trUtf8("зубы");
+		obj.count = frm->findFirstElement("li.result span.tooth-white").toPlainText().toInt();
+		if (obj.count != 0) res.items.append(obj);
+
+		obj.name = trUtf8("золотые зубы");
+		obj.count = frm->findFirstElement("li.result span.tooth-golden").toPlainText().toInt();
+		if (obj.count != 0) res.items.append(obj);
+
 		coll = frm->findAllElements("li.result span.object-thumb");
-		int idx;
+		//int idx;
 		foreach(elm, coll) {
 			obj.count = elm.findFirst("span.count").toPlainText().toInt();
 			if (obj.count != 0) {
 				obj.name = elm.findFirst("img").attribute("alt");
-				obj.icon.clear();
-				idx = 0;
-				while (namIcon[idx].count != -1) {
-					if (namIcon[idx].name == obj.name) obj.icon = namIcon[idx].icon;
-					idx++;
-				}
 				res.items.append(obj);
 			}
 		}
@@ -462,16 +522,16 @@ FightBox MWBotWin::getResult() {
 	elm = frm->findFirstElement("div.backlink div.button div.c");
 	if (elm.isNull()) return res;
 
-	clickElement("div.backlink div.button div.c",0);
+	clickElement("div.backlink div.button div.c");
+
 	obj.name = trUtf8("руда");
-	obj.icon = ":/images/ruda.png";
 	obj.count = frm->findFirstElement("div#alert-text span.ruda").toPlainText().remove("\"").toInt();
 	if (obj.count != 0) res.items.append(obj);
+
 	obj.name = trUtf8("деньги");
-	obj.icon = ":/images/money.png";
 	obj.count = frm->findFirstElement("div#alert-text span.tugriki").toPlainText().remove("\"").toInt();
 	if (obj.count != 0) res.items.append(obj);
-	obj.icon.clear();
+
 	coll = frm->findAllElements("div#alert-text span.object-thumb");
 	foreach(elm,coll) {
 		obj.name = elm.findFirst("img").attribute("alt");
@@ -482,35 +542,31 @@ FightBox MWBotWin::getResult() {
 	return res;
 }
 
-ResBox MWBotWin::getResources() {
-	ResBox res;
-	QWebElement elm;
-	elm = frm->findFirstElement("span#currenthp");
-	if (elm.isNull()) return res;
-	res.curhp = elm.toPlainText().toInt();
-	res.maxhp = frm->findFirstElement("span#maxhp").toPlainText().toInt();
-	res.curtonus = frm->findFirstElement("span#currenttonus").toPlainText().toInt();
-	res.maxtonus = frm->findFirstElement("span#maxenergy").toPlainText().toInt();
-	res.money = frm->findFirstElement("li.tugriki-block").attribute("title").split(":").last().trimmed().toInt();
-	res.ruda = frm->findFirstElement("li.ruda-block").attribute("title").split(":").last().trimmed().toInt();
-	res.neft = frm->findFirstElement("li.neft-block").attribute("title").split(":").last().trimmed().toInt();
-	res.med = frm->findFirstElement("li.med-block").attribute("title").split(":").last().trimmed().toInt();
-	res.wanted = frm->findFirstElement("div.wanted div.percent").attribute("style").split(QRegExp("[:%]")).at(1).toInt();
-	return res;
+void MWBotWin::getFastRes() {
+	QWebElement elm = frm->findFirstElement("span#currenthp");
+	if (elm.isNull()) return;
+	info.hp = elm.toPlainText().toInt();
+	info.maxhp = frm->findFirstElement("span#maxhp").toPlainText().toInt();
+	info.tonus = frm->findFirstElement("span#currenttonus").toPlainText().toInt();
+	info.maxtonus = frm->findFirstElement("span#maxenergy").toPlainText().toInt();
+	info.money = frm->findFirstElement("li.tugriki-block").attribute("title").split(":").last().trimmed().toInt();
+	info.ore = frm->findFirstElement("li.ruda-block").attribute("title").split(":").last().trimmed().toInt();
+	info.oil = frm->findFirstElement("li.neft-block").attribute("title").split(":").last().trimmed().toInt();
+	info.honey = frm->findFirstElement("li.med-block").attribute("title").split(":").last().trimmed().toInt();
+	info.wanted = frm->findFirstElement("div.wanted div.percent").attribute("style").split(QRegExp("[:%]")).at(1).toInt();
 }
 
-ResBox MWBotWin::getBerezkaRes() {
-	ResBox res;
-	res.gtooth = frm->findFirstElement("div.borderdata span.tooth-golden").toPlainText().toInt();
-	res.wtooth = frm->findFirstElement("div.borderdata span.tooth-white").toPlainText().toInt();
-	res.star = frm->findFirstElement("div.borderdata span.star").toPlainText().toInt();
-	res.badge = frm->findFirstElement("div.borderdata span.badge").toPlainText().toInt();
-	res.mobila = frm->findFirstElement("div.borderdata span.mobila").toPlainText().toInt();
-	res.neft = frm->findFirstElement("div.borderdata span.neft").toPlainText().toInt();
-	res.ipoints = frm->findFirstElement("div.borderdata span.ipoints-e").toPlainText().toInt();
-	res.medals = frm->findFirstElement("div.borderdata span.pet-golden.counter").toPlainText().toInt();
-	res.med = frm->findFirstElement("div.borderdata span.med").toPlainText().toInt();
-	return res;
+void MWBotWin::getBerezkaRes() {
+	info.tooth = frm->findFirstElement("div.borderdata span.tooth-white").toPlainText().toInt();
+	info.goldtooth = frm->findFirstElement("div.borderdata span.tooth-golden").toPlainText().toInt();
+	info.star = frm->findFirstElement("div.borderdata span.star").toPlainText().toInt();
+	info.badge = frm->findFirstElement("div.borderdata span.badge").toPlainText().toInt();
+	info.mobile = frm->findFirstElement("div.borderdata span.mobila").toPlainText().toInt();
+	info.oil = frm->findFirstElement("div.borderdata span.neft").toPlainText().toInt();
+	//res.ipoints = frm->findFirstElement("div.borderdata span.ipoints-e").toPlainText().toInt();
+	info.power = frm->findFirstElement("div.borderdata span.power.counter").toPlainText().toInt();
+	info.medal = frm->findFirstElement("div.borderdata span.pet-golden.counter").toPlainText().toInt();
+	info.honey = frm->findFirstElement("div.borderdata span.med").toPlainText().toInt();
 }
 
 CharBox MWBotWin::getStat(QString querA, QString querB) {
@@ -561,10 +617,10 @@ void MWBotWin::switchAtack() {
 */
 
 void MWBotWin::restoreHP() {
-	ResBox rbox = getResources();
-	if (rbox.curhp < rbox.maxhp * 0.95) {
-		clickElement("div.life i.plus-icon",0);
-		clickElement("div.actions button.button div.c",0);
+	getFastRes();
+	if (info.hp < info.maxhp * 0.95) {
+		clickElement("div.life i.plus-icon");
+		clickElement("div.actions button.button div.c");
 	}
 }
 
@@ -575,31 +631,25 @@ void MWBotWin::switchRat() {
 }
 */
 
-void MWBotWin::atackRat() {
-	if (~flag & FL_ATACK) return;
-	if ((pers.nextRat > 0) && (pers.nextRat % 5 == 0)) {
-		log(trUtf8("В групповые бои с крысами не ходим: уровень ").append(QString::number(pers.nextRat)));
-		flag &= ~FL_RAT;
+void MWBotWin::atkRat() {
+	if ((opt.ratk.ratlev > 0) && (opt.ratk.ratlev % 5 == 0)) {
+		log(trUtf8("В групповые бои с крысами не ходим: уровень %0").arg(opt.ratk.ratlev));
+		opt.ratk.block = 1;
 		return;
 	}
-
 	setBusy(true);
-
 	loadPath(QStringList() << "square" << "metro");
-//	loadPage("square/");
-//	loadPage("metro/");
-
 	int time = getRatTimer();
 	if (time < 1) {
-		log(trUtf8("Уровень крысы: ").append(QString::number(pers.nextRat)));
-		if ((pers.nextRat % 5) == 0) {
+		log(trUtf8("Уровень крысы: %0").arg(opt.ratk.ratlev));
+		if ((opt.ratk.ratlev % 5) == 0) {
 			log(trUtf8("В групповые бои с крысами не ходим"));
-			flag &= ~FL_RAT;
+			opt.ratk.block = 1;
 		} else {
 			restoreHP();
-			log(trUtf8("Нападаем на крысу"));
-			clickElement("div#action-rat-fight div.button div.c",0);
-			clickElement("div#welcome-rat button.button div.c",0);
+			//log(trUtf8("Нападаем на крысу"));
+			clickElement("div#action-rat-fight div.button div.c");
+			clickElement("div#welcome-rat button.button div.c");
 			fightResult();
 			getRatTimer();
 		}
@@ -608,8 +658,10 @@ void MWBotWin::atackRat() {
 }
 
 void MWBotWin::atackOil() {
-	if (pers.lev < 10) return;
-	if (~flag & FL_ATACK) return;
+	return;
+
+	getFastRes();
+	if (info.level < 10) return;
 	if (~flag & FL_OIL) return;
 
 	int time = getAtackTimer();
@@ -618,16 +670,11 @@ void MWBotWin::atackOil() {
 	setBusy(true);
 
 	loadPath(QStringList() << "tverskaya" << "neft");
-//	loadPage("tverskaya/");
-//	loadPage("neft/");
 
-//	QWebElement elm;
-	// frm->findFirstElement("div#ventel-overtip div.object h2").toPlainText();	// name [lev]
-//	elm = frm->findFirstElement("div.enemy div.action button.button div.c");
-	clickElement("div.enemy div.action button.button div.c",0);
-	if (fightResult() == 0) flag &= ~FL_OIL;
+//	clickElement("div.enemy div.action button.button div.c");
+//	if (fightResult() == 0) flag &= ~FL_OIL;
 
-	getAtackTimer();
+//	getAtackTimer();
 
 	setBusy(false);
 }
@@ -641,8 +688,11 @@ void MWBotWin::atackOil() {
 int MWBotWin::fightResult() {
 	QWebElement elm;
 	CharBox enstat = getStat("div.fighter2","td.fighter2-cell");
-	QString enname = enstat.name.append(" [").append(QString::number(enstat.level)).append("]");
+	QString enname = QString("%0 [%1]").arg(enstat.name).arg(enstat.level);
 	QString tolog;
+	QString icn;
+	QString fightres;
+	QString nname;
 	int cnt = 100;
 	do {
 		elm = frm->findFirstElement("i.icon.icon-forward");
@@ -654,27 +704,27 @@ int MWBotWin::fightResult() {
 		log(trUtf8("...ошибка при нападении"));
 		return -1;
 	}
-	clickElement("i.icon.icon-forward",0);
-//	frm->evaluateJavaScript("fightForward();");
+	clickElement("i.icon.icon-forward");
 	FightBox res = getResult();
+	nname = getItemIcon(enstat.type);
 	if (res.result == 2) {
-		tolog = trUtf8("<font style=background-color:#e0e020><img src=:/images/cancel.png>&nbsp;").append(enname).append(trUtf8("</font>"));
+		tolog = QString("<font style=background-color:#e0e020><img src=%0>&nbsp;%1</font>").arg(nname).arg(enname);
 	} else {
 		if (res.result == 1) {
-			tolog = trUtf8("<font style=background-color:#20e020><img src=:/images/yes.png>&nbsp;");
+			tolog = QString("<font style=background-color:#20e020><img src=%0>&nbsp;").arg(nname);
 		} else {
-			tolog = trUtf8("<font style=background-color:#e02020><img src=:/images/no.png>&nbsp;");
+			tolog = QString("<font style=background-color:#e02020><img src=%0>&nbsp;").arg(nname);
 		}
 		tolog.append(enname).append("</font>&nbsp;");
-		QString fightres;
-		foreach(Object obj,res.items) {
+		foreach(mwItem obj,res.items) {
 			fightres.append("<font style=background-color:#d0d0d0>");
-			if (obj.icon.isEmpty()) {
-				fightres.append(obj.name);
-			} else {
-				fightres.append("<img width=16 height=16 src=").append(obj.icon).append(">");
+			icn = getItemIcon(obj.name);
+			// qDebug() << obj.name << icn;
+			if (icn.isEmpty()) {
+				icn = ":/images/unknown.png";
 			}
-			fightres.append("&nbsp;").append(QString::number(obj.count)).append("</font>&nbsp;");
+			fightres.append(QString("<img width=16 height=16 src='%0' title='%1'>").arg(icn).arg(obj.name));
+			fightres.append(QString("&nbsp;%0</font>&nbsp;").arg(obj.count));
 		}
 		tolog.append(fightres);
 	}
@@ -684,41 +734,39 @@ int MWBotWin::fightResult() {
 
 // make petriks
 
-/*
-void MWBotWin::switchPetrik() {
-	flag |= FL_PETRIK;
-	log(trUtf8("Петрики сварены"));
-}
-*/
-
 void MWBotWin::makePetrik() {
-	ResBox rbox = getResources();
-	if ((rbox.money < 600) || (rbox.ruda < 5)) {
-		ptrTime = ptrTime.addSecs(600);		// 10 min delay
-		log(trUtf8("Для производства петриков не хватает ресурсов"));
-	}
+	QWebElement elm;
 	setBusy(true);
 	loadPath(QStringList() << "square" << "factory");
-	QWebElement elm = frm->findFirstElement("span#petriksprocess");
-	ptrTime = QDateTime::currentDateTime();
+	getFastRes();
+	curTime = QDateTime::currentDateTime();
+
+	elm = frm->findFirstElement("span#petriksprocess");
 	if (!elm.isNull() && (elm.attribute("timer").toInt() > 0)) {
-		flag &= ~FL_PETRIK;
-		int time = (elm.attribute("timer").toInt() + 80);
-		ptrTime = ptrTime.addSecs(time);
-		log(trUtf8("Петрики уже варятся, до окончания ").append(QString::number(time/60).append(trUtf8(" мин."))));
+		int time = elm.attribute("timer").toInt() + 80;
+		opt.petrik.time = curTime.addSecs(time);
+		log(trUtf8("Петрики уже варятся, до окончания %0 минут").arg(QString::number(time / 60 + 1)));
 	} else {
-		elm = frm->findFirstElement("form.factory-nanoptric button[type='submit'] div.c");
-		if (!elm.isNull()) {
-			flag &= ~FL_PETRIK;
-			clickElement("form.factory-nanoptric button[type='submit'] div.c",0);
-			ptrTime = ptrTime.addSecs(3670);
-			log(trUtf8("Начато производство петриков"));
+		elm = frm->findFirstElement("form.factory-nanoptric button.button div.c");
+		if (elm.isNull()) {
+			log(trUtf8("Ошибка варки петриков. Следующая попытка через минуту."));
+			opt.petrik.time = curTime.addSecs(60);
+		} else {
+			elm = frm->findFirstElement("form.factory-nanoptric button.button div.c span.tugriki");
+			opt.petrik.money = elm.toPlainText().toInt();
+			elm = frm->findFirstElement("form.factory-nanoptric button.button div.c span.ruda");
+			opt.petrik.ore = elm.toPlainText().toInt();
+			if ((info.money > (opt.petrik.money + 199)) && (info.ore >= opt.petrik.ore)) {
+				clickElement("form.factory-nanoptric button.button div.c");
+				opt.petrik.time = curTime.addSecs(3700);
+				log(trUtf8("Начато производство петриков"));
+			} else {
+				log(trUtf8("Для производства петриков недостаточно ресурсов"));
+			}
 		}
 	}
 	setBusy(false);
 }
-
-// play thimble
 
 
 // sell coctails
@@ -749,7 +797,7 @@ void MWBotWin::sellLots() {
 					if (!tmp.isNull()) {
 						tmp = tmp.findFirst("button.button div.c");
 						tmp.setAttribute("id","kzkz");
-						clickElement("div#kzkz",500);
+						clickElement("div#kzkz");
 						count++;
 						selled = true;
 						break;
@@ -788,7 +836,7 @@ void MWBotWin::playKub() {
 		elm = frm->findFirstElement("input#stash-change-ore");
 		if (!elm.isNull()) {
 			elm.setAttribute("value",QString::number(buyCaps));
-			clickElement("button#button-change-ore div.c",0);
+			clickElement("button#button-change-ore div.c");
 		}
 	}
 	/*
@@ -837,161 +885,167 @@ void MWBotWin::playKub() {
 void MWBotWin::loadOpts() {
 	QFile file(QDir::homePath().append("/.config/samstyle/mwbot/config.conf"));
 	if (file.open(QFile::ReadOnly)) {
-		opt = 0;
+		options = 0;
 		QString line;
 		QStringList pars;
 		while (!file.atEnd()) {
 			line = QDialog::trUtf8(file.readLine()).remove("\r").remove("\n");
 			pars = line.split(":",QString::SkipEmptyParts);
 			if (pars.size() == 2) {
-				if ((pars.first() == "atack") && (pars.last() == "yes")) opt |= FL_ATACK;
-				if (pars.first() == "atype") atackType = pars.last().toInt();
-				if (pars.first() == "atype2") atackType2 = pars.last().toInt();
-				if ((pars.first() == "makepetrik") && (pars.last() == "yes")) opt |= FL_PETRIK;
-				if ((pars.first() == "playmon") && (pars.last() == "yes")) opt |= FL_MONIA;
+				if (pars.first() == "atack") opt.atk.enabled = (pars.last() == "yes") ? 1 : 0;
+				if (pars.first() == "atype") opt.atk.typeA = pars.last().toInt();
+				if (pars.first() == "atype2") opt.atk.typeB = pars.last().toInt();
+				if (pars.first() == "makepetrik") opt.petrik.make = (pars.last() == "yes") ? 1 : 0;
+				if (pars.first() == "playmon") opt.monya.play = (pars.last() == "yes") ? 1 : 0;
 				if (pars.first() == "playsum") {
 					playSum = pars.last().toInt();
 					if (playSum == 0) playSum = 30000;
 				}
-				if ((pars.first() == "playtickets") && (pars.last() == "yes")) opt |= FL_MONIA_BILET;
-				if ((pars.first() == "buytickets") && (pars.last() == "yes")) opt |= FL_MONIA_BUY;
-				if ((pars.first() == "buytickets_star") && (pars.last() == "yes")) opt |= FL_MONIA_STAR;
-				if ((pars.first() == "rathunt") && (pars.last() == "yes")) opt |= FL_RAT;
-				if ((pars.first() == "digger") && (pars.last() == "yes")) opt |= FL_DIG;
-				if ((pars.first() == "digrat") && (pars.last() == "yes")) opt |= FL_DIGRAT;
-				if ((pars.first() == "baraban") && (pars.last() == "yes")) opt |= FL_KUB;
+				if (pars.first() == "playtickets") opt.monya.tickets = (pars.last() == "yes") ? 1 : 0;
+				if (pars.first() == "buytickets") opt.monya.buy = (pars.last() == "yes") ? 1 : 0;
+				if (pars.first() == "buytickets_star") opt.monya.stars = (pars.last() == "yes") ? 1 : 0;
+				if (pars.first() == "rathunt") opt.ratk.enabled = (pars.last() == "yes") ? 1 : 0;
+				if ((pars.first() == "digger") && (pars.last() == "yes")) options |= FL_DIG;
+				if ((pars.first() == "digrat") && (pars.last() == "yes")) options |= FL_DIGRAT;
+				if ((pars.first() == "baraban") && (pars.last() == "yes")) options |= FL_KUB;
 				if (pars.first() == "buycaps") {
 					buyCaps = pars.last().toInt();
 					if (buyCaps > 20) buyCaps = 20;
 					if (buyCaps < 0) buyCaps = 0;
 				}
 				if (pars.first() == "minlev") {
-					minLev = pars.last().toInt();
-					if (minLev > 99) minLev = 99;
-					if (minLev < 1) minLev = 1;
+					opt.atk.minLev = pars.last().toInt();
+					if (opt.atk.minLev > 50) {
+						opt.atk.minLev = 50;
+					} else if (opt.atk.minLev < -50) {
+						opt.atk.minLev = -50;
+					}
 				}
 				if (pars.first() == "maxlev") {
-					maxLev = pars.last().toInt();
-					if (maxLev > 99) maxLev = 99;
-					if (maxLev < 1) maxLev = 1;
+					opt.atk.maxLev = pars.last().toInt();
+					if (opt.atk.maxLev > 50) {
+						opt.atk.maxLev = 50;
+					} else if (opt.atk.maxLev < -50) {
+						opt.atk.maxLev = -50;
+					}
 				}
 				if (pars.first() == "statprc") {
-					statPrc = pars.last().toDouble();
-					if (statPrc <= 0) statPrc = 0.5;
-					if (statPrc > 2) statPrc = 2;
+					opt.atk.statPrc = pars.last().toDouble();
+					if (opt.atk.statPrc <= 0) {
+						opt.atk.statPrc = 0.5;
+					} else if (opt.atk.statPrc > 2) {
+						opt.atk.statPrc = 2;
+					}
 				}
-				if ((pars.first() == "checknpc") && (pars.last() == "no")) opt |= FL_NONPC;
-				if ((pars.first() == "trainpet") && (pars.last() == "yes")) opt |= FL_TRAIN;
-				if ((pars.first() == "tp-ruda") && (pars.last() == "yes")) opt |= FL_TR_RUDA;
-				if ((pars.first() == "tp-neft") && (pars.last() == "yes")) opt |= FL_TR_OIL;
-				if ((pars.first() == "runner") && (pars.last() == "yes")) opt |= FL_RUN;
+				if ((pars.first() == "checknpc") && (pars.last() == "no")) options |= FL_NONPC;
+				if (pars.first() == "trainpet") opt.bPet.train = (pars.last() == "yes") ? 1 : 0;
+				if (pars.first() == "tp-ruda") opt.bPet.useOre = (pars.last() == "yes") ? 1 : 0;
+				if (pars.first() == "tp-neft") opt.bPet.useOil = (pars.last() == "yes") ? 1 : 0;
+				if (pars.first() == "runner") opt.petRun = (pars.last() == "yes") ? 1 : 0;
 				if (pars.first() == "goldplay") goldType = pars.last().toInt();
 			}
 		}
-		if (minLev > maxLev) {
-			int tmp = minLev;
-			minLev =  maxLev;
-			maxLev = tmp;
+		if (opt.atk.minLev > opt.atk.maxLev) {
+			int tmp = opt.atk.minLev;
+			opt.atk.minLev =  opt.atk.maxLev;
+			opt.atk.maxLev = tmp;
 		}
 	}
-	mwbot->setOpts();
+	setOpts();
 }
 
 void MWBotWin::saveOpts() {
 	QFile file(QDir::homePath().append("/.config/samstyle/mwbot/config.conf"));
 	if (file.open(QFile::WriteOnly)) {
-		file.write(QString("atack:").append((opt & FL_ATACK) ? "yes" : "no").append("\n").toUtf8());
-		file.write(QString("atype:").append(QString::number(atackType)).append("\n").toUtf8());
-		file.write(QString("atype2:").append(QString::number(atackType2)).append("\n").toUtf8());
-		file.write(QString("makepetrik:").append((opt & FL_PETRIK) ? "yes" : "no").append("\n").toUtf8());
-		file.write(QString("playmon:").append((opt & FL_MONIA) ? "yes" : "no").append("\n").toUtf8());
-		file.write(QString("playsum:").append(QString::number(playSum)).append("\n").toUtf8());
-		file.write(QString("playtickets:").append((opt & FL_MONIA_BILET) ? "yes" : "no").append("\n").toUtf8());
-		file.write(QString("buytickets:").append((opt & FL_MONIA_BUY) ? "yes" : "no").append("\n").toUtf8());
-		file.write(QString("buytickets_star:").append((opt & FL_MONIA_STAR) ? "yes" : "no").append("\n").toUtf8());
-		file.write(QString("rathunt:").append((opt & FL_RAT) ? "yes" : "no").append("\n").toUtf8());
-		file.write(QString("digger:").append((opt & FL_DIG) ? "yes" : "no").append("\n").toUtf8());
-		file.write(QString("digrat:").append((opt & FL_DIGRAT) ? "yes" : "no").append("\n").toUtf8());
-		file.write(QString("baraban:").append((opt & FL_KUB) ? "yes" : "no").append("\n").toUtf8());
+		file.write(QString("atack:%0\n").arg(opt.atk.enabled ? "yes" : "no").toUtf8());
+		file.write(QString("atype:%0\n").arg(opt.atk.typeA).toUtf8());
+		file.write(QString("atype2:%0\n").arg(opt.atk.typeB).toUtf8());
+		file.write(QString("makepetrik:%0\n").arg(opt.petrik.make ? "yes" : "no").toUtf8());
+		file.write(QString("playmon:%0\n").arg(opt.monya.play ? "yes" : "no").toUtf8());
+		file.write(QString("playsum:").append(playSum).append("\n").toUtf8());
+		file.write(QString("playtickets:%0\n").arg(opt.monya.tickets ? "yes" : "no").toUtf8());
+		file.write(QString("buytickets:%0\n").arg(opt.monya.buy ? "yes" : "no").toUtf8());
+		file.write(QString("buytickets_star%0\n:").arg(opt.monya.stars ? "yes" : "no").toUtf8());
+		file.write(QString("rathunt:%0\n").arg(opt.ratk.enabled ? "yes" : "no").toUtf8());
+		file.write(QString("digger:").append((options & FL_DIG) ? "yes" : "no").append("\n").toUtf8());
+		file.write(QString("digrat:").append((options & FL_DIGRAT) ? "yes" : "no").append("\n").toUtf8());
+		file.write(QString("baraban:").append((options & FL_KUB) ? "yes" : "no").append("\n").toUtf8());
 		file.write(QString("buycaps:").append(QString::number(buyCaps)).append("\n").toUtf8());
-		file.write(QString("minlev:").append(QString::number(minLev)).append("\n").toUtf8());
-		file.write(QString("maxlev:").append(QString::number(maxLev)).append("\n").toUtf8());
-		file.write(QString("statprc:").append(QString::number(statPrc)).append("\n").toUtf8());
-		file.write(QString("checknpc:").append((opt & FL_NONPC) ? "no" : "yes").append("\n").toUtf8());
-		file.write(QString("trainpet:").append((opt & FL_TRAIN) ? "yes" : "no").append("\n").toUtf8());
-		file.write(QString("tp-ruda:").append((opt & FL_TR_RUDA) ? "yes" : "no").append("\n").toUtf8());
-		file.write(QString("tp-oil:").append((opt & FL_TR_OIL) ? "yes" : "no").append("\n").toUtf8());
-		file.write(QString("runner:").append((opt & FL_RUN) ? "yes" : "no").append("\n").toUtf8());
+		file.write(QString("minlev:%0\n").arg(QString::number(opt.atk.minLev)).toUtf8());
+		file.write(QString("maxlev:%0\n").arg(QString::number(opt.atk.maxLev)).toUtf8());
+		file.write(QString("statprc:%0\n").arg(QString::number(opt.atk.statPrc)).toUtf8());
+		file.write(QString("checknpc:").append((options & FL_NONPC) ? "no" : "yes").append("\n").toUtf8());
+		file.write(QString("trainpet:%0\n").arg(opt.bPet.train ? "yes" : "no").toUtf8());
+		file.write(QString("tp-ruda:%0\n").arg(opt.bPet.useOre ? "yes" : "no").toUtf8());
+		file.write(QString("tp-oil:%0\n").arg(opt.bPet.useOil ? "yes" : "no").toUtf8());
+		file.write(QString("runner:%0\n").arg(opt.petRun ? "yes" : "no").toUtf8());
 		file.write(QString("goldplay:").append(QString::number(goldType)).append("\n").toUtf8());
 	}
 }
 
 void MWBotWin::apply() {
-	opt = 0;
-	if (ui.cbAtack->isChecked()) opt |= FL_ATACK;
-	atackType = ui.cbAtackType->itemData(ui.cbAtackType->currentIndex()).toInt();
-	atackType2 = ui.cbAType2->itemData(ui.cbAType2->currentIndex()).toInt();
+	options = 0;
+	opt.atk.enabled = ui.cbAtack->isChecked() ? 1 : 0;
+	opt.atk.typeA = ui.cbAtackType->itemData(ui.cbAtackType->currentIndex()).toInt();
+	opt.atk.typeB = ui.cbAType2->itemData(ui.cbAType2->currentIndex()).toInt();
 	goldType = ui.boxGypsy->itemData(ui.boxGypsy->currentIndex()).toInt();
-	if (ui.cbPetrik->isChecked()) opt |= FL_PETRIK;
-	if (ui.cbMonia->isChecked()) opt |= FL_MONIA;
+	opt.petrik.make = ui.cbPetrik->isChecked() ? 1 : 0;
+	opt.monya.play = ui.cbMonia->isChecked() ? 1 : 0;
 	playSum = ui.sbMoniaCoins->value();
-	if (ui.cbPlayTickets->isChecked()) opt |= FL_MONIA_BILET;
-	if (ui.cbBuyTickets->isChecked()) opt |= FL_MONIA_BUY;
-	if (ui.cbTicketStars->isChecked()) opt |= FL_MONIA_STAR;
-	if (ui.cbRatHunt->isChecked()) opt |= FL_RAT;
-	if (ui.cbDigger->isChecked()) opt |= FL_DIG;
-	if (ui.cbDigRat->isChecked()) opt |= FL_DIGRAT;
-	if (ui.cbRoll->isChecked()) opt |= FL_KUB;
+	opt.monya.tickets = ui.cbPlayTickets->isChecked() ? 1 : 0;
+	opt.monya.buy = ui.cbBuyTickets->isChecked() ? 1 : 0;
+	opt.monya.stars = ui.cbTicketStars->isChecked() ? 1 : 0;
+	opt.ratk.enabled = ui.cbRatHunt->isChecked() ? 1 : 0;
+	if (ui.cbDigger->isChecked()) options |= FL_DIG;
+	if (ui.cbDigRat->isChecked()) options |= FL_DIGRAT;
+	if (ui.cbRoll->isChecked()) options |= FL_KUB;
 	buyCaps = ui.sbCaps->value();
-	minLev = ui.sbMinLev->value();
-	maxLev = ui.sbMaxLev->value();
-	statPrc = ui.sbStatCheck->value();
-	if (ui.cbNPCheck->isChecked()) opt |= FL_NONPC;
-	if (ui.cbTrain->isChecked()) opt |= FL_TRAIN;
-	if (ui.cbTrainRuda->isChecked()) opt |= FL_TR_RUDA;
-	if (ui.cbTrainNeft->isChecked()) opt |= FL_TR_OIL;
-	if (ui.cbRunner->isChecked()) opt |= FL_RUN;
+	opt.atk.minLev = ui.sbMinLev->value();
+	opt.atk.maxLev = ui.sbMaxLev->value();
+	opt.atk.statPrc = ui.sbStatCheck->value();
+	if (ui.cbNPCheck->isChecked()) options |= FL_NONPC;
+	opt.bPet.train = ui.cbTrain->isChecked() ? 1 : 0;
+	opt.bPet.useOre = ui.cbTrainRuda->isChecked() ? 1 : 0;
+	opt.bPet.useOil = ui.cbTrainNeft->isChecked() ? 1 : 0;
+	opt.petRun = ui.cbRunner->isChecked() ? 1 : 0;
 	saveOpts();
 }
 
 void MWBotWin::setOpts() {
-	ui.cbAtack->setChecked(opt & FL_ATACK);
-	ui.cbAtackType->setCurrentIndex(ui.cbAtackType->findData(atackType));
-	ui.cbAType2->setCurrentIndex(ui.cbAType2->findData(atackType2));
+	ui.cbAtack->setChecked(opt.atk.enabled);
+	ui.cbAtackType->setCurrentIndex(ui.cbAtackType->findData(opt.atk.typeA));
+	ui.cbAType2->setCurrentIndex(ui.cbAType2->findData(opt.atk.typeB));
 	ui.boxGypsy->setCurrentIndex(ui.boxGypsy->findData(goldType));
-	ui.cbPetrik->setChecked(opt & FL_PETRIK);
-	ui.cbMonia->setChecked(opt & FL_MONIA);
+	ui.cbPetrik->setChecked(opt.petrik.make);
+	ui.cbMonia->setChecked(opt.monya.play);
 	ui.sbMoniaCoins->setValue(playSum);
-	ui.cbPlayTickets->setChecked(opt & FL_MONIA_BILET);
-	ui.cbBuyTickets->setChecked(opt & FL_MONIA_BUY);
-	ui.cbTicketStars->setChecked(opt & FL_MONIA_STAR);
-	ui.cbRatHunt->setChecked(opt & FL_RAT);
-	ui.cbDigger->setChecked(opt & FL_DIG);
-	ui.cbDigRat->setChecked(opt & FL_DIGRAT);
-	ui.cbRoll->setChecked(opt & FL_KUB);
+	ui.cbPlayTickets->setChecked(opt.monya.tickets);
+	ui.cbBuyTickets->setChecked(opt.monya.buy);
+	ui.cbTicketStars->setChecked(opt.monya.stars);
+	ui.cbRatHunt->setChecked(opt.ratk.enabled);
+	ui.cbDigger->setChecked(options & FL_DIG);
+	ui.cbDigRat->setChecked(options & FL_DIGRAT);
+	ui.cbRoll->setChecked(options & FL_KUB);
 	ui.sbCaps->setValue(buyCaps);
-	ui.sbMinLev->setValue(minLev);
-	ui.sbMaxLev->setValue(maxLev);
-	ui.sbStatCheck->setValue(statPrc);
-	ui.cbNPCheck->setChecked(opt & FL_NONPC);
-	ui.cbTrain->setChecked(opt & FL_TRAIN);
-	ui.cbTrainRuda->setChecked(opt & FL_TR_RUDA);
-	ui.cbTrainNeft->setChecked(opt & FL_TR_OIL);
-	ui.cbRunner->setChecked(opt & FL_RUN);
+	ui.sbMinLev->setValue(opt.atk.minLev);
+	ui.sbMaxLev->setValue(opt.atk.maxLev);
+	ui.sbStatCheck->setValue(opt.atk.statPrc);
+	ui.cbNPCheck->setChecked(options & FL_NONPC);
+	ui.cbTrain->setChecked(opt.bPet.train);
+	ui.cbTrainRuda->setChecked(opt.bPet.useOre);
+	ui.cbTrainNeft->setChecked(opt.bPet.useOil);
+	ui.cbRunner->setChecked(opt.petRun);
 }
 
 int main(int ac,char** av) {
 	app = new QApplication(ac,av);
-//	int c;
-//	int sum;
-	mwbot = new MWBotWin;
-	mwbot->loadOpts();
-	mwbot->show();
-	mwbot->loadCookies();
-	mwbot->loadPage("player");
-	mwbot->startTimer(2000);
-//	QTimer::singleShot(1000,mwbot,SLOT(onTimer()));
+	MWBotWin mwbot;
+	mwbot.loadOpts();
+	mwbot.show();
+	mwbot.loadCookies();
+	mwbot.loadPage("player");
+	mwbot.startTimer(2000);
 	app->exec();
-	mwbot->saveCookies();
+	mwbot.saveCookies();
 	return 0;
 }
