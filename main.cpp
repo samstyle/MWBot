@@ -7,11 +7,27 @@
 
 QApplication* app;
 
-QString clickq = "var evt=document.createEvent('MouseEvents'); evt.initMouseEvent('click',true,true,window,0,0,0,0,0,false,false,false,false,0,null); document.getElementById('samdaboom').dispatchEvent(evt);";
+QString clickq = "\
+var evt=document.createEvent('MouseEvents');\
+evt.initMouseEvent('click',true,true,window,0,0,0,0,0,false,false,false,false,0,null);\
+document.getElementById('samdaboom').dispatchEvent(evt);\
+";
 
 MWBotWin::MWBotWin() {
 	ui.setupUi(this);
 	frm = ui.browser->page()->mainFrame();
+
+	workDir = QDir::homePath().append("/.config/samstyle/mwbot/");
+	QDir dir;
+	dir.mkpath(workDir);
+	dir.mkpath(workDir + "cache");
+
+	mgr = new QNetworkAccessManager(this);
+	cache = new QNetworkDiskCache(this);
+	cache->setCacheDirectory(workDir + "cache");
+	mgr->setCache(cache);
+	ui.browser->page()->setNetworkAccessManager(mgr);
+
 	options = 0;
 	flag = 0;//FL_TR_RUDA | FL_TR_OIL;
 
@@ -27,6 +43,7 @@ MWBotWin::MWBotWin() {
 	opt.ratk.enabled = 1;
 	opt.ratk.block = 0;
 	opt.ratk.ratlev = 0;
+	opt.ratk.maxlev = 5;
 	opt.ratk.time = curTime;
 
 	opt.petrik.make = 1;
@@ -90,8 +107,9 @@ MWBotWin::MWBotWin() {
 	connect(ui.browser,SIGNAL(loadFinished(bool)),this,SLOT(onLoad(bool)));
 	connect(ui.browser,SIGNAL(titleChanged(QString)),this,SLOT(setWindowTitle(QString)));
 
-	connect(ui.tbStop,SIGNAL(clicked()),this,SLOT(stop()));
-	connect(ui.tbStart,SIGNAL(clicked()),this,SLOT(start()));
+	connect(ui.tbStop,SIGNAL(released()),this,SLOT(stop()));
+	connect(ui.tbStart,SIGNAL(released()),this,SLOT(start()));
+	connect(ui.tbSave,SIGNAL(released()),this,SLOT(savePage()));
 
 	connect(ui.tbGipsy,SIGNAL(clicked()),this,SLOT(gipsy()));
 	connect(ui.tbAtack,SIGNAL(clicked()),this,SLOT(attack()));
@@ -107,6 +125,29 @@ MWBotWin::MWBotWin() {
 
 //	loadCookies();
 //	loadPage("player");
+}
+
+void MWBotWin::keyPressEvent(QKeyEvent* ev) {
+	QString path;
+	QFile file;
+	switch(ev->key()) {
+		case Qt::Key_F5:
+			ui.browser->reload();
+			break;
+		case Qt::Key_F2:
+			savePage();
+			break;
+	}
+}
+
+void MWBotWin::savePage() {
+	QString path = QDir::homePath().append("/");
+	path.append(windowTitle()).append("_").append(QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss")).append(".html");
+	QFile file(path);
+	if (file.open(QFile::WriteOnly)) {
+		file.write(frm->toHtml().toUtf8());
+		file.close();
+	}
 }
 
 void MWBotWin::timerEvent(QTimerEvent*) {
@@ -151,7 +192,7 @@ void MWBotWin::timerEvent(QTimerEvent*) {
 	}
 // attack
 	if (opt.atk.time < curTime) {
-		if (!opt.ratk.block && opt.ratk.enabled && (opt.ratk.time < curTime)) {
+		if (!opt.ratk.block && opt.ratk.enabled && (opt.ratk.time < curTime) && (opt.ratk.ratlev < opt.ratk.maxlev)) {
 			atkRat();
 		}
 		if (opt.atk.enabled) {
@@ -306,12 +347,15 @@ bool MWBotWin::loadPage(QString pth) {
 	pth.prepend("http://www.moswar.ru/");
 	if (!pth.endsWith("/")) pth.append("/");
 	if (ui.browser->page()->mainFrame()->url() == pth) return true;
-	ui.browser->load(QUrl(pth));
+	QNetworkRequest rqst;
+	rqst.setUrl(QUrl(pth));
+	rqst.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::PreferCache);
+	ui.browser->load(rqst);
 	waitLoading();
 	return (ui.browser->page()->mainFrame()->url() == QUrl(pth));
 }
 
-void MWBotWin::clickElement(QString quer) {
+void MWBotWin::clickElement(QString quer, int speed) {
 	QWebElement elm = frm->findFirstElement(quer);
 	if (elm.isNull()) {
 		qDebug() << QString("элемент '%0' не найден").arg(quer);
@@ -327,10 +371,11 @@ void MWBotWin::clickElement(QString quer) {
 		frm->evaluateJavaScript(quer);
 		elm.removeAttribute("id");
 	}
-	waitLoading();
+	waitLoading(speed);
 }
 
-void MWBotWin::waitLoading() {
+void MWBotWin::waitLoading(int speed) {
+	if (speed < 0) speed = 1000;
 	QWebElement elm;
 	do {
 		usleep(1000);
@@ -339,7 +384,7 @@ void MWBotWin::waitLoading() {
 	} while (state.loading || !elm.attribute("style").contains("none"));
 	int sleeptime = 500 + (rand() % 1000);
 	while (sleeptime > 0) {
-		usleep(1000);
+		usleep(speed);
 		app->processEvents();
 		sleeptime--;
 	}
@@ -424,6 +469,13 @@ mwItem namIcon[] = {
 	{QObject::trUtf8("мобила"),":/images/mobila.png",0},
 	{QObject::trUtf8("подписи"),":/images/party-signature.png",0},
 	{QObject::trUtf8("хвост крысомахи"),":/images/ratTail.png",0},
+
+	{QObject::trUtf8("малый ларец"),":/images/boxes/box_metro1.png",0},
+	{QObject::trUtf8("средний ларец"),":/images/boxes/box_metro2.png",0},
+	{QObject::trUtf8("большой ларец"),":/images/boxes/box_metro3.png",0},
+	{QObject::trUtf8("ключ от шахтерского ларца"),":/images/boxes/box_metro_key.png",0},
+
+	{QObject::trUtf8("рубль"),":/images/rubel.png",0},
 
 	{QObject::trUtf8("npc"),":/images/npc.png",0},
 	{QObject::trUtf8("arrived"),":/images/arrived.png",0},
@@ -624,35 +676,32 @@ void MWBotWin::restoreHP() {
 	}
 }
 
-/*
-void MWBotWin::switchRat() {
-	flag |= FL_RAT;
-	log(trUtf8("Атака на крысу возможна"));
-}
-*/
-
 void MWBotWin::atkRat() {
-	if ((opt.ratk.ratlev > 0) && (opt.ratk.ratlev % 5 == 0)) {
-		log(trUtf8("В групповые бои с крысами не ходим: уровень %0").arg(opt.ratk.ratlev));
-		opt.ratk.block = 1;
-		return;
-	}
+//	if ((opt.ratk.ratlev > 0) && (opt.ratk.ratlev % 5 == 0)) {
+//		log(trUtf8("В групповые бои с крысами не ходим: уровень %0").arg(opt.ratk.ratlev));
+//		opt.ratk.block = 1;
+//		return;
+//	}
 	setBusy(true);
 	loadPath(QStringList() << "square" << "metro");
 	int time = getRatTimer();
 	if (time < 1) {
 		log(trUtf8("Уровень крысы: %0").arg(opt.ratk.ratlev));
-		if ((opt.ratk.ratlev % 5) == 0) {
-			log(trUtf8("В групповые бои с крысами не ходим"));
-			opt.ratk.block = 1;
-		} else {
+//		if ((opt.ratk.ratlev % 5) == 0) {
+//			log(trUtf8("В групповые бои с крысами не ходим"));
+//			opt.ratk.block = 1;
+//		} else {
 			restoreHP();
 			//log(trUtf8("Нападаем на крысу"));
 			clickElement("div#action-rat-fight div.button div.c");
 			clickElement("div#welcome-rat button.button div.c");
-			fightResult();
+			if (opt.ratk.ratlev % 5 == 0) {
+				groupFight();
+			} else {
+				fightResult();
+			}
 			getRatTimer();
-		}
+//		}
 	}
 	setBusy(false);
 }
@@ -828,7 +877,7 @@ void MWBotWin::waitDropDown() {
 
 void MWBotWin::playKub() {
 	setBusy(true);
-	loadPath(QStringList() << "/arbat/" << "/casino/");
+	loadPath(QStringList() << "arbat" << "casino");
 	QWebElement elm;
 //
 //	int caps = elm.toPlainText().toInt();
@@ -883,7 +932,7 @@ void MWBotWin::playKub() {
 // options
 
 void MWBotWin::loadOpts() {
-	QFile file(QDir::homePath().append("/.config/samstyle/mwbot/config.conf"));
+	QFile file(workDir + "config.conf");
 	if (file.open(QFile::ReadOnly)) {
 		options = 0;
 		QString line;
@@ -905,6 +954,11 @@ void MWBotWin::loadOpts() {
 				if (pars.first() == "buytickets") opt.monya.buy = (pars.last() == "yes") ? 1 : 0;
 				if (pars.first() == "buytickets_star") opt.monya.stars = (pars.last() == "yes") ? 1 : 0;
 				if (pars.first() == "rathunt") opt.ratk.enabled = (pars.last() == "yes") ? 1 : 0;
+				if (pars.first() == "ratmaxlev") {
+					opt.ratk.maxlev = pars.last().toInt();
+					if (opt.ratk.maxlev < 1) opt.ratk.maxlev = 1;
+					else if (opt.ratk.maxlev > 40) opt.ratk.maxlev = 40;
+				}
 				if ((pars.first() == "digger") && (pars.last() == "yes")) options |= FL_DIG;
 				if ((pars.first() == "digrat") && (pars.last() == "yes")) options |= FL_DIGRAT;
 				if ((pars.first() == "baraban") && (pars.last() == "yes")) options |= FL_KUB;
@@ -955,7 +1009,7 @@ void MWBotWin::loadOpts() {
 }
 
 void MWBotWin::saveOpts() {
-	QFile file(QDir::homePath().append("/.config/samstyle/mwbot/config.conf"));
+	QFile file(workDir + "config.conf");
 	if (file.open(QFile::WriteOnly)) {
 		file.write(QString("atack:%0\n").arg(opt.atk.enabled ? "yes" : "no").toUtf8());
 		file.write(QString("atype:%0\n").arg(opt.atk.typeA).toUtf8());
@@ -967,6 +1021,7 @@ void MWBotWin::saveOpts() {
 		file.write(QString("buytickets:%0\n").arg(opt.monya.buy ? "yes" : "no").toUtf8());
 		file.write(QString("buytickets_star%0\n:").arg(opt.monya.stars ? "yes" : "no").toUtf8());
 		file.write(QString("rathunt:%0\n").arg(opt.ratk.enabled ? "yes" : "no").toUtf8());
+		file.write(QString("ratmaxlev:%0\n").arg(opt.ratk.maxlev).toUtf8());
 		file.write(QString("digger:").append((options & FL_DIG) ? "yes" : "no").append("\n").toUtf8());
 		file.write(QString("digrat:").append((options & FL_DIGRAT) ? "yes" : "no").append("\n").toUtf8());
 		file.write(QString("baraban:").append((options & FL_KUB) ? "yes" : "no").append("\n").toUtf8());
@@ -996,6 +1051,7 @@ void MWBotWin::apply() {
 	opt.monya.buy = ui.cbBuyTickets->isChecked() ? 1 : 0;
 	opt.monya.stars = ui.cbTicketStars->isChecked() ? 1 : 0;
 	opt.ratk.enabled = ui.cbRatHunt->isChecked() ? 1 : 0;
+	opt.ratk.maxlev = ui.sbRatMax->value();
 	if (ui.cbDigger->isChecked()) options |= FL_DIG;
 	if (ui.cbDigRat->isChecked()) options |= FL_DIGRAT;
 	if (ui.cbRoll->isChecked()) options |= FL_KUB;

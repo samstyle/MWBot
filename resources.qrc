@@ -77,5 +77,13 @@
         <file>images/npc.png</file>
         <file>images/resident.png</file>
         <file>images/arrived.png</file>
+        <file>images/boxes/box_metro1.png</file>
+        <file>images/boxes/box_metro2.png</file>
+        <file>images/boxes/box_metro3.png</file>
+        <file>images/boxes/box_metro4.png</file>
+        <file>images/boxes/box_metro5.png</file>
+        <file>images/boxes/box_metro6.png</file>
+        <file>images/rubel.png</file>
+        <file>images/save.png</file>
     </qresource>
 </RCC>

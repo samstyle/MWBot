@@ -10,8 +10,7 @@ void MWBotWin::goMonia() {
 	}
 	if (!frm->url().toString().contains("/thimble/")) {
 		log(trUtf8("Играем с Моней"));
-		loadPage("square/");
-		loadPage("metro/");
+		loadPath(QStringList() << "square" << "metro");
 		elm = frm->findFirstElement("div.metro-thimble p.holders");
 		if ((elm.toPlainText().split(":").last().trimmed().toInt() == 0) && !opt.monya.tickets) {
 			log(trUtf8("Игра с Моней за билеты отключена"));
@@ -76,7 +75,7 @@ void MWBotWin::playMonia() {
 				thimble = QString("i#thimble").append(QString::number(rand() % 9));
 				elm = frm->findFirstElement(thimble);
 			} while (elm.attribute("class") != "icon thimble-closed-active");
-			clickElement(thimble);
+			clickElement(thimble, 500);
 			elm = frm->findFirstElement("div#thimble-controls");
 		} while(elm.attribute("style").contains("none"));
 		getFastRes();

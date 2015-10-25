@@ -17,7 +17,8 @@ SOURCES += main.cpp \
     log.cpp \
     pet-trainer.cpp \
     arena.cpp \
-    cookies.cpp
+    cookies.cpp \
+    group.cpp
 
 FORMS += \
     mainwindow.ui
