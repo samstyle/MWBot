@@ -176,7 +176,6 @@ class MWBotWin : public QMainWindow {
 		FightBox getResult();
 		int fightResult();
 
-		QString getWeakest(int);
 		void groupFight();
 
 		bool loadPath(QStringList);

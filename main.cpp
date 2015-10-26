@@ -754,7 +754,7 @@ int MWBotWin::fightResult() {
 		return -1;
 	}
 	clickElement("i.icon.icon-forward");
-	FightBox res = getResult();
+	FightBox res = getResult();	
 	nname = getItemIcon(enstat.type);
 	if (res.result == 2) {
 		tolog = QString("<font style=background-color:#e0e020><img src=%0>&nbsp;%1</font>").arg(nname).arg(enname);
