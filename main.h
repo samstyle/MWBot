@@ -192,6 +192,8 @@ class MWBotWin : public QMainWindow {
 
 		void log(QString);
 
+		void debug();
+
 	private slots:
 		void attack();
 		int atkSelect(int);

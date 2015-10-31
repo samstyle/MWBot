@@ -128,14 +128,15 @@ MWBotWin::MWBotWin() {
 }
 
 void MWBotWin::keyPressEvent(QKeyEvent* ev) {
-	QString path;
-	QFile file;
 	switch(ev->key()) {
 		case Qt::Key_F5:
 			ui.browser->reload();
 			break;
 		case Qt::Key_F2:
 			savePage();
+			break;
+		case Qt::Key_F12:
+			debug();
 			break;
 	}
 }
@@ -754,7 +755,7 @@ int MWBotWin::fightResult() {
 		return -1;
 	}
 	clickElement("i.icon.icon-forward");
-	FightBox res = getResult();	
+	FightBox res = getResult();
 	nname = getItemIcon(enstat.type);
 	if (res.result == 2) {
 		tolog = QString("<font style=background-color:#e0e020><img src=%0>&nbsp;%1</font>").arg(nname).arg(enname);
