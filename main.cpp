@@ -998,6 +998,8 @@ void MWBotWin::loadOpts() {
 				if (pars.first() == "tp-neft") opt.bPet.useOil = (pars.last() == "yes") ? 1 : 0;
 				if (pars.first() == "runner") opt.petRun = (pars.last() == "yes") ? 1 : 0;
 				if (pars.first() == "goldplay") goldType = pars.last().toInt();
+				if (pars.first() == "useCheese") opt.group.cheese = (pars.last() == "yes") ? 1 : 0;
+				if (pars.first() == "useHeal") opt.group.heal = (pars.last() == "yes") ? 1 : 0;
 			}
 		}
 		if (opt.atk.minLev > opt.atk.maxLev) {
@@ -1015,12 +1017,14 @@ void MWBotWin::saveOpts() {
 		file.write(QString("atack:%0\n").arg(opt.atk.enabled ? "yes" : "no").toUtf8());
 		file.write(QString("atype:%0\n").arg(opt.atk.typeA).toUtf8());
 		file.write(QString("atype2:%0\n").arg(opt.atk.typeB).toUtf8());
+		file.write(QString("useCheese:%0\n").arg(opt.group.cheese ? "yes" : "no").toUtf8());
+		file.write(QString("useHeal:%0\n").arg(opt.group.heal ? "yes" : "no").toUtf8());
 		file.write(QString("makepetrik:%0\n").arg(opt.petrik.make ? "yes" : "no").toUtf8());
 		file.write(QString("playmon:%0\n").arg(opt.monya.play ? "yes" : "no").toUtf8());
-		file.write(QString("playsum:").append(playSum).append("\n").toUtf8());
+		file.write(QString("playsum:%0\n").arg(playSum).toUtf8());
 		file.write(QString("playtickets:%0\n").arg(opt.monya.tickets ? "yes" : "no").toUtf8());
 		file.write(QString("buytickets:%0\n").arg(opt.monya.buy ? "yes" : "no").toUtf8());
-		file.write(QString("buytickets_star%0\n:").arg(opt.monya.stars ? "yes" : "no").toUtf8());
+		file.write(QString("buytickets_star:%0\n").arg(opt.monya.stars ? "yes" : "no").toUtf8());
 		file.write(QString("rathunt:%0\n").arg(opt.ratk.enabled ? "yes" : "no").toUtf8());
 		file.write(QString("ratmaxlev:%0\n").arg(opt.ratk.maxlev).toUtf8());
 		file.write(QString("digger:").append((options & FL_DIG) ? "yes" : "no").append("\n").toUtf8());
@@ -1065,6 +1069,8 @@ void MWBotWin::apply() {
 	opt.bPet.useOre = ui.cbTrainRuda->isChecked() ? 1 : 0;
 	opt.bPet.useOil = ui.cbTrainNeft->isChecked() ? 1 : 0;
 	opt.petRun = ui.cbRunner->isChecked() ? 1 : 0;
+	opt.group.cheese = ui.cbGFCheese->isChecked() ? 1 : 0;
+	opt.group.heal = ui.cbGFHeal->isChecked() ? 1 : 0;
 	saveOpts();
 }
 
@@ -1092,6 +1098,8 @@ void MWBotWin::setOpts() {
 	ui.cbTrainRuda->setChecked(opt.bPet.useOre);
 	ui.cbTrainNeft->setChecked(opt.bPet.useOil);
 	ui.cbRunner->setChecked(opt.petRun);
+	ui.cbGFCheese->setChecked(opt.group.cheese);
+	ui.cbGFHeal->setChecked(opt.group.heal);
 }
 
 int main(int ac,char** av) {

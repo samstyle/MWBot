@@ -105,6 +105,10 @@ class MWBotWin : public QMainWindow {
 				QDateTime time;
 			} atk;
 			struct {
+				unsigned cheese:1;
+				unsigned heal:1;
+			} group;
+			struct {
 				unsigned enabled:1;
 				unsigned block:1;
 				int ratlev;

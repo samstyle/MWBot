@@ -91,10 +91,13 @@ void MWBotWin::groupFight() {
 	healList << trUtf8("Роллы «Огурцовые» [Ультра]");
 	healList << trUtf8("Вкусный воккер");
 	healList << trUtf8("Вкусный воккер [Ультра]");
-	int enemyHp = getSumHp(frm,0);
-	int allyHp = getSumHp(frm,1);
-	int useCheese = (enemyHp > allyHp*2) ? 1 : 0;
-	int useHeal = 1;
+	int useCheese = 0;
+	if (opt.group.cheese) {
+		int enemyHp = getSumHp(frm,0);
+		int allyHp = getSumHp(frm,1);
+		useCheese = (enemyHp > allyHp*2) ? 1 : 0;
+	}
+	int useHeal = opt.group.heal ? 1 : 0;
 	do {
 		cnt = getGroupCount(frm,1);
 		if (cnt == 0) {
