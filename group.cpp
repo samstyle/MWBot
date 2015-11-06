@@ -142,28 +142,5 @@ void MWBotWin::groupFight() {
 // debug
 
 void MWBotWin::debug() {
-	loadPage("fight/50092882/");
-	qDebug() << "ally:" << getSumHp(frm, 1);
-	qDebug() << "enem:" << getSumHp(frm, 0);
-	QStringList cheeseList, healList;
-	cheeseList << trUtf8("Ароматный сыр");
-	cheeseList << trUtf8("Шведский сыр");
-	cheeseList << trUtf8("Итальянский сыр");
-	cheeseList << trUtf8("Французский сыр");
-	healList << trUtf8("Хот-дог «Сасисыч»");
-	healList << trUtf8("Лапша");
-	healList << trUtf8("Пицца «Пепперони»");
-	healList << trUtf8("Ройалбургер «Сумоист»");
-	healList << trUtf8("Гамбургер «Обжорка»");
-	healList << trUtf8("Орех «Кокосовый»");
-	healList << trUtf8("Тыква «Колхозная»");
-	healList << trUtf8("Дуриан «Заморский»");
-	healList << trUtf8("Икорка на черством хлебушке");
-	healList << trUtf8("Икорка на хлебушке [Ультра]");
-	healList << trUtf8("Роллы «Огурцовые»");
-	healList << trUtf8("Роллы «Огурцовые» [Ультра]");
-	healList << trUtf8("Вкусный воккер");
-	healList << trUtf8("Вкусный воккер [Ультра]");
-	qDebug() << "cheese : " << searchFightSlot(frm, cheeseList);
-	qDebug() << "heal : " << searchFightSlot(frm, healList);
+	checkPolice();
 }

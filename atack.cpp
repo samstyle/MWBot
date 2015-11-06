@@ -63,6 +63,7 @@ void MWBotWin::attack() {
 		} while (tim == AT_ERR);
 	}
 	flag &= ~FL_STOP;
+	checkPolice();
 	setBusy(false);
 }
 

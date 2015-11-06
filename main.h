@@ -145,6 +145,10 @@ class MWBotWin : public QMainWindow {
 				int oil;
 				QDateTime time;
 			} bPet;		// battle pet
+			struct {
+				unsigned fine:1;
+				unsigned relations:1;
+			} police;
 		} opt;
 		struct {
 			unsigned loading:1;
@@ -193,6 +197,8 @@ class MWBotWin : public QMainWindow {
 		void setBusy(bool);
 
 		void playMonia();
+
+		void checkPolice();
 
 		void log(QString);
 
