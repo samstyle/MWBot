@@ -136,7 +136,7 @@ class MWBotWin : public QMainWindow {
 				QDate date;
 			} kub;
 			struct {
-				unsigned block:1;
+				//unsigned block:1;
 				unsigned train:1;
 				unsigned useOre:1;
 				unsigned useOil:1;
@@ -188,6 +188,7 @@ class MWBotWin : public QMainWindow {
 
 		bool loadPath(QStringList);
 		void clickElement(QString, int = 1000);
+		void clickElement(QWebElement&, int = 1000);
 
 		void waitLoading(int = 1000);
 		void waitDropDown();

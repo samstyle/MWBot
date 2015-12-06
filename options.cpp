@@ -63,7 +63,7 @@ void MWBotWin::loadOpts() {
 				if ((pars.first() == "checknpc") && (pars.last() == "no")) options |= FL_NONPC;
 				if (pars.first() == "trainpet") opt.bPet.train = (pars.last() == "yes") ? 1 : 0;
 				if (pars.first() == "tp-ruda") opt.bPet.useOre = (pars.last() == "yes") ? 1 : 0;
-				if (pars.first() == "tp-neft") opt.bPet.useOil = (pars.last() == "yes") ? 1 : 0;
+				if (pars.first() == "tp-oil") opt.bPet.useOil = (pars.last() == "yes") ? 1 : 0;
 				if (pars.first() == "runner") opt.petRun = (pars.last() == "yes") ? 1 : 0;
 				if (pars.first() == "goldplay") goldType = pars.last().toInt();
 				if (pars.first() == "useCheese") opt.group.cheese = (pars.last() == "yes") ? 1 : 0;

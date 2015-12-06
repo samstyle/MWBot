@@ -64,7 +64,7 @@ MWBotWin::MWBotWin() {
 	opt.bPet.train = 1;
 	opt.bPet.useOre = 1;
 	opt.bPet.useOil = 0;
-	opt.bPet.block = 0;
+//	opt.bPet.block = 0;
 	opt.bPet.money = 0;
 	opt.bPet.ore = 0;
 	opt.bPet.oil = 0;
@@ -356,23 +356,30 @@ bool MWBotWin::loadPage(QString pth) {
 	return (ui.browser->page()->mainFrame()->url() == QUrl(pth));
 }
 
-void MWBotWin::clickElement(QString quer, int speed) {
-	QWebElement elm = frm->findFirstElement(quer);
-	if (elm.isNull()) {
-		qDebug() << QString("элемент '%0' не найден").arg(quer);
-		log(trUtf8("DEBUG: элемент <b>").append(quer).append(trUtf8("</b> не найден")));
-		return;
-	}
-	quer = clickq;
+void MWBotWin::clickElement(QWebElement& elm, int speed) {
+	QString quer = clickq;
+	QString id;
 	if (elm.hasAttribute("id")) {
-		quer.replace("samdaboom",elm.attribute("id"));
+		id = elm.attribute("id");
+		elm.setAttribute("id","samdaboom");
 		frm->evaluateJavaScript(quer);
+		elm.setAttribute("id",id);
 	} else {
 		elm.setAttribute("id","samdaboom");
 		frm->evaluateJavaScript(quer);
 		elm.removeAttribute("id");
 	}
 	waitLoading(speed);
+}
+
+void MWBotWin::clickElement(QString quer, int speed) {
+	QWebElement elm = frm->findFirstElement(quer);
+	if (!elm.isNull()) {
+		clickElement(elm, speed);
+	} else {
+		qDebug() << QString("элемент '%0' не найден").arg(quer);
+		log(trUtf8("DEBUG: элемент <b>").append(quer).append(trUtf8("</b> не найден")));
+	}
 }
 
 void MWBotWin::waitLoading(int speed) {
