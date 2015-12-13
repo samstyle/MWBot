@@ -15,11 +15,6 @@ struct mwItem {
 	int count;
 };
 
-struct FightBox {
-	int result;	// 0:lost 1:win 2:draw
-	QList<mwItem> items;
-};
-
 struct CharBox{
 	int level;
 	int id;
@@ -36,6 +31,12 @@ struct CharBox{
 		int hari;
 	} stat;
 	int statsum;
+};
+
+struct FightBox {
+	int result;	// 0:lost 1:win 2:draw
+	CharBox enemy;
+	QList<mwItem> items;
 };
 
 // new
@@ -181,8 +182,15 @@ class MWBotWin : public QMainWindow {
 
 		CharBox getStat(QString,QString);
 
-		FightBox getResult();
+		// FightBox getResult();
 		int fightResult();
+
+		FightBox getDuelResult();
+		FightBox getGroupResult();
+		QList<mwItem> getDuelResultMain();
+		QList<mwItem> getDuelResultExtra();
+		QList<mwItem> getGroupResultMain();
+		QList<mwItem> getGroupResultExtra();
 
 		void groupFight();
 
@@ -229,7 +237,6 @@ class MWBotWin : public QMainWindow {
 		void onLoad(bool);
 
 		void start();
-		void stop();
 		void savePage();
 	signals:
 		void digEnded();

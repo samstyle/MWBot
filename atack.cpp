@@ -63,7 +63,6 @@ void MWBotWin::attack() {
 		} while (tim == AT_ERR);
 	}
 	flag &= ~FL_STOP;
-	checkPolice();
 	setBusy(false);
 }
 
@@ -136,16 +135,4 @@ int MWBotWin::atkCheck(CharBox& enstat, int type) {
 		}
 	} while (res < 0);
 	return res;
-}
-
-// get atack result
-bool MWBotWin::atkResult() {
-	int res = 0;
-	res = fightResult();
-	if (res < 0) {
-		return false;
-	}
-	loadPage("alley/");
-	getAtackTimer();
-	return true;
 }

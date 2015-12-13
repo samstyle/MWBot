@@ -101,7 +101,7 @@ MWBotWin::MWBotWin() {
 	connect(ui.browser,SIGNAL(loadFinished(bool)),this,SLOT(onLoad(bool)));
 	connect(ui.browser,SIGNAL(titleChanged(QString)),this,SLOT(setWindowTitle(QString)));
 
-	connect(ui.tbStop,SIGNAL(released()),this,SLOT(stop()));
+//	connect(ui.tbStop,SIGNAL(released()),this,SLOT(stop()));
 	connect(ui.tbStart,SIGNAL(released()),this,SLOT(start()));
 	connect(ui.tbSave,SIGNAL(released()),this,SLOT(savePage()));
 
@@ -308,20 +308,19 @@ void MWBotWin::onStart() {
 }
 
 void MWBotWin::start() {
-	log(trUtf8("Бот запущен"));
-	ui.tbStart->setEnabled(false);
-	flag = 0;
-	state.botWork = 1;
-	state.firstRun = 1;
-}
+	if (state.botWork) {
+		log(trUtf8("Бот остановлен"));
+		flag = 0;
+		state.botWork = 0;
+		ui.tbStart->setIcon(QIcon(":/images/start.png"));
+	} else {
+		log(trUtf8("Бот запущен"));
+		if (!ui.browser->isEnabled()) flag |= FL_STOP;
+		state.botWork = 1;
+		ui.tbStart->setIcon(QIcon(":/images/stop.png"));
+	}
 
-void MWBotWin::stop() {
-	if (!ui.browser->isEnabled()) flag |= FL_STOP;
-	state.botWork = 0;
-	log(trUtf8("Бот остановлен"));
-	ui.tbStart->setEnabled(true);
 }
-
 
 // load - click
 
@@ -458,27 +457,27 @@ mwItem namIcon[] = {
 	{QObject::trUtf8("персик"),":/images/fruit/fruit12.png",0},
 	{QObject::trUtf8("виноград"),":/images/fruit/fruit13.png",0},
 
-	{QObject::trUtf8("опыт"),":/images/lamp.png",0},
-	{QObject::trUtf8("деньги"),":/images/money.png",0},
-	{QObject::trUtf8("руда"),":/images/ruda.png",0},
-	{QObject::trUtf8("нефть"),":/images/neft.png",0},
-	{QObject::trUtf8("зубы"),":/images/tooth.png",0},
-	{QObject::trUtf8("золотые зубы"),":/images/toothGold.png",0},
-	{QObject::trUtf8("пули"),":/images/bullet.png",0},
-	{QObject::trUtf8("звездочки"),":/images/sparkle.png",0},
-	{QObject::trUtf8("искра"),":/images/sparkle.png",0},
-	{QObject::trUtf8("снежинки"),":/images/snow.png",0},
-	{QObject::trUtf8("жетоны"),":/images/badge.png",0},
-	{QObject::trUtf8("мобила"),":/images/mobila.png",0},
-	{QObject::trUtf8("подписи"),":/images/party-signature.png",0},
+	{QObject::trUtf8("expa"),":/images/lamp.png",0},
+	{QObject::trUtf8("tugriki"),":/images/money.png",0},
+	{QObject::trUtf8("ruda"),":/images/ruda.png",0},
+	{QObject::trUtf8("neft"),":/images/neft.png",0},
+	{QObject::trUtf8("tooth-white"),":/images/tooth.png",0},
+	{QObject::trUtf8("tooth-golden"),":/images/toothGold.png",0},
+	{QObject::trUtf8("bullet"),":/images/bullet.png",0},
+	{QObject::trUtf8("sparkles"),":/images/sparkle.png",0},
+	{QObject::trUtf8("snowflake"),":/images/snow.png",0},
+	{QObject::trUtf8("badge"),":/images/badge.png",0},
+	{QObject::trUtf8("mobila"),":/images/mobila.png",0},
+	{QObject::trUtf8("party_signature"),":/images/party-signature.png",0},
+
 	{QObject::trUtf8("хвост крысомахи"),":/images/ratTail.png",0},
+	{QObject::trUtf8("рубль"),":/images/rubel.png",0},
 
 	{QObject::trUtf8("малый ларец"),":/images/boxes/box_metro1.png",0},
 	{QObject::trUtf8("средний ларец"),":/images/boxes/box_metro2.png",0},
 	{QObject::trUtf8("большой ларец"),":/images/boxes/box_metro3.png",0},
 	{QObject::trUtf8("ключ от шахтерского ларца"),":/images/boxes/box_metro_key.png",0},
 
-	{QObject::trUtf8("рубль"),":/images/rubel.png",0},
 
 	{QObject::trUtf8("праймари пасс"),":/images/aroundworld/pass.png",0},
 	{QObject::trUtf8("дорожные чеки"),":/images/aroundworld/magnet.png",0},
@@ -499,104 +498,6 @@ QString MWBotWin::getItemIcon(QString name) {
 		if (namIcon[idx].name == name)
 			res = namIcon[idx].icn;
 		idx++;
-	}
-	return res;
-}
-
-FightBox MWBotWin::getResult() {
-	FightBox res;
-	QWebElement elm;
-	mwItem obj;
-	QWebElementCollection coll;
-	int mylife = frm->findFirstElement("span#fighter1-life").toPlainText().split("/").first().trimmed().toInt();
-	int enlife = frm->findFirstElement("span#fighter2-life").toPlainText().split("/").first().trimmed().toInt();
-	res.result = (mylife > 0) ? 1 : ((enlife > 0) ? 0 : 2);
-
-	obj.name = trUtf8("деньги");
-	obj.count = 0;
-
-	coll=frm->findAllElements("li.result span.tugriki");
-
-	foreach(elm,coll) {
-		if (elm.attribute("title").isNull()) {
-			if (res.result == 1) obj.count += elm.toPlainText().trimmed().toInt();
-		} else {
-			obj.count += elm.attribute("title").split(":").last().trimmed().toInt();
-		}
-	}
-	if (obj.count != 0) res.items.append(obj);
-
-	if (res.result == 1) {			// check all only if win
-
-		obj.name = trUtf8("опыт");
-		obj.count = frm->findFirstElement("li.result span.expa").attribute("title").split(":").last().trimmed().toInt();
-		if (obj.count != 0) res.items.append(obj);
-
-		obj.name = trUtf8("нефть");
-		obj.count = frm->findFirstElement("li.result span.neft").attribute("title").split(":").last().trimmed().toInt();
-		if (obj.count != 0) res.items.append(obj);
-
-		obj.name = trUtf8("пули");
-		obj.count = frm->findFirstElement("li.result span.bullet").toPlainText().toInt();
-		if (obj.count != 0) res.items.append(obj);
-
-		obj.name = trUtf8("звездочки");
-		obj.count = frm->findFirstElement("li.result span.sparkles").toPlainText().toInt();
-		if (obj.count != 0) res.items.append(obj);
-
-		obj.name = trUtf8("снежинки");
-		obj.count = frm->findFirstElement("li.result span.snowflake").toPlainText().toInt();
-		if (obj.count != 0) res.items.append(obj);
-
-		obj.name = trUtf8("жетоны");
-		obj.count = frm->findFirstElement("li.result span.badge").toPlainText().toInt();
-		if (obj.count != 0) res.items.append(obj);
-
-		obj.name = trUtf8("мобила");
-		obj.count = frm->findFirstElement("li.result span.mobila").isNull() ? 0 : 1;
-		if (obj.count != 0) res.items.append(obj);
-
-		obj.name = trUtf8("подписи");
-		obj.count = frm->findFirstElement("li.result span.party_signature").toPlainText().toInt();
-		if (obj.count != 0) res.items.append(obj);
-
-		obj.name = trUtf8("зубы");
-		obj.count = frm->findFirstElement("li.result span.tooth-white").toPlainText().toInt();
-		if (obj.count != 0) res.items.append(obj);
-
-		obj.name = trUtf8("золотые зубы");
-		obj.count = frm->findFirstElement("li.result span.tooth-golden").toPlainText().toInt();
-		if (obj.count != 0) res.items.append(obj);
-
-		coll = frm->findAllElements("li.result span.object-thumb");
-		//int idx;
-		foreach(elm, coll) {
-			obj.count = elm.findFirst("span.count").toPlainText().toInt();
-			if (obj.count != 0) {
-				obj.name = elm.findFirst("img").attribute("alt");
-				res.items.append(obj);
-			}
-		}
-	}
-	elm = frm->findFirstElement("div.backlink div.button div.c");
-	if (elm.isNull()) return res;
-
-	clickElement("div.backlink div.button div.c");
-
-	obj.name = trUtf8("руда");
-	obj.count = frm->findFirstElement("div#alert-text span.ruda").toPlainText().remove("\"").toInt();
-	if (obj.count != 0) res.items.append(obj);
-
-	obj.name = trUtf8("деньги");
-	obj.count = frm->findFirstElement("div#alert-text span.tugriki").toPlainText().remove("\"").toInt();
-	if (obj.count != 0) res.items.append(obj);
-
-	coll = frm->findAllElements("div#alert-text span.object-thumb");
-	foreach(elm,coll) {
-		obj.name = elm.findFirst("img").attribute("alt");
-		obj.count = elm.findFirst("span.count").toPlainText().remove("#").toInt();
-		if (obj.count == 0) obj.count = 1;
-		res.items.append(obj);
 	}
 	return res;
 }
@@ -741,52 +642,6 @@ void MWBotWin::atackOil() {
 // get results
 
 
-int MWBotWin::fightResult() {
-	QWebElement elm;
-	CharBox enstat = getStat("div.fighter2","td.fighter2-cell");
-	QString enname = QString("%0 [%1]").arg(enstat.name).arg(enstat.level);
-	QString tolog;
-	QString icn;
-	QString fightres;
-	QString nname;
-	int cnt = 100;
-	do {
-		elm = frm->findFirstElement("i.icon.icon-forward");
-		app->processEvents();
-		usleep(20000);
-		cnt--;
-	} while (elm.isNull() && (cnt > 0));
-	if (cnt < 1) {
-		log(trUtf8("...ошибка при нападении"));
-		return -1;
-	}
-	clickElement("i.icon.icon-forward");
-	FightBox res = getResult();
-	nname = getItemIcon(enstat.type);
-	if (res.result == 2) {
-		tolog = QString("<font style=background-color:#e0e020><img src=%0>&nbsp;%1</font>").arg(nname).arg(enname);
-	} else {
-		if (res.result == 1) {
-			tolog = QString("<font style=background-color:#20e020><img src=%0>&nbsp;").arg(nname);
-		} else {
-			tolog = QString("<font style=background-color:#e02020><img src=%0>&nbsp;").arg(nname);
-		}
-		tolog.append(enname).append("</font>&nbsp;");
-		foreach(mwItem obj,res.items) {
-			fightres.append("<font style=background-color:#d0d0d0>");
-			icn = getItemIcon(obj.name);
-			// qDebug() << obj.name << icn;
-			if (icn.isEmpty()) {
-				icn = ":/images/unknown.png";
-			}
-			fightres.append(QString("<img width=16 height=16 src='%0' title='%1'>").arg(icn).arg(obj.name));
-			fightres.append(QString("&nbsp;%0</font>&nbsp;").arg(obj.count));
-		}
-		tolog.append(fightres);
-	}
-	log(tolog);
-	return res.result;
-}
 
 // make petriks
 

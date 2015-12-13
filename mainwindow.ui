@@ -33,17 +33,6 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="tbStop">
-        <property name="text">
-         <string>...</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/images/stop.png</normaloff>:/images/stop.png</iconset>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QToolButton" name="tbSave">
         <property name="text">
          <string>...</string>
@@ -265,7 +254,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>571</width>
+             <width>771</width>
              <height>424</height>
             </rect>
            </property>

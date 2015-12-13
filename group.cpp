@@ -143,6 +143,6 @@ void MWBotWin::groupFight() {
 // debug
 
 void MWBotWin::debug() {
-	//checkPolice();
-	clickElement("a.square");
+	loadPage("alley/fight/20151213248515/d0fed/");
+	getDuelResultMain();
 }

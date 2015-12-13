@@ -20,7 +20,8 @@ SOURCES += main.cpp \
     cookies.cpp \
     group.cpp \
     police.cpp \
-    options.cpp
+    options.cpp \
+    results.cpp
 
 FORMS += \
     mainwindow.ui

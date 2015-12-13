@@ -6,7 +6,7 @@ void MWBotWin::checkPolice() {
 		loadPath(QStringList() << "square" << "police");
 		getFastRes();
 		if (!opt.police.fine || (info.ore < 5)) {
-			stop();
+			if (state.botWork) start();
 			log(tr("Вы задержаны. Бот остановлен"));
 		} else {
 			clickElement("form#fine-form div.button div.c");
