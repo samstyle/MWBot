@@ -85,5 +85,8 @@
         <file>images/boxes/box_metro6.png</file>
         <file>images/rubel.png</file>
         <file>images/save.png</file>
+        <file>images/aroundworld/magnet.png</file>
+        <file>images/aroundworld/pass.png</file>
+        <file>images/aroundworld/ticket.png</file>
     </qresource>
 </RCC>

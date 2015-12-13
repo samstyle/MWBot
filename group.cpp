@@ -77,6 +77,7 @@ void MWBotWin::groupFight() {
 	cheeseList << trUtf8("Шведский сыр");
 	cheeseList << trUtf8("Итальянский сыр");
 	cheeseList << trUtf8("Французский сыр");
+	cheeseList << trUtf8("Запрещенный сыр");
 	healList << trUtf8("Хот-дог «Сасисыч»");
 	healList << trUtf8("Лапша");
 	healList << trUtf8("Пицца «Пепперони»");
@@ -129,9 +130,9 @@ void MWBotWin::groupFight() {
 				}
 				if (!target.isEmpty()) {
 					clickElement(target);
-					state.loading = 1;
-					clickElement("div#fightAction span.f div.c");
 				}
+				state.loading = 1;
+				clickElement("div#fightAction span.f div.c");
 			}
 		}
 	} while (res == 0);
@@ -142,5 +143,6 @@ void MWBotWin::groupFight() {
 // debug
 
 void MWBotWin::debug() {
-	checkPolice();
+	//checkPolice();
+	clickElement("a.square");
 }

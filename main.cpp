@@ -7,12 +7,6 @@
 
 QApplication* app;
 
-QString clickq = "\
-var evt=document.createEvent('MouseEvents');\
-evt.initMouseEvent('click',true,true,window,0,0,0,0,0,false,false,false,false,0,null);\
-document.getElementById('samdaboom').dispatchEvent(evt);\
-";
-
 MWBotWin::MWBotWin() {
 	ui.setupUi(this);
 	frm = ui.browser->page()->mainFrame();
@@ -155,6 +149,8 @@ void MWBotWin::timerEvent(QTimerEvent*) {
 	curTime = QDateTime::currentDateTime();
 
 	if (!state.botWork) return;
+
+	checkPolice();
 
 	if (state.firstRun) {
 		getAtackTimer();
@@ -356,19 +352,18 @@ bool MWBotWin::loadPage(QString pth) {
 	return (ui.browser->page()->mainFrame()->url() == QUrl(pth));
 }
 
+QString clickq = "\
+var evt=document.createEvent('MouseEvents');\
+evt.initMouseEvent('click',true,true,window,0,0,0,0,0,false,false,false,false,0,null);\
+var elst = document.querySelectorAll('[mustBeClicked]');\
+if (elst.length > 0) {elst[0].dispatchEvent(evt);}\
+";
+
 void MWBotWin::clickElement(QWebElement& elm, int speed) {
 	QString quer = clickq;
-	QString id;
-	if (elm.hasAttribute("id")) {
-		id = elm.attribute("id");
-		elm.setAttribute("id","samdaboom");
-		frm->evaluateJavaScript(quer);
-		elm.setAttribute("id",id);
-	} else {
-		elm.setAttribute("id","samdaboom");
-		frm->evaluateJavaScript(quer);
-		elm.removeAttribute("id");
-	}
+	elm.setAttribute("mustBeClicked","1");
+	frm->evaluateJavaScript(quer);
+	elm.removeAttribute("mustBeClicked");
 	waitLoading(speed);
 }
 
@@ -378,7 +373,7 @@ void MWBotWin::clickElement(QString quer, int speed) {
 		clickElement(elm, speed);
 	} else {
 		qDebug() << QString("элемент '%0' не найден").arg(quer);
-		log(trUtf8("DEBUG: элемент <b>").append(quer).append(trUtf8("</b> не найден")));
+		log(QString("DEBUG: элемент <b>%0</b> не нейден").arg(quer));
 	}
 }
 
@@ -484,6 +479,10 @@ mwItem namIcon[] = {
 	{QObject::trUtf8("ключ от шахтерского ларца"),":/images/boxes/box_metro_key.png",0},
 
 	{QObject::trUtf8("рубль"),":/images/rubel.png",0},
+
+	{QObject::trUtf8("праймари пасс"),":/images/aroundworld/pass.png",0},
+	{QObject::trUtf8("дорожные чеки"),":/images/aroundworld/magnet.png",0},
+	{QObject::trUtf8("посадочный билет"),":/images/aroundworld/ticket.png",0},
 
 	{QObject::trUtf8("npc"),":/images/npc.png",0},
 	{QObject::trUtf8("arrived"),":/images/arrived.png",0},

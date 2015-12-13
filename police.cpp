@@ -2,7 +2,7 @@
 
 void MWBotWin::checkPolice() {
 	QWebElement elm = frm->findFirstElement("a.bubble span.text");
-	if (elm.toPlainText().contains(tr("Задержан за бои"))) {
+	if (elm.toPlainText().contains(trUtf8("Задержан за бои"))) {
 		loadPath(QStringList() << "square" << "police");
 		getFastRes();
 		if (!opt.police.fine || (info.ore < 5)) {
