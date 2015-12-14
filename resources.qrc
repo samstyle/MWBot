@@ -89,5 +89,7 @@
         <file>images/aroundworld/pass.png</file>
         <file>images/aroundworld/ticket.png</file>
         <file>images/star.png</file>
+        <file>images/boxes/box_metro_key.png</file>
+        <file>images/boxes/box_stitch.png</file>
     </qresource>
 </RCC>

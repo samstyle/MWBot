@@ -479,6 +479,7 @@ mwItem namIcon[] = {
 	{QObject::trUtf8("средний ларец"),":/images/boxes/box_metro2.png",0},
 	{QObject::trUtf8("большой ларец"),":/images/boxes/box_metro3.png",0},
 	{QObject::trUtf8("ключ от шахтерского ларца"),":/images/boxes/box_metro_key.png",0},
+	{QObject::trUtf8("шкатулка с нашивками"),":/images/boxes/box_stitch.png",0},
 
 	{QObject::trUtf8("праймари пасс"),":/images/aroundworld/pass.png",0},
 	{QObject::trUtf8("дорожные чеки"),":/images/aroundworld/magnet.png",0},
