@@ -189,7 +189,7 @@ void MWBotWin::timerEvent(QTimerEvent*) {
 	}
 // attack
 	if (opt.atk.time < curTime) {
-		if (!opt.ratk.block && opt.ratk.enabled && (opt.ratk.time < curTime) && (opt.ratk.ratlev < opt.ratk.maxlev)) {
+		if (opt.ratk.enabled && (opt.ratk.time < curTime) && (opt.ratk.ratlev < opt.ratk.maxlev)) {
 			atkRat();
 		}
 		if (opt.atk.enabled) {
@@ -461,6 +461,8 @@ mwItem namIcon[] = {
 	{QObject::trUtf8("tugriki"),":/images/money.png",0},
 	{QObject::trUtf8("ruda"),":/images/ruda.png",0},
 	{QObject::trUtf8("neft"),":/images/neft.png",0},
+	{QObject::trUtf8("star"),":/images/star.png",0},
+	{QObject::trUtf8("petric"),":/images/petrik.png",0},
 	{QObject::trUtf8("tooth-white"),":/images/tooth.png",0},
 	{QObject::trUtf8("tooth-golden"),":/images/toothGold.png",0},
 	{QObject::trUtf8("bullet"),":/images/bullet.png",0},
@@ -477,7 +479,6 @@ mwItem namIcon[] = {
 	{QObject::trUtf8("средний ларец"),":/images/boxes/box_metro2.png",0},
 	{QObject::trUtf8("большой ларец"),":/images/boxes/box_metro3.png",0},
 	{QObject::trUtf8("ключ от шахтерского ларца"),":/images/boxes/box_metro_key.png",0},
-
 
 	{QObject::trUtf8("праймари пасс"),":/images/aroundworld/pass.png",0},
 	{QObject::trUtf8("дорожные чеки"),":/images/aroundworld/magnet.png",0},
@@ -585,31 +586,33 @@ void MWBotWin::restoreHP() {
 }
 
 void MWBotWin::atkRat() {
-//	if ((opt.ratk.ratlev > 0) && (opt.ratk.ratlev % 5 == 0)) {
-//		log(trUtf8("В групповые бои с крысами не ходим: уровень %0").arg(opt.ratk.ratlev));
-//		opt.ratk.block = 1;
-//		return;
-//	}
 	setBusy(true);
 	loadPath(QStringList() << "square" << "metro");
 	int time = getRatTimer();
-	if (time < 1) {
-		log(trUtf8("Уровень крысы: %0").arg(opt.ratk.ratlev));
-//		if ((opt.ratk.ratlev % 5) == 0) {
-//			log(trUtf8("В групповые бои с крысами не ходим"));
-//			opt.ratk.block = 1;
-//		} else {
-			restoreHP();
-			//log(trUtf8("Нападаем на крысу"));
-			clickElement("div#action-rat-fight div.button div.c");
-			clickElement("div#welcome-rat button.button div.c");
-			if (opt.ratk.ratlev % 5 == 0) {
-				groupFight();
-			} else {
-				fightResult();
-			}
-			getRatTimer();
-//		}
+	if (opt.ratk.ratlev > opt.ratk.maxlev) {
+		QWebElement elm = frm->findFirstElement("div#action-rat-fight div small small.dashedlink");
+		if (elm.isNull()) {
+			time = 60;
+		} else {
+			time = elm.attribute("timer").toInt() + 60;
+		}
+		opt.ratk.time = QDateTime::currentDateTime().addSecs(time);
+		log(trUtf8("Хватит крыс. Ждём обвала. До обвала <b>%0</b> мин.").arg(time/60 + 1));
+	} else if (time < 1) {
+		log(trUtf8("Уровень крысы: <b>%0</b>").arg(opt.ratk.ratlev));
+		restoreHP();
+		clickElement("div#action-rat-fight div.button div.c");
+		clickElement("div#welcome-rat button.button div.c");
+		if (opt.ratk.ratlev % 5 == 0) {
+			groupFight();
+		} else {
+			fightResult();
+		}
+		getRatTimer();
+	} else {
+		time += 60;
+		opt.ratk.time = QDateTime::currentDateTime().addSecs(time);
+		log(trUtf8("До следующей крысы <b>%0</b> мин.").arg(time/60 + 1));
 	}
 	setBusy(false);
 }

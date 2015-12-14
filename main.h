@@ -191,6 +191,7 @@ class MWBotWin : public QMainWindow {
 		QList<mwItem> getDuelResultExtra();
 		QList<mwItem> getGroupResultMain();
 		QList<mwItem> getGroupResultExtra();
+		void logResult(FightBox);
 
 		void groupFight();
 

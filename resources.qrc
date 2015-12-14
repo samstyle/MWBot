@@ -88,5 +88,6 @@
         <file>images/aroundworld/magnet.png</file>
         <file>images/aroundworld/pass.png</file>
         <file>images/aroundworld/ticket.png</file>
+        <file>images/star.png</file>
     </qresource>
 </RCC>

@@ -138,11 +138,14 @@ void MWBotWin::groupFight() {
 	} while (res == 0);
 	state.loading = 1;
 	waitLoading();
+	FightBox fb = getGroupResult();
+	logResult(fb);
 }
 
 // debug
 
 void MWBotWin::debug() {
-	loadPage("alley/fight/20151213248515/d0fed/");
-	getDuelResultMain();
+	loadPage("fight/51829219/");
+	FightBox res = getGroupResult();
+	logResult(res);
 }
