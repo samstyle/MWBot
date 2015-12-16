@@ -30,12 +30,12 @@ void MWBotWin::loadOpts() {
 				}
 				if ((pars.first() == "digger") && (pars.last() == "yes")) options |= FL_DIG;
 				if ((pars.first() == "digrat") && (pars.last() == "yes")) options |= FL_DIGRAT;
-				if ((pars.first() == "baraban") && (pars.last() == "yes")) options |= FL_KUB;
-				if (pars.first() == "buycaps") {
-					buyCaps = pars.last().toInt();
-					if (buyCaps > 20) buyCaps = 20;
-					if (buyCaps < 0) buyCaps = 0;
-				}
+
+				if (pars.first() == "baraban") opt.kub.play = (pars.last() == "yes") ? 1 : 0;
+				if (pars.first() == "buycaps") opt.kub.buy = (pars.last() == "yes") ? 1 : 0;
+				if (pars.first() == "caps") opt.kub.caps = pars.last().toInt();
+				if (pars.first() == "kubDate") opt.kub.date = QDate::fromString(pars.last());
+
 				if (pars.first() == "minlev") {
 					opt.atk.minLev = pars.last().toInt();
 					if (opt.atk.minLev > 50) {
@@ -60,7 +60,7 @@ void MWBotWin::loadOpts() {
 						opt.atk.statPrc = 2;
 					}
 				}
-				if ((pars.first() == "checknpc") && (pars.last() == "no")) options |= FL_NONPC;
+//				if ((pars.first() == "checknpc") && (pars.last() == "no")) options |= FL_NONPC;
 				if (pars.first() == "trainpet") opt.bPet.train = (pars.last() == "yes") ? 1 : 0;
 				if (pars.first() == "tp-ruda") opt.bPet.useOre = (pars.last() == "yes") ? 1 : 0;
 				if (pars.first() == "tp-oil") opt.bPet.useOil = (pars.last() == "yes") ? 1 : 0;
@@ -99,12 +99,16 @@ void MWBotWin::saveOpts() {
 		file.write(QString("ratmaxlev:%0\n").arg(opt.ratk.maxlev).toUtf8());
 		file.write(QString("digger:").append((options & FL_DIG) ? "yes" : "no").append("\n").toUtf8());
 		file.write(QString("digrat:").append((options & FL_DIGRAT) ? "yes" : "no").append("\n").toUtf8());
-		file.write(QString("baraban:").append((options & FL_KUB) ? "yes" : "no").append("\n").toUtf8());
-		file.write(QString("buycaps:").append(QString::number(buyCaps)).append("\n").toUtf8());
+
+		file.write(QString("baraban:%0\n").arg(opt.kub.play ? "yes" : "no").toUtf8());
+		file.write(QString("kubDate:%0\n").arg(opt.kub.date.toString()).toUtf8());
+		file.write(QString("buycaps:%0\n").arg(opt.kub.buy ? "yes" : "no").toUtf8());
+		file.write(QString("caps:%0\n").arg(opt.kub.caps).toUtf8());
+
 		file.write(QString("minlev:%0\n").arg(QString::number(opt.atk.minLev)).toUtf8());
 		file.write(QString("maxlev:%0\n").arg(QString::number(opt.atk.maxLev)).toUtf8());
 		file.write(QString("statprc:%0\n").arg(QString::number(opt.atk.statPrc)).toUtf8());
-		file.write(QString("checknpc:").append((options & FL_NONPC) ? "no" : "yes").append("\n").toUtf8());
+//		file.write(QString("checknpc:").append((options & FL_NONPC) ? "no" : "yes").append("\n").toUtf8());
 		file.write(QString("trainpet:%0\n").arg(opt.bPet.train ? "yes" : "no").toUtf8());
 		file.write(QString("tp-ruda:%0\n").arg(opt.bPet.useOre ? "yes" : "no").toUtf8());
 		file.write(QString("tp-oil:%0\n").arg(opt.bPet.useOil ? "yes" : "no").toUtf8());
@@ -131,12 +135,15 @@ void MWBotWin::apply() {
 	opt.ratk.maxlev = ui.sbRatMax->value();
 	if (ui.cbDigger->isChecked()) options |= FL_DIG;
 	if (ui.cbDigRat->isChecked()) options |= FL_DIGRAT;
-	if (ui.cbRoll->isChecked()) options |= FL_KUB;
-	buyCaps = ui.sbCaps->value();
+
+	opt.kub.play = ui.cbRoll->isChecked() ? 1 : 0;
+	opt.kub.buy = ui.cbBuyCaps->isChecked() ? 1 : 0;
+	opt.kub.caps = ui.sbCaps->value();
+
 	opt.atk.minLev = ui.sbMinLev->value();
 	opt.atk.maxLev = ui.sbMaxLev->value();
 	opt.atk.statPrc = ui.sbStatCheck->value();
-	if (ui.cbNPCheck->isChecked()) options |= FL_NONPC;
+//	if (ui.cbNPCheck->isChecked()) options |= FL_NONPC;
 	opt.bPet.train = ui.cbTrain->isChecked() ? 1 : 0;
 	opt.bPet.useOre = ui.cbTrainRuda->isChecked() ? 1 : 0;
 	opt.bPet.useOil = ui.cbTrainNeft->isChecked() ? 1 : 0;
@@ -162,12 +169,15 @@ void MWBotWin::setOpts() {
 	ui.cbRatHunt->setChecked(opt.ratk.enabled);
 	ui.cbDigger->setChecked(options & FL_DIG);
 	ui.cbDigRat->setChecked(options & FL_DIGRAT);
-	ui.cbRoll->setChecked(options & FL_KUB);
-	ui.sbCaps->setValue(buyCaps);
+
+	ui.cbRoll->setChecked(opt.kub.play);
+	ui.cbBuyCaps->setChecked(opt.kub.buy);
+	ui.sbCaps->setValue(opt.kub.caps);
+
 	ui.sbMinLev->setValue(opt.atk.minLev);
 	ui.sbMaxLev->setValue(opt.atk.maxLev);
 	ui.sbStatCheck->setValue(opt.atk.statPrc);
-	ui.cbNPCheck->setChecked(options & FL_NONPC);
+//	ui.cbNPCheck->setChecked(options & FL_NONPC);
 	ui.cbTrain->setChecked(opt.bPet.train);
 	ui.cbTrainRuda->setChecked(opt.bPet.useOre);
 	ui.cbTrainNeft->setChecked(opt.bPet.useOil);

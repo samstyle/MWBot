@@ -60,6 +60,7 @@ struct CharInfo {
 	int mobile;
 	int medal;
 	int power;
+	int caps;
 };
 
 
@@ -71,8 +72,6 @@ struct CharInfo {
 #define	FL_DIG		(1<<12)		// do dig
 #define FL_DIGGING	(1<<13)		// dig in process
 #define	FL_DIGRAT	(1<<14)		// atack rats during dig
-#define	FL_KUB		(1<<15)		// play baraban
-#define	FL_NONPC	(1<<16)		// don't check npc stats
 
 #define	ATK_EQUAL	1
 #define	ATK_WEAK	2
@@ -131,12 +130,6 @@ class MWBotWin : public QMainWindow {
 				QDate date;
 			} monya;
 			struct {
-				unsigned block:1;
-				unsigned play:1;
-				int rolls;
-				QDate date;
-			} kub;
-			struct {
 				//unsigned block:1;
 				unsigned train:1;
 				unsigned useOre:1;
@@ -150,6 +143,12 @@ class MWBotWin : public QMainWindow {
 				unsigned fine:1;
 				unsigned relations:1;
 			} police;
+			struct {
+				unsigned play:1;
+				unsigned buy:1;
+				int caps;
+				QDate date;
+			} kub;
 		} opt;
 		struct {
 			unsigned loading:1;

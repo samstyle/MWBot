@@ -47,18 +47,17 @@ MWBotWin::MWBotWin() {
 
 	opt.petRun = 1;
 
+	opt.kub.date = QDate::currentDate().addDays(-1);
+
 	opt.monya.play = 1;
 	opt.monya.buy = 1;
 	opt.monya.stars = 0;
 	opt.monya.block = 0;
 	opt.monya.date = curTime.date();
 
-	opt.kub.date = opt.monya.date;
-
 	opt.bPet.train = 1;
 	opt.bPet.useOre = 1;
 	opt.bPet.useOil = 0;
-//	opt.bPet.block = 0;
 	opt.bPet.money = 0;
 	opt.bPet.ore = 0;
 	opt.bPet.oil = 0;
@@ -150,6 +149,7 @@ void MWBotWin::timerEvent(QTimerEvent*) {
 
 	if (!state.botWork) return;
 
+	QWebElement elm;
 	checkPolice();
 
 	if (state.firstRun) {
@@ -171,15 +171,16 @@ void MWBotWin::timerEvent(QTimerEvent*) {
 		arena();
 	}
 // play baraban
-/*
-	if ((options & FL_KUB) && (~flag & FL_KUB)) {
+	if (opt.kub.play && (opt.kub.date < QDate::currentDate())) {
 		elm = frm->findFirstElement("div.side-fractionwar");
 		if (!elm.isNull()) {
-			if (elm.toPlainText().contains(trUtf8("Приз в студию")))
+			if (elm.toPlainText().contains(trUtf8("Приз в студию"))) {
+				opt.kub.date = QDate::currentDate();
 				playKub();
+			}
 		}
 	}
-*/
+
 // make petriks
 	if (opt.petrik.make && \
 		(info.money > (opt.petrik.money + 200)) && \
@@ -739,60 +740,6 @@ void MWBotWin::waitDropDown() {
 		usleep(10000);
 		app->processEvents();
 	} while (!elm.attribute("style").contains("none"));
-}
-
-void MWBotWin::playKub() {
-	setBusy(true);
-	loadPath(QStringList() << "arbat" << "casino");
-	QWebElement elm;
-//
-//	int caps = elm.toPlainText().toInt();
-	if (buyCaps > 0) {
-		elm = frm->findFirstElement("input#stash-change-ore");
-		if (!elm.isNull()) {
-			elm.setAttribute("value",QString::number(buyCaps));
-			clickElement("button#button-change-ore div.c");
-		}
-	}
-	/*
-	loadPage("/casino/kubovich/");
-	int caps;
-	int ncaps;
-	int needCaps;
-	do {
-		elm = frm->findFirstElement("button#push-ellow");
-		if (elm.isNull()) break;
-		if (!elm.attribute("class").contains("disabled")) {	// yellow
-			log(trUtf8("Крутим желтый барабан"));
-			clickElement("button#push-ellow div.c",0);
-		}
-		elm = frm->findFirstElement("span#fishki-balance-num");
-		caps = elm.toPlainText().remove(",").toInt();
-		elm = frm->findFirstElement("button#push.button span.cost span.fishki");
-		if (elm.isNull())
-			needCaps = 0;
-		else
-			needCaps = elm.toPlainText().toInt();
-//		log(QString::number(caps).append(":").append(QString::number(needCaps)));
-		flag |= FL_KUB;
-		if (caps < needCaps) break;
-		log(trUtf8("Крутим барабан за ").append(QString::number(needCaps)).append(trUtf8(" фишек")));
-		clickElement("button#push.button div.c",-1);
-//		waitDropDown();
-		if (needCaps != 0) {
-			do {
-				ncaps = frm->findFirstElement("span#fishki-balance-num").toPlainText().toInt();
-				usleep(10000);
-				app->processEvents();
-			} while (caps == ncaps);
-		}
-//		log("Reload");
-		ui.browser->reload();
-		waitLoading(0);
-//		log("----");
-	} while (caps >= needCaps);
-	*/
-	setBusy(false);
 }
 
 // options

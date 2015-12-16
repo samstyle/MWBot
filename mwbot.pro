@@ -21,7 +21,8 @@ SOURCES += main.cpp \
     group.cpp \
     police.cpp \
     options.cpp \
-    results.cpp
+    results.cpp \
+    kubovich.cpp
 
 FORMS += \
     mainwindow.ui

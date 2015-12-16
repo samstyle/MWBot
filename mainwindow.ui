@@ -254,8 +254,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>771</width>
-             <height>424</height>
+             <width>775</width>
+             <height>414</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -713,7 +713,7 @@
                  <item>
                   <widget class="QCheckBox" name="cbRoll">
                    <property name="text">
-                    <string>Крутить барабан на все и покупать</string>
+                    <string>Крутить барабан на</string>
                    </property>
                   </widget>
                  </item>
@@ -723,7 +723,7 @@
                     <number>0</number>
                    </property>
                    <property name="maximum">
-                    <number>20</number>
+                    <number>10000</number>
                    </property>
                   </widget>
                  </item>
@@ -731,6 +731,13 @@
                   <widget class="QLabel" name="label">
                    <property name="text">
                     <string>фишек</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="cbBuyCaps">
+                   <property name="text">
+                    <string>и докупать их</string>
                    </property>
                   </widget>
                  </item>
