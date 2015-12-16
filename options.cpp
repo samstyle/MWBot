@@ -34,7 +34,10 @@ void MWBotWin::loadOpts() {
 				if (pars.first() == "baraban") opt.kub.play = (pars.last() == "yes") ? 1 : 0;
 				if (pars.first() == "buycaps") opt.kub.buy = (pars.last() == "yes") ? 1 : 0;
 				if (pars.first() == "caps") opt.kub.caps = pars.last().toInt();
-				if (pars.first() == "kubDate") opt.kub.date = QDate::fromString(pars.last());
+				if (pars.first() == "kubDate") {
+					opt.kub.date = QDate::fromString(pars.last(),"dd-MM-yyyy");
+					if (!opt.kub.date.isValid()) opt.kub.date = QDate::currentDate().addDays(-1);
+				}
 
 				if (pars.first() == "minlev") {
 					opt.atk.minLev = pars.last().toInt();
@@ -101,7 +104,7 @@ void MWBotWin::saveOpts() {
 		file.write(QString("digrat:").append((options & FL_DIGRAT) ? "yes" : "no").append("\n").toUtf8());
 
 		file.write(QString("baraban:%0\n").arg(opt.kub.play ? "yes" : "no").toUtf8());
-		file.write(QString("kubDate:%0\n").arg(opt.kub.date.toString()).toUtf8());
+		file.write(QString("kubDate:%0\n").arg(opt.kub.date.toString("dd-MM-yyyy")).toUtf8());
 		file.write(QString("buycaps:%0\n").arg(opt.kub.buy ? "yes" : "no").toUtf8());
 		file.write(QString("caps:%0\n").arg(opt.kub.caps).toUtf8());
 
