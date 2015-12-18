@@ -175,7 +175,6 @@ void MWBotWin::timerEvent(QTimerEvent*) {
 		elm = frm->findFirstElement("div.side-fractionwar");
 		if (!elm.isNull()) {
 			if (elm.toPlainText().contains(trUtf8("Приз в студию"))) {
-				opt.kub.date = QDate::currentDate();
 				playKub();
 			}
 		}
@@ -675,7 +674,7 @@ void MWBotWin::makePetrik() {
 			if ((info.money > (opt.petrik.money + 199)) && (info.ore >= opt.petrik.ore)) {
 				clickElement("form.factory-nanoptric button.button div.c");
 				opt.petrik.time = curTime.addSecs(3700);
-				log(trUtf8("Начато производство петриков"));
+				log(trUtf8("<img src=:/images/petrik.png>&nbsp;Начато производство петриков"));
 			} else {
 				log(trUtf8("Для производства петриков недостаточно ресурсов"));
 			}

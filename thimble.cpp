@@ -81,5 +81,6 @@ void MWBotWin::playMonia() {
 		getFastRes();
 	}
 	loadPage("thimble/leave");
-	log(trUtf8("За ").append(QString::number(games).append(trUtf8(" игр получено ").append(QString::number(info.ore - oldruda).append(trUtf8(" руды"))))));
+	log(QString("<img src=:/images/ruda.png>&nbsp;За %0 игр получено %1 руды").arg(games).arg(info.ore - oldruda));
+	//log(trUtf8("За ").append(QString::number(games).append(trUtf8(" игр получено ").append(QString::number(info.ore - oldruda).append(trUtf8(" руды"))))));
 }
