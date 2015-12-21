@@ -61,6 +61,7 @@ struct CharInfo {
 	int medal;
 	int power;
 	int caps;
+	QMap<int,int> resMap;
 };
 
 
@@ -84,6 +85,7 @@ class MWBotWin : public QMainWindow {
 	Q_OBJECT
 	public:
 		MWBotWin();
+		void prepare();
 	public slots:
 		void loadCookies();
 		void saveCookies();
@@ -92,6 +94,7 @@ class MWBotWin : public QMainWindow {
 		void loadOpts();
 		void saveOpts();
 	private:
+		int timerId;
 		QString workDir;
 		struct {
 			unsigned petRun:1;
@@ -127,7 +130,9 @@ class MWBotWin : public QMainWindow {
 				unsigned tickets:1;
 				unsigned buy:1;
 				unsigned stars:1;
-				QDate date;
+				int minPlaySum;
+				int maxPlaySum;
+				//QDate date;
 			} monya;
 			struct {
 				//unsigned block:1;
@@ -151,6 +156,7 @@ class MWBotWin : public QMainWindow {
 			} kub;
 		} opt;
 		struct {
+			unsigned stop:1;
 			unsigned loading:1;
 			unsigned botWork:1;
 			unsigned firstRun:1;
@@ -160,14 +166,14 @@ class MWBotWin : public QMainWindow {
 		QString getItemIcon(QString);
 
 		CharInfo info;
+		void getResources();
 		void getFastRes();
 		void getBerezkaRes();
 
 		int goldType;
 		int options;
 		int flag;
-		int playSum;
-		int buyCaps;
+//		int buyCaps;
 
 		Ui::MainWin ui;
 		QEventLoop evloop;
@@ -199,13 +205,13 @@ class MWBotWin : public QMainWindow {
 		void clickElement(QWebElement&, int = 1000);
 
 		void waitLoading(int = 1000);
-		void waitDropDown();
 		int getAtackTimer();
 		int getRatTimer();
 		void restoreHP();
 		void setBusy(bool);
 
 		void playMonia();
+		void goBankChange();
 
 		void checkPolice();
 
@@ -241,6 +247,7 @@ class MWBotWin : public QMainWindow {
 	signals:
 		void digEnded();
 	protected:
+		void closeEvent(QCloseEvent*);
 		void timerEvent(QTimerEvent*);
 		void keyPressEvent(QKeyEvent*);
 };

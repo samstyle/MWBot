@@ -141,11 +141,3 @@ void MWBotWin::groupFight() {
 	FightBox fb = getGroupResult();
 	logResult(fb);
 }
-
-// debug
-
-void MWBotWin::debug() {
-	loadPage("fight/51829219/");
-	FightBox res = getGroupResult();
-	logResult(res);
-}

@@ -53,7 +53,7 @@ MWBotWin::MWBotWin() {
 	opt.monya.buy = 1;
 	opt.monya.stars = 0;
 	opt.monya.block = 0;
-	opt.monya.date = curTime.date();
+//	opt.monya.date = curTime.date();
 
 	opt.bPet.train = 1;
 	opt.bPet.useOre = 1;
@@ -63,6 +63,7 @@ MWBotWin::MWBotWin() {
 	opt.bPet.oil = 0;
 	opt.bPet.time = curTime;
 
+	state.stop = 0;
 	state.botWork = 0;
 	state.firstRun = 1;
 
@@ -86,10 +87,10 @@ MWBotWin::MWBotWin() {
 	ui.cbAType2->addItem(trUtf8("по уровню"),ATK_LEVEL);
 	ui.cbAType2->setCurrentIndex(ui.cbAtackType->findData(opt.atk.typeB));
 
-	ui.boxGypsy->addItem(QIcon(":/images/gold.png"),"250",250);
-	ui.boxGypsy->addItem(QIcon(":/images/gold.png"),"750",750);
+//	ui.boxGypsy->addItem(QIcon(":/images/gold.png"),"250",250);
+//	ui.boxGypsy->addItem(QIcon(":/images/gold.png"),"750",750);
 //	ui.boxGypsy->addItem(QIcon(":/images/gold.png"),"150 + 2",150);
-	ui.boxGypsy->setCurrentIndex(ui.boxGypsy->findData(goldType));
+//	ui.boxGypsy->setCurrentIndex(ui.boxGypsy->findData(goldType));
 
 	ui.browser->setZoomFactor(0.75);
 
@@ -118,6 +119,21 @@ MWBotWin::MWBotWin() {
 
 //	loadCookies();
 //	loadPage("player");
+}
+
+void MWBotWin::prepare() {
+	loadOpts();
+	show();
+	loadCookies();
+	loadPage("player");
+	timerId = startTimer(2000);
+}
+
+void MWBotWin::closeEvent(QCloseEvent* ev) {
+	state.stop = 1;
+	killTimer(timerId);
+	waitLoading();
+	ev->accept();
 }
 
 void MWBotWin::keyPressEvent(QKeyEvent* ev) {
@@ -197,8 +213,13 @@ void MWBotWin::timerEvent(QTimerEvent*) {
 		}
 	}
 // play with monya
-	if (!opt.monya.block && opt.monya.play && (info.money > playSum)) {
-		goMonia();
+	getFastRes();
+	if (!opt.monya.block && opt.monya.play && (info.money > opt.monya.minPlaySum)) {
+		if (info.money < opt.monya.maxPlaySum) {
+			goMonia();
+		} else {
+			goBankChange();
+		}
 	}
 }
 
@@ -266,38 +287,6 @@ void MWBotWin::setBusy(bool bsy) {
 	ui.browser->setDisabled(bsy);
 	ui.toolbar->setDisabled(bsy);
 }
-
-/*
-void MWBotWin::scan() {
-	if (flag & FL_SCAN) {
-		log(trUtf8("Сканирование остановлено"));
-		flag &= ~FL_SCAN;
-		return;
-	}
-	flag |= FL_SCAN;
-	log(trUtf8("Запуск сканирования"));
-	loadPage("player/");
-	CharBox myStat = getStat("div#content span.user","div#content td.stats-cell");
-	CharBox enStat;
-	QString str;
-	QWebElement elm,tmp;
-	QList<QWebElement> elist;
-	loadPage("alley/");
-	elm = frm->findFirstElement("input[name=minlevel]");
-	elm.setAttribute("value",QString::number(myStat.level - 1));
-	elm = frm->findFirstElement("input[name=maxlevel]");
-	elm.setAttribute("value",QString::number(myStat.level + 1));
-	clickElement("form#searchLevelForm div.button div.c",0);
-	while (flag & FL_SCAN) {
-		enStat = getStat("div.fighter2","td.fighter2-cell");
-		if (enStat.statsum < (myStat.statsum * 0.9)) {
-			str = QString("[").append(QString::number(enStat.level)).append("] ").append(enStat.name).append(" id=").append(QString::number(enStat.id));
-			log(str);
-		}
-		clickElement("div.button.button-search div.c",0);
-	}
-}
-*/
 
 void MWBotWin::onLoad(bool) {
 	state.loading = 0;
@@ -383,7 +372,9 @@ void MWBotWin::waitLoading(int speed) {
 		usleep(1000);
 		app->processEvents();
 		elm = frm->findFirstElement("div.loading-top");
+		if (state.stop) break;
 	} while (state.loading || !elm.attribute("style").contains("none"));
+	if (state.stop) return;
 	int sleeptime = 500 + (rand() % 1000);
 	while (sleeptime > 0) {
 		usleep(speed);
@@ -504,6 +495,22 @@ QString MWBotWin::getItemIcon(QString name) {
 	return res;
 }
 
+void MWBotWin::getResources() {
+	getFastRes();
+	loadPage("player");
+	QWebElement elm,subelm;
+	int id,count;
+	QList<QWebElement> lst = frm->findAllElements("table.inventary td.equipment-cell div.object-thumb div.padding").toList();
+	info.resMap.clear();
+	foreach(elm, lst) {
+		subelm = elm.findFirst("img");
+		id = subelm.attribute("data-st").toInt();
+		count = elm.findFirst("div.count").toPlainText().remove("#").toInt();
+		if (count == 0) count = 1;
+		info.resMap[id] = count;
+	}
+}
+
 void MWBotWin::getFastRes() {
 	QWebElement elm = frm->findFirstElement("span#currenthp");
 	if (elm.isNull()) return;
@@ -519,16 +526,16 @@ void MWBotWin::getFastRes() {
 }
 
 void MWBotWin::getBerezkaRes() {
-	info.tooth = frm->findFirstElement("div.borderdata span.tooth-white").toPlainText().toInt();
-	info.goldtooth = frm->findFirstElement("div.borderdata span.tooth-golden").toPlainText().toInt();
-	info.star = frm->findFirstElement("div.borderdata span.star").toPlainText().toInt();
-	info.badge = frm->findFirstElement("div.borderdata span.badge").toPlainText().toInt();
-	info.mobile = frm->findFirstElement("div.borderdata span.mobila").toPlainText().toInt();
-	info.oil = frm->findFirstElement("div.borderdata span.neft").toPlainText().toInt();
+	info.tooth = frm->findFirstElement("div.borderdata span.tooth-white").toPlainText().remove(",").toInt();
+	info.goldtooth = frm->findFirstElement("div.borderdata span.tooth-golden").toPlainText().remove(",").toInt();
+	info.star = frm->findFirstElement("div.borderdata span.star").toPlainText().remove(",").toInt();
+	info.badge = frm->findFirstElement("div.borderdata span.badge").toPlainText().remove(",").toInt();
+	info.mobile = frm->findFirstElement("div.borderdata span.mobila").toPlainText().remove(",").toInt();
+	info.oil = frm->findFirstElement("div.borderdata span.neft").toPlainText().remove(",").toInt();
 	//res.ipoints = frm->findFirstElement("div.borderdata span.ipoints-e").toPlainText().toInt();
-	info.power = frm->findFirstElement("div.borderdata span.power.counter").toPlainText().toInt();
-	info.medal = frm->findFirstElement("div.borderdata span.pet-golden.counter").toPlainText().toInt();
-	info.honey = frm->findFirstElement("div.borderdata span.med").toPlainText().toInt();
+	info.power = frm->findFirstElement("div.borderdata span.power.counter").toPlainText().remove(",").toInt();
+	info.medal = frm->findFirstElement("div.borderdata span.pet-golden.counter").toPlainText().remove(",").toInt();
+	info.honey = frm->findFirstElement("div.borderdata span.med").toPlainText().remove(",").toInt();
 }
 
 CharBox MWBotWin::getStat(QString querA, QString querB) {
@@ -725,34 +732,20 @@ void MWBotWin::sellLots() {
 	setBusy(false);
 }
 
-// roll baraban
-
-void MWBotWin::waitDropDown() {
-	QWebElement elm;
-	do {
-		elm = frm->findFirstElement("div.loading-top");
-		usleep(10000);
-		app->processEvents();
-	} while (elm.attribute("style").contains("none"));
-	do {
-		elm = frm->findFirstElement("div.loading-top");
-		usleep(10000);
-		app->processEvents();
-	} while (!elm.attribute("style").contains("none"));
-}
-
-// options
-
-
 int main(int ac,char** av) {
 	app = new QApplication(ac,av);
 	MWBotWin mwbot;
-	mwbot.loadOpts();
-	mwbot.show();
-	mwbot.loadCookies();
-	mwbot.loadPage("player");
-	mwbot.startTimer(2000);
+	mwbot.prepare();
 	app->exec();
 	mwbot.saveCookies();
 	return 0;
+}
+
+// debug
+
+void MWBotWin::debug() {
+	getFastRes();
+	int games = 1;
+	int oldruda = 0;
+	log(QString(trUtf8("<img src=:/images/ruda.png>&nbsp;Сыграно игр: %0. получено руды: %1")).arg(games).arg(info.ore - oldruda));
 }

@@ -16,8 +16,12 @@ void MWBotWin::loadOpts() {
 				if (pars.first() == "makepetrik") opt.petrik.make = (pars.last() == "yes") ? 1 : 0;
 				if (pars.first() == "playmon") opt.monya.play = (pars.last() == "yes") ? 1 : 0;
 				if (pars.first() == "playsum") {
-					playSum = pars.last().toInt();
-					if (playSum == 0) playSum = 30000;
+					opt.monya.minPlaySum = pars.last().toInt();
+					if (opt.monya.minPlaySum == 0) opt.monya.minPlaySum = 30000;
+				}
+				if (pars.first() == "maxplaysum") {
+					opt.monya.maxPlaySum = pars.last().toInt();
+					if (opt.monya.maxPlaySum == 0) opt.monya.maxPlaySum = 100000;
 				}
 				if (pars.first() == "playtickets") opt.monya.tickets = (pars.last() == "yes") ? 1 : 0;
 				if (pars.first() == "buytickets") opt.monya.buy = (pars.last() == "yes") ? 1 : 0;
@@ -94,7 +98,8 @@ void MWBotWin::saveOpts() {
 		file.write(QString("useHeal:%0\n").arg(opt.group.heal ? "yes" : "no").toUtf8());
 		file.write(QString("makepetrik:%0\n").arg(opt.petrik.make ? "yes" : "no").toUtf8());
 		file.write(QString("playmon:%0\n").arg(opt.monya.play ? "yes" : "no").toUtf8());
-		file.write(QString("playsum:%0\n").arg(playSum).toUtf8());
+		file.write(QString("playsum:%0\n").arg(opt.monya.minPlaySum).toUtf8());
+		file.write(QString("maxplaysum:%0\n").arg(opt.monya.maxPlaySum).toUtf8());
 		file.write(QString("playtickets:%0\n").arg(opt.monya.tickets ? "yes" : "no").toUtf8());
 		file.write(QString("buytickets:%0\n").arg(opt.monya.buy ? "yes" : "no").toUtf8());
 		file.write(QString("buytickets_star:%0\n").arg(opt.monya.stars ? "yes" : "no").toUtf8());
@@ -124,22 +129,23 @@ void MWBotWin::saveOpts() {
 
 void MWBotWin::apply() {
 	options = 0;
-	opt.atk.enabled = ui.cbAtack->isChecked() ? 1 : 0;
+	opt.atk.enabled = ui.gbAttack->isChecked() ? 1 : 0;
 	opt.atk.typeA = ui.cbAtackType->itemData(ui.cbAtackType->currentIndex()).toInt();
 	opt.atk.typeB = ui.cbAType2->itemData(ui.cbAType2->currentIndex()).toInt();
-	goldType = ui.boxGypsy->itemData(ui.boxGypsy->currentIndex()).toInt();
+//	goldType = ui.boxGypsy->itemData(ui.boxGypsy->currentIndex()).toInt();
 	opt.petrik.make = ui.cbPetrik->isChecked() ? 1 : 0;
-	opt.monya.play = ui.cbMonia->isChecked() ? 1 : 0;
-	playSum = ui.sbMoniaCoins->value();
+	opt.monya.play = ui.gbMonya->isChecked() ? 1 : 0;
+	opt.monya.minPlaySum = ui.sbMoniaCoins->value();
+	opt.monya.maxPlaySum = ui.sbMaxMoneyPlay->value();
 	opt.monya.tickets = ui.cbPlayTickets->isChecked() ? 1 : 0;
 	opt.monya.buy = ui.cbBuyTickets->isChecked() ? 1 : 0;
 	opt.monya.stars = ui.cbTicketStars->isChecked() ? 1 : 0;
-	opt.ratk.enabled = ui.cbRatHunt->isChecked() ? 1 : 0;
+	opt.ratk.enabled = ui.gbRats->isChecked() ? 1 : 0;
 	opt.ratk.maxlev = ui.sbRatMax->value();
-	if (ui.cbDigger->isChecked()) options |= FL_DIG;
-	if (ui.cbDigRat->isChecked()) options |= FL_DIGRAT;
+//	if (ui.cbDigger->isChecked()) options |= FL_DIG;
+//	if (ui.cbDigRat->isChecked()) options |= FL_DIGRAT;
 
-	opt.kub.play = ui.cbRoll->isChecked() ? 1 : 0;
+	opt.kub.play = ui.gbBaraban->isChecked() ? 1 : 0;
 	opt.kub.buy = ui.cbBuyCaps->isChecked() ? 1 : 0;
 	opt.kub.caps = ui.sbCaps->value();
 
@@ -147,7 +153,7 @@ void MWBotWin::apply() {
 	opt.atk.maxLev = ui.sbMaxLev->value();
 	opt.atk.statPrc = ui.sbStatCheck->value();
 //	if (ui.cbNPCheck->isChecked()) options |= FL_NONPC;
-	opt.bPet.train = ui.cbTrain->isChecked() ? 1 : 0;
+	opt.bPet.train = ui.gbFightPet->isChecked() ? 1 : 0;
 	opt.bPet.useOre = ui.cbTrainRuda->isChecked() ? 1 : 0;
 	opt.bPet.useOil = ui.cbTrainNeft->isChecked() ? 1 : 0;
 	opt.petRun = ui.cbRunner->isChecked() ? 1 : 0;
@@ -159,21 +165,22 @@ void MWBotWin::apply() {
 }
 
 void MWBotWin::setOpts() {
-	ui.cbAtack->setChecked(opt.atk.enabled);
+	ui.gbAttack->setChecked(opt.atk.enabled);
 	ui.cbAtackType->setCurrentIndex(ui.cbAtackType->findData(opt.atk.typeA));
 	ui.cbAType2->setCurrentIndex(ui.cbAType2->findData(opt.atk.typeB));
-	ui.boxGypsy->setCurrentIndex(ui.boxGypsy->findData(goldType));
+//	ui.boxGypsy->setCurrentIndex(ui.boxGypsy->findData(goldType));
 	ui.cbPetrik->setChecked(opt.petrik.make);
-	ui.cbMonia->setChecked(opt.monya.play);
-	ui.sbMoniaCoins->setValue(playSum);
+	ui.gbMonya->setChecked(opt.monya.play);
+	ui.sbMoniaCoins->setValue(opt.monya.minPlaySum);
+	ui.sbMaxMoneyPlay->setValue(opt.monya.maxPlaySum);
 	ui.cbPlayTickets->setChecked(opt.monya.tickets);
 	ui.cbBuyTickets->setChecked(opt.monya.buy);
 	ui.cbTicketStars->setChecked(opt.monya.stars);
-	ui.cbRatHunt->setChecked(opt.ratk.enabled);
-	ui.cbDigger->setChecked(options & FL_DIG);
-	ui.cbDigRat->setChecked(options & FL_DIGRAT);
+	ui.gbRats->setChecked(opt.ratk.enabled);
+//	ui.cbDigger->setChecked(options & FL_DIG);
+//	ui.cbDigRat->setChecked(options & FL_DIGRAT);
 
-	ui.cbRoll->setChecked(opt.kub.play);
+	ui.gbBaraban->setChecked(opt.kub.play);
 	ui.cbBuyCaps->setChecked(opt.kub.buy);
 	ui.sbCaps->setValue(opt.kub.caps);
 
@@ -181,7 +188,7 @@ void MWBotWin::setOpts() {
 	ui.sbMaxLev->setValue(opt.atk.maxLev);
 	ui.sbStatCheck->setValue(opt.atk.statPrc);
 //	ui.cbNPCheck->setChecked(options & FL_NONPC);
-	ui.cbTrain->setChecked(opt.bPet.train);
+	ui.gbFightPet->setChecked(opt.bPet.train);
 	ui.cbTrainRuda->setChecked(opt.bPet.useOre);
 	ui.cbTrainNeft->setChecked(opt.bPet.useOil);
 	ui.cbRunner->setChecked(opt.petRun);

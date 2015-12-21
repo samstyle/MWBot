@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>819</width>
-    <height>544</height>
+    <width>749</width>
+    <height>604</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -240,40 +240,26 @@
        <attribute name="title">
         <string>Options</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_9">
+       <layout class="QVBoxLayout" name="verticalLayout_6">
         <item>
-         <widget class="QScrollArea" name="scrollArea">
-          <property name="frameShape">
-           <enum>QFrame::NoFrame</enum>
-          </property>
-          <property name="widgetResizable">
-           <bool>true</bool>
-          </property>
-          <widget class="QWidget" name="scrollAreaWidgetContents">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>775</width>
-             <height>414</height>
-            </rect>
-           </property>
-           <layout class="QVBoxLayout" name="verticalLayout_5">
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_4">
             <item>
-             <widget class="QFrame" name="frame">
-              <property name="frameShape">
-               <enum>QFrame::Box</enum>
+             <widget class="QGroupBox" name="gbAttack">
+              <property name="title">
+               <string>Атаковать</string>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_4">
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_9">
                <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_10">
+                <layout class="QHBoxLayout" name="horizontalLayout_16">
                  <item>
-                  <widget class="QCheckBox" name="cbAtack">
+                  <widget class="QLabel" name="label">
                    <property name="text">
-                    <string>Атаковать</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
+                    <string>Тип</string>
                    </property>
                   </widget>
                  </item>
@@ -290,71 +276,10 @@
                  <item>
                   <widget class="QComboBox" name="cbAType2"/>
                  </item>
-                 <item>
-                  <spacer name="horizontalSpacer_5">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
                 </layout>
                </item>
                <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_15">
-                 <property name="topMargin">
-                  <number>8</number>
-                 </property>
-                 <item>
-                  <widget class="QLabel" name="label_10">
-                   <property name="text">
-                    <string>В полиции</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="cbPolFine">
-                   <property name="text">
-                    <string>платить штрафы</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="cbPolRelat">
-                   <property name="text">
-                    <string>налаживать связи</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_14">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="label_9">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_9">
+                <layout class="QHBoxLayout" name="horizontalLayout_17">
                  <item>
                   <widget class="QLabel" name="label_4">
                    <property name="text">
@@ -389,10 +314,14 @@
                    </property>
                   </widget>
                  </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_18">
                  <item>
                   <widget class="QLabel" name="label_6">
                    <property name="text">
-                    <string>и статы</string>
+                    <string>Статы</string>
                    </property>
                   </widget>
                  </item>
@@ -410,116 +339,19 @@
                    </property>
                   </widget>
                  </item>
-                 <item>
-                  <widget class="QCheckBox" name="cbNPCheck">
-                   <property name="text">
-                    <string>не учитывать NPC</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_9">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
                 </layout>
                </item>
                <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_6">
-                 <item>
-                  <widget class="QCheckBox" name="cbRatHunt">
-                   <property name="text">
-                    <string>Охотиться на крыс, макс.уровень</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QSpinBox" name="sbRatMax">
-                   <property name="minimum">
-                    <number>1</number>
-                   </property>
-                   <property name="maximum">
-                    <number>40</number>
-                   </property>
-                   <property name="value">
-                    <number>20</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_6">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_14">
-                 <item>
-                  <widget class="QLabel" name="label_8">
-                   <property name="text">
-                    <string>В групповых боях использовать</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="cbGFCheese">
-                   <property name="text">
-                    <string>сыр</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="cbGFHeal">
-                   <property name="text">
-                    <string>лечилки</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_13">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QFrame" name="frame_2">
-              <property name="frameShape">
-               <enum>QFrame::Box</enum>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_6">
-               <item>
-                <widget class="QCheckBox" name="cbPetrik">
+                <widget class="QCheckBox" name="cbPolFine">
                  <property name="text">
-                  <string>Варить петрики</string>
+                  <string>платить штрафы</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="cbPolRelat">
+                 <property name="text">
+                  <string>налаживать связи</string>
                  </property>
                 </widget>
                </item>
@@ -527,20 +359,20 @@
              </widget>
             </item>
             <item>
-             <widget class="QFrame" name="frame_3">
-              <property name="frameShape">
-               <enum>QFrame::Box</enum>
+             <widget class="QGroupBox" name="gbMonya">
+              <property name="title">
+               <string>Играть с Моней</string>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_7">
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_12">
                <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_5">
+                <layout class="QHBoxLayout" name="horizontalLayout_20" stretch="0,10,0">
                  <item>
-                  <widget class="QCheckBox" name="cbMonia">
+                  <widget class="QLabel" name="label_12">
                    <property name="text">
-                    <string>Играть с Моней за</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
+                    <string>Играть за</string>
                    </property>
                   </widget>
                  </item>
@@ -564,224 +396,107 @@
                    </property>
                   </widget>
                  </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="0,10,0,0">
                  <item>
-                  <widget class="QCheckBox" name="cbPlayTickets">
+                  <widget class="QLabel" name="label_8">
                    <property name="text">
-                    <string>за билеты</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
+                    <string>Более</string>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QCheckBox" name="cbBuyTickets">
-                   <property name="text">
-                    <string>покупать их</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
+                  <widget class="QSpinBox" name="sbMaxMoneyPlay">
+                   <property name="maximum">
+                    <number>1000000</number>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QCheckBox" name="cbTicketStars">
+                  <widget class="QLabel" name="label_10">
                    <property name="text">
-                    <string>за звезды</string>
+                    <string/>
+                   </property>
+                   <property name="pixmap">
+                    <pixmap resource="resources.qrc">:/images/money.png</pixmap>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <spacer name="horizontalSpacer_4">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
+                  <widget class="QLabel" name="label_9">
+                   <property name="text">
+                    <string>менять сразу</string>
                    </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
+                  </widget>
                  </item>
                 </layout>
                </item>
                <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_7">
-                 <item>
-                  <widget class="QCheckBox" name="cbDigger">
-                   <property name="text">
-                    <string>Копать туннель</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="cbDigRat">
-                   <property name="text">
-                    <string>бить крыс</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_7">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
+                <widget class="QCheckBox" name="cbPlayTickets">
+                 <property name="text">
+                  <string>Играть за билеты</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="cbBuyTickets">
+                 <property name="text">
+                  <string>покупать билеты...</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="cbTicketStars">
+                 <property name="text">
+                  <string>...за звезды</string>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="resources.qrc">
+                   <normaloff>:/images/star.png</normaloff>:/images/star.png</iconset>
+                 </property>
+                </widget>
                </item>
               </layout>
              </widget>
             </item>
             <item>
-             <widget class="QFrame" name="frame_4">
-              <property name="frameShape">
-               <enum>QFrame::Box</enum>
+             <widget class="QGroupBox" name="gbFightPet">
+              <property name="title">
+               <string>Тренировать боевого питомца</string>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_8">
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_13">
                <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_12">
-                 <item>
-                  <widget class="QCheckBox" name="cbRunner">
-                   <property name="text">
-                    <string>Записывать на бега</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_11">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
+                <widget class="QCheckBox" name="cbTrainRuda">
+                 <property name="text">
+                  <string>за руду</string>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="resources.qrc">
+                   <normaloff>:/images/ruda.png</normaloff>:/images/ruda.png</iconset>
+                 </property>
+                </widget>
                </item>
                <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_11">
-                 <item>
-                  <widget class="QCheckBox" name="cbTrain">
-                   <property name="text">
-                    <string>Тренировать боевого пета</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="cbTrainRuda">
-                   <property name="text">
-                    <string>за руду</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="cbTrainNeft">
-                   <property name="text">
-                    <string>за нефть</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_10">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_8">
-                 <item>
-                  <widget class="QCheckBox" name="cbRoll">
-                   <property name="text">
-                    <string>Крутить барабан на</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QSpinBox" name="sbCaps">
-                   <property name="minimum">
-                    <number>0</number>
-                   </property>
-                   <property name="maximum">
-                    <number>10000</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="label">
-                   <property name="text">
-                    <string>фишек</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="cbBuyCaps">
-                   <property name="text">
-                    <string>и докупать их</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_8">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_13">
-                 <item>
-                  <widget class="QCheckBox" name="cbGypsy">
-                   <property name="text">
-                    <string>Играть с цыганкой</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QComboBox" name="boxGypsy"/>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_12">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
+                <widget class="QCheckBox" name="cbTrainNeft">
+                 <property name="text">
+                  <string>за нефть</string>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="resources.qrc">
+                   <normaloff>:/images/neft.png</normaloff>:/images/neft.png</iconset>
+                 </property>
+                </widget>
                </item>
               </layout>
              </widget>
@@ -800,8 +515,183 @@
              </spacer>
             </item>
            </layout>
-          </widget>
-         </widget>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_5">
+            <item>
+             <widget class="QGroupBox" name="gbRats">
+              <property name="title">
+               <string>Охота на крыс</string>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_10">
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_19">
+                 <item>
+                  <widget class="QLabel" name="label_11">
+                   <property name="text">
+                    <string>Макс.уровень</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSpinBox" name="sbRatMax">
+                   <property name="minimum">
+                    <number>1</number>
+                   </property>
+                   <property name="maximum">
+                    <number>40</number>
+                   </property>
+                   <property name="value">
+                    <number>20</number>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="groupBox_3">
+              <property name="title">
+               <string>Групповые бои</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_11">
+               <item>
+                <widget class="QCheckBox" name="cbGFCheese">
+                 <property name="text">
+                  <string>Использовать сыр</string>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="resources.qrc">
+                   <normaloff>:/images/cheese.png</normaloff>:/images/cheese.png</iconset>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="cbGFHeal">
+                 <property name="text">
+                  <string>Использовать лечилки</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="gbBaraban">
+              <property name="title">
+               <string>Крутить барабан</string>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_7">
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_6">
+                 <item>
+                  <widget class="QLabel" name="label_13">
+                   <property name="text">
+                    <string>Использовать</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSpinBox" name="sbCaps">
+                   <property name="minimum">
+                    <number>0</number>
+                   </property>
+                   <property name="maximum">
+                    <number>10000</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_14">
+                   <property name="pixmap">
+                    <pixmap resource="resources.qrc">:/images/caps.png</pixmap>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="cbBuyCaps">
+                 <property name="text">
+                  <string>докупать фишки</string>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="resources.qrc">
+                   <normaloff>:/images/caps.png</normaloff>:/images/caps.png</iconset>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="groupBox_5">
+              <property name="title">
+               <string>Другое</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_8">
+               <item>
+                <widget class="QCheckBox" name="cbPetrik">
+                 <property name="text">
+                  <string>Варить петрики</string>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="resources.qrc">
+                   <normaloff>:/images/petrik.png</normaloff>:/images/petrik.png</iconset>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="cbRunner">
+                 <property name="text">
+                  <string>Записывать на бега</string>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="resources.qrc">
+                   <normaloff>:/images/medal.png</normaloff>:/images/medal.png</iconset>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_4">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -872,7 +762,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>819</width>
+     <width>749</width>
      <height>18</height>
     </rect>
    </property>

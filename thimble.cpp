@@ -81,6 +81,31 @@ void MWBotWin::playMonia() {
 		getFastRes();
 	}
 	loadPage("thimble/leave");
-	log(QString("<img src=:/images/ruda.png>&nbsp;За %0 игр получено %1 руды").arg(games).arg(info.ore - oldruda));
+	log(QString(trUtf8("<img src=:/images/ruda.png>&nbsp;Сыграно игр: %0. получено руды: %1")).arg(games).arg(info.ore - oldruda));
 	//log(trUtf8("За ").append(QString::number(games).append(trUtf8(" игр получено ").append(QString::number(info.ore - oldruda).append(trUtf8(" руды"))))));
+}
+
+void MWBotWin::goBankChange() {
+	setBusy(true);
+	getResources();
+	int work = 1;
+	if (info.resMap[447] == 0) {
+		loadPath(QStringList() << "arbat" << "berezka" << "berezka/section/mixed/");
+		getBerezkaRes();
+		if ((info.star > info.tooth) && (info.star >= 4)) {
+			clickElement("li[rel='447'] div.button#ore_ticket div.c");
+			log(trUtf8("Рудный билет куплен за звезды"));
+		} else if ((info.tooth >= 4)) {
+			clickElement("li[rel='449'] div.button#ore_ticket div.c");
+			log(trUtf8("Рудный билет куплен за зубы"));
+		} else {
+			work = 0;
+		}
+	}
+	if (work) {
+		loadPath(QStringList() << "arbat" << "bank");
+		clickElement("div.bank-robbery button.button div.c");
+		log(trUtf8("Деньги обменены в банке на руду"));
+	}
+	setBusy(false);
 }
