@@ -93,5 +93,6 @@
         <file>images/boxes/box_stitch.png</file>
         <file>images/caps.png</file>
         <file>images/cheese.png</file>
+        <file>images/heal.png</file>
     </qresource>
 </RCC>

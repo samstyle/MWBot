@@ -528,7 +528,17 @@
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_10">
                <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_19">
+                <layout class="QHBoxLayout" name="horizontalLayout_19" stretch="0,10,0">
+                 <item>
+                  <widget class="QLabel" name="label_15">
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="pixmap">
+                    <pixmap resource="resources.qrc">:/images/rat.png</pixmap>
+                   </property>
+                  </widget>
+                 </item>
                  <item>
                   <widget class="QLabel" name="label_11">
                    <property name="text">
@@ -559,8 +569,8 @@
               <property name="title">
                <string>Групповые бои</string>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_11">
-               <item>
+              <layout class="QGridLayout" name="gridLayout">
+               <item row="0" column="0">
                 <widget class="QCheckBox" name="cbGFCheese">
                  <property name="text">
                   <string>Использовать сыр</string>
@@ -571,10 +581,28 @@
                  </property>
                 </widget>
                </item>
-               <item>
+               <item row="0" column="1">
+                <widget class="QToolButton" name="tbCheeseList">
+                 <property name="text">
+                  <string>...</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QToolButton" name="tbHealList">
+                 <property name="text">
+                  <string>...</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
                 <widget class="QCheckBox" name="cbGFHeal">
                  <property name="text">
-                  <string>Использовать лечилки</string>
+                  <string>Лечиться</string>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="resources.qrc">
+                   <normaloff>:/images/heal.png</normaloff>:/images/heal.png</iconset>
                  </property>
                 </widget>
                </item>
