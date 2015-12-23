@@ -77,6 +77,23 @@ void MWBotWin::loadOpts() {
 				if (pars.first() == "useHeal") opt.group.heal = (pars.last() == "yes") ? 1 : 0;
 				if (pars.first() == "payfine") opt.police.fine = (pars.last() == "yes") ? 1 : 0;
 				if (pars.first() == "setrel") opt.police.relations = (pars.last() == "yes") ? 1 : 0;
+
+				if (pars.first() == "cheeseList") {
+					cheeseList.clear();
+					do {
+						line = QDialog::trUtf8(file.readLine()).remove("\r").remove("\n");
+						cheeseList.append(line);
+					} while (line != "}");
+					cheeseList.removeLast();
+				}
+				if (pars.first() == "healList") {
+					healList.clear();
+					do {
+						line = QDialog::trUtf8(file.readLine()).remove("\r").remove("\n");
+						healList.append(line);
+					} while (line != "}");
+					healList.removeLast();
+				}
 			}
 		}
 		if (opt.atk.minLev > opt.atk.maxLev) {
@@ -90,6 +107,7 @@ void MWBotWin::loadOpts() {
 
 void MWBotWin::saveOpts() {
 	QFile file(workDir + "config.conf");
+	QString str;
 	if (file.open(QFile::WriteOnly)) {
 		file.write(QString("atack:%0\n").arg(opt.atk.enabled ? "yes" : "no").toUtf8());
 		file.write(QString("atype:%0\n").arg(opt.atk.typeA).toUtf8());
@@ -124,6 +142,20 @@ void MWBotWin::saveOpts() {
 		file.write(QString("goldplay:").append(QString::number(goldType)).append("\n").toUtf8());
 		file.write(QString("payfine:%0\n").arg(opt.police.fine ? "yes" : "no").toUtf8());
 		file.write(QString("setrel:%0\n").arg(opt.police.relations ? "yes" : "no").toUtf8());
+
+		file.write(QString("cheeseList:{\n").toUtf8());
+		foreach(str, cheeseList) {
+			str.append("\n");
+			file.write(str.toUtf8());
+		}
+		file.write("}\n");
+		file.write(QString("healList:{\n").toUtf8());
+		foreach(str, healList) {
+			str.append("\n");
+			file.write(str.toUtf8());
+		}
+		file.write("}\n");
+
 	}
 }
 

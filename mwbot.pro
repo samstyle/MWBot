@@ -25,7 +25,8 @@ SOURCES += main.cpp \
     kubovich.cpp
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    textwindow.ui
 
 RESOURCES += \
     resources.qrc

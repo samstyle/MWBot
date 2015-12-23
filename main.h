@@ -8,6 +8,7 @@
 #include <QNetworkDiskCache>
 
 #include "ui_mainwindow.h"
+#include "ui_textwindow.h"
 
 struct mwItem {
 	QString name;
@@ -96,6 +97,7 @@ class MWBotWin : public QMainWindow {
 	private:
 		int timerId;
 		QString workDir;
+		QDialog* tedit;
 		struct {
 			unsigned petRun:1;
 			struct {
@@ -176,10 +178,15 @@ class MWBotWin : public QMainWindow {
 //		int buyCaps;
 
 		Ui::MainWin ui;
+		Ui::TEdit tui;
 		QEventLoop evloop;
 		QWebFrame* frm;
 		QNetworkAccessManager* mgr;
 		QNetworkDiskCache* cache;
+
+		QStringList cheeseList;
+		QStringList healList;
+		QStringList* editList;
 
 		QDateTime curTime;
 		QDateTime digTime;
@@ -238,6 +245,9 @@ class MWBotWin : public QMainWindow {
 		void arena();
 
 		void apply();
+		void editCheese();
+		void editHeal();
+		void setList();
 
 		void onStart();
 		void onLoad(bool);

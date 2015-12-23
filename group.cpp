@@ -71,27 +71,6 @@ void MWBotWin::groupFight() {
 	QString target;
 	int res = 0;
 	int cnt;
-	//int step = 1;
-	QStringList cheeseList, healList;
-	cheeseList << trUtf8("Ароматный сыр");
-	cheeseList << trUtf8("Шведский сыр");
-	cheeseList << trUtf8("Итальянский сыр");
-	cheeseList << trUtf8("Французский сыр");
-	cheeseList << trUtf8("Запрещенный сыр");
-	healList << trUtf8("Хот-дог «Сасисыч»");
-	healList << trUtf8("Лапша");
-	healList << trUtf8("Пицца «Пепперони»");
-	healList << trUtf8("Ройалбургер «Сумоист»");
-	healList << trUtf8("Гамбургер «Обжорка»");
-	healList << trUtf8("Орех «Кокосовый»");
-	healList << trUtf8("Тыква «Колхозная»");
-	healList << trUtf8("Дуриан «Заморский»");
-	healList << trUtf8("Икорка на черством хлебушке");
-	healList << trUtf8("Икорка на хлебушке [Ультра]");
-	healList << trUtf8("Роллы «Огурцовые»");
-	healList << trUtf8("Роллы «Огурцовые» [Ультра]");
-	healList << trUtf8("Вкусный воккер");
-	healList << trUtf8("Вкусный воккер [Ультра]");
 	int useCheese = 0;
 	if (opt.group.cheese) {
 		int enemyHp = getSumHp(frm,0);

@@ -9,6 +9,10 @@ QApplication* app;
 
 MWBotWin::MWBotWin() {
 	ui.setupUi(this);
+
+	tedit = new QDialog(this);
+	tui.setupUi(tedit);
+
 	frm = ui.browser->page()->mainFrame();
 
 	workDir = QDir::homePath().append("/.config/samstyle/mwbot/");
@@ -117,8 +121,10 @@ MWBotWin::MWBotWin() {
 	connect(ui.tbTrainPet,SIGNAL(clicked()),this,SLOT(trainPet()));
 	connect(ui.tbArena,SIGNAL(clicked()),this,SLOT(arena()));
 
-//	loadCookies();
-//	loadPage("player");
+	connect(ui.tbCheeseList,SIGNAL(clicked(bool)),this,SLOT(editCheese()));
+	connect(ui.tbHealList,SIGNAL(clicked(bool)),this,SLOT(editHeal()));
+	connect(tui.okButton,SIGNAL(clicked(bool)),this,SLOT(setList()));
+	connect(tui.cancelButton,SIGNAL(clicked(bool)),tedit,SLOT(hide()));
 }
 
 void MWBotWin::prepare() {
@@ -731,6 +737,28 @@ void MWBotWin::sellLots() {
 	}
 	setBusy(false);
 }
+
+// edit lists
+
+void MWBotWin::editCheese() {
+	editList = &cheeseList;
+	tui.textArea->setPlainText(editList->join("\n"));
+	tedit->show();
+}
+
+void MWBotWin::editHeal() {
+	editList = &healList;
+	tui.textArea->setPlainText(editList->join("\n"));
+	tedit->show();
+}
+
+void MWBotWin::setList() {
+	*editList = tui.textArea->toPlainText().split("\n",QString::SkipEmptyParts);
+	tedit->hide();
+	saveOpts();
+}
+
+// main
 
 int main(int ac,char** av) {
 	app = new QApplication(ac,av);
