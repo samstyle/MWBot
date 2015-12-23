@@ -6,79 +6,83 @@ void MWBotWin::loadOpts() {
 		options = 0;
 		QString line;
 		QStringList pars;
+		QString com,val;
+		int ival;
+		int bval;
 		while (!file.atEnd()) {
 			line = QDialog::trUtf8(file.readLine()).remove("\r").remove("\n");
 			pars = line.split(":",QString::SkipEmptyParts);
 			if (pars.size() == 2) {
-				if (pars.first() == "atack") opt.atk.enabled = (pars.last() == "yes") ? 1 : 0;
-				if (pars.first() == "atype") opt.atk.typeA = pars.last().toInt();
-				if (pars.first() == "atype2") opt.atk.typeB = pars.last().toInt();
-				if (pars.first() == "makepetrik") opt.petrik.make = (pars.last() == "yes") ? 1 : 0;
-				if (pars.first() == "playmon") opt.monya.play = (pars.last() == "yes") ? 1 : 0;
-				if (pars.first() == "playsum") {
-					opt.monya.minPlaySum = pars.last().toInt();
-					if (opt.monya.minPlaySum == 0) opt.monya.minPlaySum = 30000;
+				com = pars.first();
+				val = pars.last();
+				ival = val.toInt();
+				bval = (val == "yes") ? 1 : 0;
+				if (com == "atack") opt.atk.enabled = bval;
+				if (com == "atype") opt.atk.typeA = ival;
+				if (com == "atype2") opt.atk.typeB = ival;
+				if (com == "makepetrik") opt.petrik.make = bval;
+				if (com == "playmon") opt.monya.play = bval;
+				if (com == "playsum") {
+					if (ival == 0) ival = 30000;
+					opt.monya.minPlaySum = ival;
 				}
-				if (pars.first() == "maxplaysum") {
-					opt.monya.maxPlaySum = pars.last().toInt();
-					if (opt.monya.maxPlaySum == 0) opt.monya.maxPlaySum = 100000;
+				if (com == "maxplaysum") {
+					if (ival == 0) ival = 100000;
+					opt.monya.maxPlaySum = ival;
 				}
-				if (pars.first() == "playtickets") opt.monya.tickets = (pars.last() == "yes") ? 1 : 0;
-				if (pars.first() == "buytickets") opt.monya.buy = (pars.last() == "yes") ? 1 : 0;
-				if (pars.first() == "buytickets_star") opt.monya.stars = (pars.last() == "yes") ? 1 : 0;
-				if (pars.first() == "rathunt") opt.ratk.enabled = (pars.last() == "yes") ? 1 : 0;
-				if (pars.first() == "ratmaxlev") {
-					opt.ratk.maxlev = pars.last().toInt();
+				if (com == "playtickets") opt.monya.tickets = bval;
+				if (com == "buytickets") opt.monya.buy = bval;
+				if (com == "buytickets_star") opt.monya.stars = bval;
+				if (com == "rathunt") opt.ratk.enabled = bval;
+				if (com == "ratmaxlev") {
+					opt.ratk.maxlev = ival;
 					if (opt.ratk.maxlev < 1) opt.ratk.maxlev = 1;
 					else if (opt.ratk.maxlev > 40) opt.ratk.maxlev = 40;
 				}
-				if ((pars.first() == "digger") && (pars.last() == "yes")) options |= FL_DIG;
-				if ((pars.first() == "digrat") && (pars.last() == "yes")) options |= FL_DIGRAT;
+				if ((com == "digger") && bval) options |= FL_DIG;
+				if ((com == "digrat") && bval) options |= FL_DIGRAT;
 
-				if (pars.first() == "baraban") opt.kub.play = (pars.last() == "yes") ? 1 : 0;
-				if (pars.first() == "buycaps") opt.kub.buy = (pars.last() == "yes") ? 1 : 0;
-				if (pars.first() == "caps") opt.kub.caps = pars.last().toInt();
-				if (pars.first() == "kubDate") {
-					opt.kub.date = QDate::fromString(pars.last(),"dd-MM-yyyy");
+				if (com == "baraban") opt.kub.play = bval;
+				if (com == "buycaps") opt.kub.buy = bval;
+				if (com == "caps") opt.kub.caps = ival;
+				if (com == "kubDate") {
+					opt.kub.date = QDate::fromString(val,"dd-MM-yyyy");
 					if (!opt.kub.date.isValid()) opt.kub.date = QDate::currentDate().addDays(-1);
 				}
 
-				if (pars.first() == "minlev") {
-					opt.atk.minLev = pars.last().toInt();
+				if (com == "minlev") {
+					opt.atk.minLev = ival;
 					if (opt.atk.minLev > 50) {
 						opt.atk.minLev = 50;
 					} else if (opt.atk.minLev < -50) {
 						opt.atk.minLev = -50;
 					}
 				}
-				if (pars.first() == "maxlev") {
-					opt.atk.maxLev = pars.last().toInt();
-					if (opt.atk.maxLev > 50) {
-						opt.atk.maxLev = 50;
-					} else if (opt.atk.maxLev < -50) {
-						opt.atk.maxLev = -50;
-					}
+				if (com == "maxlev") {
+					if (ival > 50) ival = 50;
+					if (ival < -50) ival = -50;
+					opt.atk.maxLev = ival;
 				}
-				if (pars.first() == "statprc") {
-					opt.atk.statPrc = pars.last().toDouble();
+				if (com == "statprc") {
+					opt.atk.statPrc = val.toDouble();
 					if (opt.atk.statPrc <= 0) {
 						opt.atk.statPrc = 0.5;
 					} else if (opt.atk.statPrc > 2) {
 						opt.atk.statPrc = 2;
 					}
 				}
-//				if ((pars.first() == "checknpc") && (pars.last() == "no")) options |= FL_NONPC;
-				if (pars.first() == "trainpet") opt.bPet.train = (pars.last() == "yes") ? 1 : 0;
-				if (pars.first() == "tp-ruda") opt.bPet.useOre = (pars.last() == "yes") ? 1 : 0;
-				if (pars.first() == "tp-oil") opt.bPet.useOil = (pars.last() == "yes") ? 1 : 0;
-				if (pars.first() == "runner") opt.petRun = (pars.last() == "yes") ? 1 : 0;
-				if (pars.first() == "goldplay") goldType = pars.last().toInt();
-				if (pars.first() == "useCheese") opt.group.cheese = (pars.last() == "yes") ? 1 : 0;
-				if (pars.first() == "useHeal") opt.group.heal = (pars.last() == "yes") ? 1 : 0;
-				if (pars.first() == "payfine") opt.police.fine = (pars.last() == "yes") ? 1 : 0;
-				if (pars.first() == "setrel") opt.police.relations = (pars.last() == "yes") ? 1 : 0;
+//				if ((com == "checknpc") && (val == "no")) options |= FL_NONPC;
+				if (com == "trainpet") opt.bPet.train = bval;
+				if (com == "tp-ruda") opt.bPet.useOre = bval;
+				if (com == "tp-oil") opt.bPet.useOil = bval;
+				if (com == "runner") opt.petRun = bval;
+				if (com == "goldplay") goldType = ival;
+				if (com == "useCheese") opt.group.cheese = bval;
+				if (com == "useHeal") opt.group.heal = bval;
+				if (com == "payfine") opt.police.fine = bval;
+				if (com == "setrel") opt.police.relations = bval;
 
-				if (pars.first() == "cheeseList") {
+				if (com == "cheeseList") {
 					cheeseList.clear();
 					do {
 						line = QDialog::trUtf8(file.readLine()).remove("\r").remove("\n");
@@ -86,7 +90,7 @@ void MWBotWin::loadOpts() {
 					} while (line != "}");
 					cheeseList.removeLast();
 				}
-				if (pars.first() == "healList") {
+				if (com == "healList") {
 					healList.clear();
 					do {
 						line = QDialog::trUtf8(file.readLine()).remove("\r").remove("\n");
