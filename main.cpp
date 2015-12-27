@@ -367,7 +367,7 @@ void MWBotWin::clickElement(QString quer, int speed) {
 		clickElement(elm, speed);
 	} else {
 		qDebug() << QString("элемент '%0' не найден").arg(quer);
-		log(QString("DEBUG: элемент <b>%0</b> не нейден").arg(quer));
+		log(trUtf8("DEBUG: элемент <b>%0</b> не нейден").arg(quer));
 	}
 }
 
@@ -403,7 +403,7 @@ int MWBotWin::getAtackTimer() {
 		if (res > 0) {
 			res += (5 + (rand() % 10));
 			opt.atk.time = opt.atk.time.addSecs(res);
-			log(QString::number(res).append(trUtf8(" сек. до следующего нападения")));
+			log(trUtf8("%0 сек. до следующего нападения").arg(res));
 		}
 	}
 	return res;
@@ -611,6 +611,7 @@ void MWBotWin::atkRat() {
 			time = elm.attribute("timer").toInt() + 60;
 		}
 		opt.ratk.time = QDateTime::currentDateTime().addSecs(time);
+		opt.ratk.ratlev = 1;
 		log(trUtf8("Хватит крыс. Ждём обвала. До обвала <b>%0</b> мин.").arg(time/60 + 1));
 	} else if (time < 1) {
 		log(trUtf8("Уровень крысы: <b>%0</b>").arg(opt.ratk.ratlev));
@@ -775,5 +776,5 @@ void MWBotWin::debug() {
 	getFastRes();
 	int games = 1;
 	int oldruda = 0;
-	log(QString(trUtf8("<img src=:/images/ruda.png>&nbsp;Сыграно игр: %0. получено руды: %1")).arg(games).arg(info.ore - oldruda));
+	log(trUtf8("<img src=:/images/ruda.png>&nbsp;Сыграно игр: %0. получено руды: %1").arg(games).arg(info.ore - oldruda));
 }
