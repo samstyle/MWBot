@@ -45,9 +45,13 @@ void MWBotWin::attack() {
 					if (elm.isNull()) {
 						tim = atkResult() ? AT_OK : AT_RTRY;
 					} else {
+						loadPage("alley");
+						tim = AT_ERR;
+/*
 						if (elm.toPlainText().contains(trUtf8("недавно нападали"))) {
-							clickElement("div#content table.buttons div.button div.c");
-							tim = AT_RTRY;			// try atack him again
+							//clickElement("div#content table.buttons div.button div.c");
+							loadPage("/alley/");
+							tim = AT_ERR;			// try atack him again
 						}
 						if (elm.toPlainText().contains(trUtf8("менее 35% жизней"))) {
 							loadPage("/alley/");
@@ -57,6 +61,7 @@ void MWBotWin::attack() {
 							loadPage("/alley/");
 							tim = AT_ERR;			// HP is low, try again
 						}
+*/
 					}
 				} while (tim == AT_RTRY);
 			}
