@@ -102,6 +102,7 @@ class MWBotWin : public QMainWindow {
 			unsigned petRun:1;
 			struct {
 				unsigned enabled:1;
+				unsigned droped:1;
 				int typeA;
 				int typeB;
 				int minLev;
@@ -254,6 +255,7 @@ class MWBotWin : public QMainWindow {
 
 		void start();
 		void savePage();
+		void chZoom(int);
 	signals:
 		void digEnded();
 	protected:

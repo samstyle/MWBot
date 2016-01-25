@@ -75,6 +75,8 @@ MWBotWin::MWBotWin() {
 
 	runTime = curTime;
 
+//	ui.browser->setZoomFactor(0.75);
+
 	ui.cbAtackType->addItem(trUtf8("Слабых"),ATK_WEAK);
 	ui.cbAtackType->addItem(trUtf8("Равных"),ATK_EQUAL);
 	ui.cbAtackType->addItem(trUtf8("Сильных"),ATK_STRONG);
@@ -95,8 +97,6 @@ MWBotWin::MWBotWin() {
 //	ui.boxGypsy->addItem(QIcon(":/images/gold.png"),"750",750);
 //	ui.boxGypsy->addItem(QIcon(":/images/gold.png"),"150 + 2",150);
 //	ui.boxGypsy->setCurrentIndex(ui.boxGypsy->findData(goldType));
-
-	ui.browser->setZoomFactor(0.75);
 
 	connect(ui.pbOptSave,SIGNAL(clicked()),this,SLOT(apply()));
 
@@ -121,10 +121,21 @@ MWBotWin::MWBotWin() {
 	connect(ui.tbTrainPet,SIGNAL(clicked()),this,SLOT(trainPet()));
 	connect(ui.tbArena,SIGNAL(clicked()),this,SLOT(arena()));
 
+	connect(ui.zoomSlider,SIGNAL(valueChanged(int)),this,SLOT(chZoom(int)));
+
 	connect(ui.tbCheeseList,SIGNAL(clicked(bool)),this,SLOT(editCheese()));
 	connect(ui.tbHealList,SIGNAL(clicked(bool)),this,SLOT(editHeal()));
 	connect(tui.okButton,SIGNAL(clicked(bool)),this,SLOT(setList()));
 	connect(tui.cancelButton,SIGNAL(clicked(bool)),tedit,SLOT(hide()));
+
+	ui.zoomSlider->setValue(75);
+
+}
+
+void MWBotWin::chZoom(int zoom) {
+	if (zoom < 20) return;
+	if (zoom > 100) return;
+	ui.browser->setZoomFactor(zoom/100.0);
 }
 
 void MWBotWin::prepare() {
@@ -239,8 +250,7 @@ void MWBotWin::dig() {
 	int sec = elm.attribute("timer").toInt() + 2;
 	curTime = QDateTime::currentDateTime();
 	digTime = curTime.addSecs(sec);
-	QString tm = trUtf8("Копаем в метро, до окончания ").append(QString::number(sec)).append(trUtf8(" сек"));
-	log(tm);
+	log(trUtf8("Копаем в метро, до окончания %0 сек").arg(sec));
 	flag |= FL_DIGGING;
 	setBusy(false);
 }
@@ -674,7 +684,7 @@ void MWBotWin::makePetrik() {
 	if (!elm.isNull() && (elm.attribute("timer").toInt() > 0)) {
 		int time = elm.attribute("timer").toInt() + 80;
 		opt.petrik.time = curTime.addSecs(time);
-		log(trUtf8("Петрики уже варятся, до окончания %0 минут").arg(QString::number(time / 60 + 1)));
+		log(trUtf8("Петрики уже варятся, до окончания %0 минут").arg(time / 60 + 1));
 	} else {
 		elm = frm->findFirstElement("form.factory-nanoptric button.button div.c");
 		if (elm.isNull()) {

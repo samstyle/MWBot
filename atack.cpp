@@ -132,6 +132,7 @@ int MWBotWin::atkCheck(CharBox& enstat, int type) {
 				if ((type == ATK_ENEMY) || (type == ATK_VICTIM)) checkLev = true;
 				if (checkLev && ((mystat.statsum * opt.atk.statPrc) > enstat.statsum)) res = AT_OK;	// player : ok
 			}
+			if (opt.atk.droped && (enstat.type != "npc")) res = -1;
 		}
 		if (res < 0) {
 			clickElement("div.button.button-search div.c");

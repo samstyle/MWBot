@@ -40,7 +40,7 @@ void MWBotWin::arena() {
 						clickElement(QString("ul.lenta li.pet-object[data-id='").append(pet.attribute("data-id")).append("']"));
 						clickElement("div.center button#checkInEnabled div.c");
 					}
-					log(pet.attribute("data-pet-name").append(trUtf8(" записан на забег")));
+					log(trUtf8("%0 записан на забег").arg(pet.attribute("data-pet-name")));
 					runTime = curTime.addSecs(600);		// +10 min
 					wtime = 0;
 					break;				// break foreach
@@ -49,7 +49,7 @@ void MWBotWin::arena() {
 				}
 			}
 			if (wtime != 0) {
-				log(trUtf8("До забегов ").append(QString::number(wtime)).append(trUtf8(" мин")));
+				log(trUtf8("До забегов %0 мин").arg(wtime));
 				runTime = curTime.addSecs(wtime * 60);		// 3min = 1%
 			}
 		}

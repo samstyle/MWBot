@@ -20,6 +20,7 @@ void MWBotWin::loadOpts() {
 				if (com == "atack") opt.atk.enabled = bval;
 				if (com == "atype") opt.atk.typeA = ival;
 				if (com == "atype2") opt.atk.typeB = ival;
+				if (com == "droped") opt.atk.droped = bval;
 				if (com == "makepetrik") opt.petrik.make = bval;
 				if (com == "playmon") opt.monya.play = bval;
 				if (com == "playsum") {
@@ -116,8 +117,11 @@ void MWBotWin::saveOpts() {
 		file.write(QString("atack:%0\n").arg(opt.atk.enabled ? "yes" : "no").toUtf8());
 		file.write(QString("atype:%0\n").arg(opt.atk.typeA).toUtf8());
 		file.write(QString("atype2:%0\n").arg(opt.atk.typeB).toUtf8());
+		file.write(QString("droped:%0\n").arg(opt.atk.droped ? "yes" : "no").toUtf8());
+
 		file.write(QString("useCheese:%0\n").arg(opt.group.cheese ? "yes" : "no").toUtf8());
 		file.write(QString("useHeal:%0\n").arg(opt.group.heal ? "yes" : "no").toUtf8());
+
 		file.write(QString("makepetrik:%0\n").arg(opt.petrik.make ? "yes" : "no").toUtf8());
 		file.write(QString("playmon:%0\n").arg(opt.monya.play ? "yes" : "no").toUtf8());
 		file.write(QString("playsum:%0\n").arg(opt.monya.minPlaySum).toUtf8());
@@ -168,6 +172,7 @@ void MWBotWin::apply() {
 	opt.atk.enabled = ui.gbAttack->isChecked() ? 1 : 0;
 	opt.atk.typeA = ui.cbAtackType->itemData(ui.cbAtackType->currentIndex()).toInt();
 	opt.atk.typeB = ui.cbAType2->itemData(ui.cbAType2->currentIndex()).toInt();
+	opt.atk.droped = ui.cbDrop->isChecked() ? 1 : 0;
 //	goldType = ui.boxGypsy->itemData(ui.boxGypsy->currentIndex()).toInt();
 	opt.petrik.make = ui.cbPetrik->isChecked() ? 1 : 0;
 	opt.monya.play = ui.gbMonya->isChecked() ? 1 : 0;
@@ -204,6 +209,7 @@ void MWBotWin::setOpts() {
 	ui.gbAttack->setChecked(opt.atk.enabled);
 	ui.cbAtackType->setCurrentIndex(ui.cbAtackType->findData(opt.atk.typeA));
 	ui.cbAType2->setCurrentIndex(ui.cbAType2->findData(opt.atk.typeB));
+	ui.cbDrop->setChecked(opt.atk.droped);
 //	ui.boxGypsy->setCurrentIndex(ui.boxGypsy->findData(goldType));
 	ui.cbPetrik->setChecked(opt.petrik.make);
 	ui.gbMonya->setChecked(opt.monya.play);
