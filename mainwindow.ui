@@ -221,6 +221,10 @@
        <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
+       <attribute name="icon">
+        <iconset resource="resources.qrc">
+         <normaloff>:/images/ui/web.png</normaloff>:/images/ui/web.png</iconset>
+       </attribute>
        <attribute name="title">
         <string>Browser</string>
        </attribute>
@@ -237,6 +241,10 @@
        </layout>
       </widget>
       <widget class="QWidget" name="tab_2">
+       <attribute name="icon">
+        <iconset resource="resources.qrc">
+         <normaloff>:/images/ui/settings.png</normaloff>:/images/ui/settings.png</iconset>
+       </attribute>
        <attribute name="title">
         <string>Options</string>
        </attribute>
@@ -759,6 +767,10 @@
        </layout>
       </widget>
       <widget class="QWidget" name="tab_3">
+       <attribute name="icon">
+        <iconset resource="resources.qrc">
+         <normaloff>:/images/ui/log.png</normaloff>:/images/ui/log.png</iconset>
+       </attribute>
        <attribute name="title">
         <string>Log</string>
        </attribute>
