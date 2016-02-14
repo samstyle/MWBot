@@ -116,6 +116,7 @@ class MWBotWin : public QMainWindow {
 			} group;
 			struct {
 				unsigned enabled:1;
+				unsigned dark:1;
 				unsigned block:1;
 				int ratlev;
 				int maxlev;

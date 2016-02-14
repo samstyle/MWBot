@@ -610,11 +610,26 @@ void MWBotWin::restoreHP() {
 }
 
 void MWBotWin::atkRat() {
+	QWebElement elm;
 	setBusy(true);
 	loadPath(QStringList() << "square" << "metro");
+	elm = frm->findFirstElement("div.metro-branch div.metro-rats-light__dark-block");
+	if (!elm.isNull()) {
+		if (opt.ratk.dark) {
+			elm = frm->findFirstElement("a.f[href='/metro/select/1/']");
+		} else {
+			elm = frm->findFirstElement("a.f[href='/metro/select/0/']");
+		}
+		elm = elm.findFirst("div.c");
+		if (elm.isNull()) {
+			log(QString("DEBUG: Rat selection error"));
+			return;
+		}
+		clickElement(elm);
+	}
 	int time = getRatTimer();
 	if (opt.ratk.ratlev > opt.ratk.maxlev) {
-		QWebElement elm = frm->findFirstElement("div#action-rat-fight div small small.dashedlink");
+		elm = frm->findFirstElement("div#action-rat-fight div small small.dashedlink");
 		if (elm.isNull()) {
 			time = 60;
 		} else {

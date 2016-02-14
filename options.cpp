@@ -21,7 +21,9 @@ void MWBotWin::loadOpts() {
 				if (com == "atype") opt.atk.typeA = ival;
 				if (com == "atype2") opt.atk.typeB = ival;
 				if (com == "droped") opt.atk.droped = bval;
+
 				if (com == "makepetrik") opt.petrik.make = bval;
+
 				if (com == "playmon") opt.monya.play = bval;
 				if (com == "playsum") {
 					if (ival == 0) ival = 30000;
@@ -34,14 +36,17 @@ void MWBotWin::loadOpts() {
 				if (com == "playtickets") opt.monya.tickets = bval;
 				if (com == "buytickets") opt.monya.buy = bval;
 				if (com == "buytickets_star") opt.monya.stars = bval;
+
 				if (com == "rathunt") opt.ratk.enabled = bval;
+				if (com == "ratdark") opt.ratk.dark = bval;
 				if (com == "ratmaxlev") {
 					opt.ratk.maxlev = ival;
 					if (opt.ratk.maxlev < 1) opt.ratk.maxlev = 1;
 					else if (opt.ratk.maxlev > 40) opt.ratk.maxlev = 40;
 				}
-				if ((com == "digger") && bval) options |= FL_DIG;
-				if ((com == "digrat") && bval) options |= FL_DIGRAT;
+
+//				if ((com == "digger") && bval) options |= FL_DIG;
+//				if ((com == "digrat") && bval) options |= FL_DIGRAT;
 
 				if (com == "baraban") opt.kub.play = bval;
 				if (com == "buycaps") opt.kub.buy = bval;
@@ -131,8 +136,10 @@ void MWBotWin::saveOpts() {
 		file.write(QString("buytickets_star:%0\n").arg(opt.monya.stars ? "yes" : "no").toUtf8());
 		file.write(QString("rathunt:%0\n").arg(opt.ratk.enabled ? "yes" : "no").toUtf8());
 		file.write(QString("ratmaxlev:%0\n").arg(opt.ratk.maxlev).toUtf8());
-		file.write(QString("digger:").append((options & FL_DIG) ? "yes" : "no").append("\n").toUtf8());
-		file.write(QString("digrat:").append((options & FL_DIGRAT) ? "yes" : "no").append("\n").toUtf8());
+		file.write(QString("ratdark:%0\n").arg(opt.ratk.dark ? "yes" : "no").toUtf8());
+
+//		file.write(QString("digger:").append((options & FL_DIG) ? "yes" : "no").append("\n").toUtf8());
+//		file.write(QString("digrat:").append((options & FL_DIGRAT) ? "yes" : "no").append("\n").toUtf8());
 
 		file.write(QString("baraban:%0\n").arg(opt.kub.play ? "yes" : "no").toUtf8());
 		file.write(QString("kubDate:%0\n").arg(opt.kub.date.toString("dd-MM-yyyy")).toUtf8());
@@ -183,6 +190,7 @@ void MWBotWin::apply() {
 	opt.monya.stars = ui.cbTicketStars->isChecked() ? 1 : 0;
 	opt.ratk.enabled = ui.gbRats->isChecked() ? 1 : 0;
 	opt.ratk.maxlev = ui.sbRatMax->value();
+	opt.ratk.dark = ui.cbDarkTunnel->isChecked() ? 1 : 0;
 //	if (ui.cbDigger->isChecked()) options |= FL_DIG;
 //	if (ui.cbDigRat->isChecked()) options |= FL_DIGRAT;
 
@@ -219,6 +227,7 @@ void MWBotWin::setOpts() {
 	ui.cbBuyTickets->setChecked(opt.monya.buy);
 	ui.cbTicketStars->setChecked(opt.monya.stars);
 	ui.gbRats->setChecked(opt.ratk.enabled);
+	ui.cbDarkTunnel->setChecked(opt.ratk.dark);
 //	ui.cbDigger->setChecked(options & FL_DIG);
 //	ui.cbDigRat->setChecked(options & FL_DIGRAT);
 

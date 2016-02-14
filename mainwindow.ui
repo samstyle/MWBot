@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>749</width>
-    <height>628</height>
+    <height>629</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -579,6 +579,13 @@
                   </widget>
                  </item>
                 </layout>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="cbDarkTunnel">
+                 <property name="text">
+                  <string>Тёмный туннель</string>
+                 </property>
+                </widget>
                </item>
               </layout>
              </widget>
