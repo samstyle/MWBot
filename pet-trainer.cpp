@@ -56,10 +56,10 @@ void MWBotWin::trainPet() {
 					clk = "li.stat[rel=mass]";
 				}
 				elm = frm->findFirstElement(clk);
-				opt.bPet.money = elm.findFirst("div.text span[rel=cost] span.tugriki").toPlainText().toInt();
-				opt.bPet.ore = elm.findFirst("div.text span[rel=cost] span.ruda").toPlainText().toInt();
-				opt.bPet.oil = elm.findFirst("div.text span[rel=cost] span.neft").toPlainText().toInt();
-				// qDebug() << tgr << rud << nef;
+				opt.bPet.money = elm.findFirst("div.text span[rel=cost] span.tugriki").toPlainText().remove("\"").remove(",").toInt();
+				opt.bPet.ore = elm.findFirst("div.text span[rel=cost] span.ruda").toPlainText().remove("\"").remove(",").toInt();
+				opt.bPet.oil = elm.findFirst("div.text span[rel=cost] span.neft").toPlainText().remove("\"").remove(",").toInt();
+				qDebug() << opt.bPet.money << opt.bPet.ore << opt.bPet.oil;
 				getFastRes();
 				if (info.money < opt.bPet.money + 200) {
 					log(trUtf8("не хватает денег на тренировки"));
