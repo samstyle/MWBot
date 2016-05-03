@@ -177,10 +177,12 @@ void MWBotWin::savePage() {
 	}
 }
 
-void MWBotWin::timerEvent(QTimerEvent*) {
+void MWBotWin::timerEvent(QTimerEvent* ev) {
 	curTime = QDateTime::currentDateTime();
-
+	ev->accept();
 	if (!state.botWork) return;
+	if (state.loading) return;
+	if (state.busy) return;
 
 	QWebElement elm;
 	checkPolice();
@@ -302,6 +304,7 @@ void MWBotWin::setBusy(bool bsy) {
 //	if (flag & FL_BOT) bsy = true;
 	ui.browser->setDisabled(bsy);
 	ui.toolbar->setDisabled(bsy);
+	state.busy = bsy ? 1 : 0;
 }
 
 void MWBotWin::onLoad(bool) {

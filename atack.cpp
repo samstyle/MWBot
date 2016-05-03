@@ -38,32 +38,23 @@ void MWBotWin::attack() {
 			}
 			tim = atkCheck(enstat, at ? opt.atk.typeA : opt.atk.typeB);			// AT_OK:victim found; AT_ERR:error; AT_STOP:stop
 			if (tim == AT_OK) {
-				clickElement("div.button.button-fight div.c");		// click atack
-				do {
-					// if (flag & FL_STOP) {tim = 2; break;}
-					elm = frm->findFirstElement("div#content div.report div.red");
-					if (elm.isNull()) {
-						tim = atkResult() ? AT_OK : AT_RTRY;
-					} else {
-						loadPage("alley");
-						tim = AT_ERR;
-/*
-						if (elm.toPlainText().contains(trUtf8("недавно нападали"))) {
-							//clickElement("div#content table.buttons div.button div.c");
-							loadPage("/alley/");
-							tim = AT_ERR;			// try atack him again
+				elm = frm->findFirstElement("div#content div.report div.red");
+				if (!elm.isNull()) {
+					loadPage("alley");
+					tim = AT_ERR;
+				} else {
+					clickElement("div.button.button-fight div.c");				// click atack
+					do {
+						// if (flag & FL_STOP) {tim = 2; break;}
+						elm = frm->findFirstElement("div#content div.report div.red");
+						if (elm.isNull()) {
+							tim = atkResult() ? AT_OK : AT_RTRY;
+						} else {
+							loadPage("alley");
+							tim = AT_ERR;
 						}
-						if (elm.toPlainText().contains(trUtf8("менее 35% жизней"))) {
-							loadPage("/alley/");
-							tim = AT_ERR;			// enemy is out, try another one
-						}
-						if (elm.toPlainText().contains(trUtf8("Вы слишком слабы"))) {
-							loadPage("/alley/");
-							tim = AT_ERR;			// HP is low, try again
-						}
-*/
-					}
-				} while (tim == AT_RTRY);
+					} while (tim == AT_RTRY);
+				}
 			}
 		} while (tim == AT_ERR);
 	}

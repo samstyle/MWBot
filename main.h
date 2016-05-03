@@ -160,6 +160,7 @@ class MWBotWin : public QMainWindow {
 			} kub;
 		} opt;
 		struct {
+			unsigned busy:1;
 			unsigned stop:1;
 			unsigned loading:1;
 			unsigned botWork:1;
