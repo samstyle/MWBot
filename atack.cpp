@@ -94,6 +94,8 @@ int MWBotWin::atkSelect(int type) {
 			break;
 	}
 	if (brk) return AT_ERR;
+	elm = frm->findFirstElement("div#alley-search-myself div.error");
+	if (!elm.isNull()) return AT_ERR;
 	elm = frm->findFirstElement("div#alley-search-myself p.error");
 	if (elm.isNull()) return AT_OK;
 	atkId = elm.toPlainText();
