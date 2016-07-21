@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>749</width>
-    <height>629</height>
+    <width>747</width>
+    <height>627</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -704,15 +704,22 @@
                 </widget>
                </item>
                <item>
-                <widget class="QCheckBox" name="cbRunner">
-                 <property name="text">
-                  <string>Записывать на бега</string>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="resources.qrc">
-                   <normaloff>:/images/medal.png</normaloff>:/images/medal.png</iconset>
-                 </property>
-                </widget>
+                <layout class="QHBoxLayout" name="horizontalLayout_8">
+                 <item>
+                  <widget class="QCheckBox" name="cbRunner">
+                   <property name="text">
+                    <string>Бега</string>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="resources.qrc">
+                     <normaloff>:/images/medal.png</normaloff>:/images/medal.png</iconset>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="leRunName"/>
+                 </item>
+                </layout>
                </item>
               </layout>
              </widget>
@@ -836,8 +843,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>749</width>
-     <height>18</height>
+     <width>747</width>
+     <height>21</height>
     </rect>
    </property>
   </widget>

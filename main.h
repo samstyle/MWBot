@@ -99,7 +99,10 @@ class MWBotWin : public QMainWindow {
 		QString workDir;
 		QDialog* tedit;
 		struct {
-			unsigned petRun:1;
+			struct {
+				unsigned enabled:1;
+				QString name;
+			} run;
 			struct {
 				unsigned enabled:1;
 				unsigned droped:1;

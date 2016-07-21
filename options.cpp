@@ -81,7 +81,8 @@ void MWBotWin::loadOpts() {
 				if (com == "trainpet") opt.bPet.train = bval;
 				if (com == "tp-ruda") opt.bPet.useOre = bval;
 				if (com == "tp-oil") opt.bPet.useOil = bval;
-				if (com == "runner") opt.petRun = bval;
+				if (com == "runner") opt.run.enabled = bval;
+				if (com == "runname") opt.run.name = val;
 				if (com == "goldplay") goldType = ival;
 				if (com == "useCheese") opt.group.cheese = bval;
 				if (com == "useHeal") opt.group.heal = bval;
@@ -153,7 +154,8 @@ void MWBotWin::saveOpts() {
 		file.write(QString("trainpet:%0\n").arg(opt.bPet.train ? "yes" : "no").toUtf8());
 		file.write(QString("tp-ruda:%0\n").arg(opt.bPet.useOre ? "yes" : "no").toUtf8());
 		file.write(QString("tp-oil:%0\n").arg(opt.bPet.useOil ? "yes" : "no").toUtf8());
-		file.write(QString("runner:%0\n").arg(opt.petRun ? "yes" : "no").toUtf8());
+		file.write(QString("runner:%0\n").arg(opt.run.enabled ? "yes" : "no").toUtf8());
+		file.write(QString("runname:%0\n").arg(opt.run.name).toUtf8());
 		file.write(QString("goldplay:").append(QString::number(goldType)).append("\n").toUtf8());
 		file.write(QString("payfine:%0\n").arg(opt.police.fine ? "yes" : "no").toUtf8());
 		file.write(QString("setrel:%0\n").arg(opt.police.relations ? "yes" : "no").toUtf8());
@@ -205,7 +207,8 @@ void MWBotWin::apply() {
 	opt.bPet.train = ui.gbFightPet->isChecked() ? 1 : 0;
 	opt.bPet.useOre = ui.cbTrainRuda->isChecked() ? 1 : 0;
 	opt.bPet.useOil = ui.cbTrainNeft->isChecked() ? 1 : 0;
-	opt.petRun = ui.cbRunner->isChecked() ? 1 : 0;
+	opt.run.enabled = ui.cbRunner->isChecked() ? 1 : 0;
+	opt.run.name = ui.leRunName->text();
 	opt.group.cheese = ui.cbGFCheese->isChecked() ? 1 : 0;
 	opt.group.heal = ui.cbGFHeal->isChecked() ? 1 : 0;
 	opt.police.fine = ui.cbPolFine->isChecked() ? 1 : 0;
@@ -228,6 +231,7 @@ void MWBotWin::setOpts() {
 	ui.cbTicketStars->setChecked(opt.monya.stars);
 	ui.gbRats->setChecked(opt.ratk.enabled);
 	ui.cbDarkTunnel->setChecked(opt.ratk.dark);
+	ui.sbRatMax->setValue(opt.ratk.maxlev);
 //	ui.cbDigger->setChecked(options & FL_DIG);
 //	ui.cbDigRat->setChecked(options & FL_DIGRAT);
 
@@ -242,7 +246,8 @@ void MWBotWin::setOpts() {
 	ui.gbFightPet->setChecked(opt.bPet.train);
 	ui.cbTrainRuda->setChecked(opt.bPet.useOre);
 	ui.cbTrainNeft->setChecked(opt.bPet.useOil);
-	ui.cbRunner->setChecked(opt.petRun);
+	ui.cbRunner->setChecked(opt.run.enabled);
+	ui.leRunName->setText(opt.run.name);
 	ui.cbGFCheese->setChecked(opt.group.cheese);
 	ui.cbGFHeal->setChecked(opt.group.heal);
 	ui.cbPolFine->setChecked(opt.police.fine);

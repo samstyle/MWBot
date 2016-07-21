@@ -6,6 +6,8 @@ void MWBotWin::arena() {
 	curTime = QDateTime::currentDateTime();
 	QWebElementCollection pets;
 	QWebElement elm,pet;
+	QString name;
+	int wtime;
 // rewind record
 	elm = frm->findFirstElement("div#forward-btn");
 	if (!elm.isNull()) {
@@ -25,27 +27,33 @@ void MWBotWin::arena() {
 		if (elm.isNull()) {
 			runTime = runTime.addSecs(300);
 		} else {
-			int wtime = 20;
+			wtime = 20;
 			pets = elm.findAll("li.pet-object[data-id]");
-			foreach(pet,pets) {
-				elm = pet.findFirst("span.percent");
-				prc = elm.attribute("style").split(QRegExp("[:%;]"),QString::SkipEmptyParts).last().toInt();
-				if (prc > 19) {
-					clickElement(QString("ul.lenta li.pet-object[data-id='").append(pet.attribute("data-id")).append("']"));
-					clickElement("div.center button#checkInEnabled div.c");
-					elm = frm->findFirstElement("div.alert div#alert-text");
-					if (elm.toPlainText().contains(trUtf8("нужен билет"))) {
-						clickElement("div.alert div.button div.c");
-						clickElement("input[value=ticket]");	// select ticket
+			qDebug() << pets.toList().size();
+			foreach(pet, pets) {
+				name = pet.attribute("data-pet-name");
+				qDebug() << name;
+				if (opt.run.name.isNull() || (name.toLower().contains(opt.run.name.toLower()))) {
+					if (pet.attribute("selected").isNull())
+						clickElement(pet);
+					elm = pet.findFirst("span.percent");
+					prc = elm.attribute("style").split(QRegExp("[:%;]"),QString::SkipEmptyParts).last().toInt();
+					if (prc > 19) {
 						clickElement(QString("ul.lenta li.pet-object[data-id='").append(pet.attribute("data-id")).append("']"));
 						clickElement("div.center button#checkInEnabled div.c");
+						elm = frm->findFirstElement("div.alert div#alert-text");
+						if (elm.toPlainText().contains(trUtf8("нужен билет"))) {
+							clickElement("div.alert div.button div.c");
+							clickElement("input[value=ticket]");	// select ticket
+							clickElement(QString("ul.lenta li.pet-object[data-id='").append(pet.attribute("data-id")).append("']"));
+							clickElement("div.center button#checkInEnabled div.c");
+						}
+						log(trUtf8("%0 записан на забег").arg(pet.attribute("data-pet-name")));
+						runTime = curTime.addSecs(600);		// +10 min
+						wtime = 0;
+					} else {
+						if (wtime > (21 - prc)) wtime = (21 - prc) * 3;
 					}
-					log(trUtf8("%0 записан на забег").arg(pet.attribute("data-pet-name")));
-					runTime = curTime.addSecs(600);		// +10 min
-					wtime = 0;
-					break;				// break foreach
-				} else {
-					if (wtime > (21 - prc)) wtime = (21 - prc) * 3;
 				}
 			}
 			if (wtime != 0) {

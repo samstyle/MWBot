@@ -49,7 +49,8 @@ MWBotWin::MWBotWin() {
 	opt.petrik.ore = 0;
 	opt.petrik.time = curTime;
 
-	opt.petRun = 1;
+	opt.run.enabled = 1;
+	opt.run.name.clear();
 
 	opt.kub.date = QDate::currentDate().addDays(-1);
 
@@ -202,7 +203,7 @@ void MWBotWin::timerEvent(QTimerEvent* ev) {
 		trainPet();
 	}
 // send pet to arena
-	if (opt.petRun && (curTime > runTime)) {
+	if (opt.run.enabled && (curTime > runTime)) {
 		arena();
 	}
 // play baraban
