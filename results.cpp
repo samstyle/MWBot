@@ -40,6 +40,28 @@ FightBox MWBotWin::getGroupResult() {
 	return res;
 }
 
+FightBox MWBotWin::getChestResult() {
+	FightBox res;
+	mwItem item;
+	QWebElement elm,itm;
+	QWebElementCollection elms = frm->findAllElements("div#alert-text span.object-thumb");
+	res.result = 3;		// chest
+	res.enemy.name = frm->findFirstElement("div#alert-text b").toPlainText();
+	foreach(elm, elms) {
+		itm = elm.findFirst("img");
+		item.name = itm.attribute("title");
+		item.icn = getItemIcon(item.name);
+		itm = elm.findFirst("div.count");
+		if (itm.isNull()) {
+			item.count = 1;
+		} else {
+			item.count = itm.toPlainText().remove("#").toInt();
+		}
+		res.items.append(item);
+	}
+	return res;
+}
+
 QList<mwItem> MWBotWin::getDuelResultMain() {
 	QList<mwItem> res;
 	mwItem obj;
@@ -143,17 +165,23 @@ void MWBotWin::logResult(FightBox res) {
 	} else {
 		enname = QString("%0 [%1]").arg(res.enemy.name).arg(res.enemy.level);
 	}
-	if (res.result == 2) {
+	if (res.result == 2) {		// draw
 		tolog = QString("<img src=:/images/unknown.png>&nbsp;<img src=%0>&nbsp;<b>%1</b></font>").arg(nname).arg(enname);
 	} else {
-		if (res.result == 1) {
-			tolog = QString("<img src=:/images/yes.png>&nbsp;<img src=%0>&nbsp;<b>%1</b>&nbsp;").arg(nname).arg(enname);
-		} else {
-			tolog = QString("<img src=:/images/stop.png>&nbsp;<img src=%0>&nbsp;<b>%1</b>&nbsp;").arg(nname).arg(enname);
+		switch (res.result) {
+			case 0:		// lose
+				tolog = QString("<img src=:/images/stop.png>&nbsp;<img src=%0>&nbsp;<b>%1</b>&nbsp;").arg(nname).arg(enname);
+				break;
+			case 1:		// win
+				tolog = QString("<img src=:/images/yes.png>&nbsp;<img src=%0>&nbsp;<b>%1</b>&nbsp;").arg(nname).arg(enname);
+				break;
+			case 3:		// chest
+				tolog = trUtf8("Открыт сундук <b>%0</b>&nbsp;").arg(res.enemy.name);
+				break;
 		}
 		fightres.append("<b>");
 		foreach(mwItem obj,res.items) {
-			if ((obj.name == "tugriki") || (res.result == 1)) {
+			if ((obj.name == "tugriki") || (res.result != 0)) {
 				icn = getItemIcon(obj.name);
 				if (icn.isEmpty()) {
 					icn = ":/images/unknown.png";

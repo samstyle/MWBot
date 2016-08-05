@@ -23,6 +23,7 @@ void MWBotWin::loadOpts() {
 				if (com == "droped") opt.atk.droped = bval;
 
 				if (com == "makepetrik") opt.petrik.make = bval;
+				if (com == "openchest") opt.chest.open = bval;
 
 				if (com == "playmon") opt.monya.play = bval;
 				if (com == "playsum") {
@@ -88,6 +89,7 @@ void MWBotWin::loadOpts() {
 				if (com == "useHeal") opt.group.heal = bval;
 				if (com == "payfine") opt.police.fine = bval;
 				if (com == "setrel") opt.police.relations = bval;
+				if (com == "taxi") opt.taxi.enable = bval;
 
 				if (com == "cheeseList") {
 					cheeseList.clear();
@@ -159,6 +161,8 @@ void MWBotWin::saveOpts() {
 		file.write(QString("goldplay:").append(QString::number(goldType)).append("\n").toUtf8());
 		file.write(QString("payfine:%0\n").arg(opt.police.fine ? "yes" : "no").toUtf8());
 		file.write(QString("setrel:%0\n").arg(opt.police.relations ? "yes" : "no").toUtf8());
+		file.write(QString("openchest:%0\n").arg(opt.chest.open ? "yes" : "no").toUtf8());
+		file.write(QString("taxi:%0\n").arg(opt.taxi.enable ? "yes" : "no").toUtf8());
 
 		file.write(QString("cheeseList:{\n").toUtf8());
 		foreach(str, cheeseList) {
@@ -213,6 +217,8 @@ void MWBotWin::apply() {
 	opt.group.heal = ui.cbGFHeal->isChecked() ? 1 : 0;
 	opt.police.fine = ui.cbPolFine->isChecked() ? 1 : 0;
 	opt.police.relations = ui.cbPolRelat->isChecked() ? 1 : 0;
+	opt.chest.open = ui.cbChest->isChecked() ? 1 : 0;
+	opt.taxi.enable = ui.cbTaxi->isChecked() ? 1 : 0;
 	saveOpts();
 }
 
@@ -252,4 +258,6 @@ void MWBotWin::setOpts() {
 	ui.cbGFHeal->setChecked(opt.group.heal);
 	ui.cbPolFine->setChecked(opt.police.fine);
 	ui.cbPolRelat->setChecked(opt.police.relations);
+	ui.cbChest->setChecked(opt.chest.open);
+	ui.cbTaxi->setChecked(opt.taxi.enable);
 }

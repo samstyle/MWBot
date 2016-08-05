@@ -17,7 +17,7 @@ void MWBotWin::arena() {
 // check tickets
 	int prc = frm->findFirstElement("div.balance span#grayhound-tickets-num").toPlainText().toInt();
 	if (prc == 0) {
-		log(trUtf8("Билеты на забеги кончились. Продолжим завтра в 00:05"));
+		log(trUtf8("Билеты на забеги кончились. Продолжим завтра в 00:05"),"medal.png");
 		runTime = curTime;
 		runTime.setTime(QTime(0,5));		// 00:05 of tommorow
 		runTime = runTime.addDays(1);
@@ -48,7 +48,7 @@ void MWBotWin::arena() {
 							clickElement(QString("ul.lenta li.pet-object[data-id='").append(pet.attribute("data-id")).append("']"));
 							clickElement("div.center button#checkInEnabled div.c");
 						}
-						log(trUtf8("%0 записан на забег").arg(pet.attribute("data-pet-name")));
+						log(trUtf8("%0 записан на забег").arg(pet.attribute("data-pet-name")),"medal.png");
 						runTime = curTime.addSecs(600);		// +10 min
 						wtime = 0;
 					} else {
@@ -57,7 +57,7 @@ void MWBotWin::arena() {
 				}
 			}
 			if (wtime != 0) {
-				log(trUtf8("До забегов %0 мин").arg(wtime));
+				log(trUtf8("До забегов %0 мин").arg(wtime),"medal.png");
 				runTime = curTime.addSecs(wtime * 60);		// 3min = 1%
 			}
 		}

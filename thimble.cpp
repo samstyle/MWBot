@@ -5,15 +5,15 @@ void MWBotWin::goMonia() {
 	QWebElement elm;
 	getFastRes();
 	if (info.money < 1500) {
-		log(trUtf8("Для игры с Моней недостаточно денег (").append(QString::number(info.money).append(")")));
+		log(trUtf8("Для игры с Моней недостаточно денег (%0)").arg(info.money),"monya.png");
 		return;
 	}
 	if (!frm->url().toString().contains("/thimble/")) {
-		log(trUtf8("Играем с Моней"));
+		log(trUtf8("Играем с Моней"),"monya.png");
 		loadPath(QStringList() << "square" << "metro");
 		elm = frm->findFirstElement("div.metro-thimble p.holders");
 		if ((elm.toPlainText().split(":").last().trimmed().toInt() == 0) && !opt.monya.tickets) {
-			log(trUtf8("Игра с Моней за билеты отключена"));
+			log(trUtf8("Игра с Моней за билеты отключена"),"monya.png");
 			opt.monya.block = 1;
 			setBusy(false);
 			return;
@@ -35,7 +35,7 @@ void MWBotWin::goMonia() {
 					loadPage("thimble/start/");
 					playMonia();
 				} else {
-					log(trUtf8("Нет звезд, чтобы купить билет к Моне"));
+					log(trUtf8("Нет звезд, чтобы купить билет к Моне"),"monya.png");
 					opt.monya.block = 1;
 				}
 			} else {
@@ -45,12 +45,12 @@ void MWBotWin::goMonia() {
 					loadPage("thimble/start/");
 					playMonia();
 				} else {
-					log(trUtf8("Нет зубов, чтобы купить билет к Моне"));
+					log(trUtf8("Нет зубов, чтобы купить билет к Моне"),"monya.png");
 					opt.monya.block = 1;
 				}
 			}
 		} else {
-			log(trUtf8("Билеты кончились, игры с Моней тоже"));
+			log(trUtf8("Билеты кончились, игры с Моней тоже"),"monya.png");
 			opt.monya.block = 1;
 		}
 	}
@@ -81,8 +81,7 @@ void MWBotWin::playMonia() {
 		getFastRes();
 	}
 	loadPage("thimble/leave");
-	log(trUtf8("<img src=:/images/ruda.png>&nbsp;Сыграно игр: %0. получено руды: %1").arg(games).arg(info.ore - oldruda));
-	//log(trUtf8("За ").append(QString::number(games).append(trUtf8(" игр получено ").append(QString::number(info.ore - oldruda).append(trUtf8(" руды"))))));
+	log(trUtf8("Сыграно игр: %0. получено руды: %1").arg(games).arg(info.ore - oldruda),"monya.png");
 }
 
 void MWBotWin::goBankChange() {

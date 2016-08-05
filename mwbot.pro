@@ -22,7 +22,10 @@ SOURCES += main.cpp \
     police.cpp \
     options.cpp \
     results.cpp \
-    kubovich.cpp
+    kubovich.cpp \
+    chests.cpp \
+    taxi.cpp \
+    rats.cpp
 
 FORMS += \
     mainwindow.ui \

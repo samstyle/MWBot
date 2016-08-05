@@ -35,7 +35,7 @@ struct CharBox{
 };
 
 struct FightBox {
-	int result;	// 0:lost 1:win 2:draw
+	int result;	// 0:lost 1:win 2:draw 3:openchest
 	CharBox enemy;
 	QList<mwItem> items;
 };
@@ -99,6 +99,16 @@ class MWBotWin : public QMainWindow {
 		QString workDir;
 		QDialog* tedit;
 		struct {
+			struct {
+				unsigned enable:1;
+				QDateTime time;
+			} taxi;
+			struct {
+				unsigned open:1;
+				int keyOil;
+				int keyRat;
+				int keyElect;
+			} chest;
 			struct {
 				unsigned enabled:1;
 				QString name;
@@ -178,10 +188,13 @@ class MWBotWin : public QMainWindow {
 		void getFastRes();
 		void getBerezkaRes();
 
+		QWebElement getItemElement(int);
+		int getItem(int);
+		void doChest(int);
+
 		int goldType;
 		int options;
 		int flag;
-//		int buyCaps;
 
 		Ui::MainWin ui;
 		Ui::TEdit tui;
@@ -205,6 +218,7 @@ class MWBotWin : public QMainWindow {
 
 		FightBox getDuelResult();
 		FightBox getGroupResult();
+		FightBox getChestResult();
 		QList<mwItem> getDuelResultMain();
 		QList<mwItem> getDuelResultExtra();
 		QList<mwItem> getGroupResultMain();
@@ -228,7 +242,7 @@ class MWBotWin : public QMainWindow {
 
 		void checkPolice();
 
-		void log(QString);
+		void log(QString, QString icon="");
 
 		void debug();
 
@@ -249,6 +263,8 @@ class MWBotWin : public QMainWindow {
 		void playKub();
 		void trainPet();
 		void arena();
+		void openChests();
+		void doTaxi();
 
 		void apply();
 		void editCheese();

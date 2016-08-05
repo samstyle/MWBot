@@ -97,5 +97,9 @@
         <file>images/ui/log.png</file>
         <file>images/ui/settings.png</file>
         <file>images/ui/web.png</file>
+        <file>images/chest.png</file>
+        <file>images/taxi.png</file>
+        <file>images/punch.png</file>
+        <file>images/monya.png</file>
     </qresource>
 </RCC>

@@ -41,7 +41,7 @@ void MWBotWin::playKub() {
 		waitLoading();
 		rcaps += price;
 	} while (rcaps < opt.kub.caps);
-	log(trUtf8("<img src=:/images/baraban.png>&nbsp;Покрутили барабан"));
+	log(trUtf8("Покрутили барабан"),"baraban.png");
 	opt.kub.date = QDate::currentDate();
 	setBusy(false);
 }

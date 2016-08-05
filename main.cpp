@@ -44,6 +44,10 @@ MWBotWin::MWBotWin() {
 	opt.ratk.maxlev = 5;
 	opt.ratk.time = curTime;
 
+	opt.chest.open = 1;
+	opt.chest.keyOil = -1;
+	opt.chest.keyRat = -1;
+
 	opt.petrik.make = 1;
 	opt.petrik.money = 0;
 	opt.petrik.ore = 0;
@@ -68,6 +72,9 @@ MWBotWin::MWBotWin() {
 	opt.bPet.oil = 0;
 	opt.bPet.time = curTime;
 
+	opt.taxi.enable = 1;
+	opt.taxi.time = curTime;
+
 	state.stop = 0;
 	state.botWork = 0;
 	state.firstRun = 1;
@@ -75,6 +82,8 @@ MWBotWin::MWBotWin() {
 	goldType = 250;
 
 	runTime = curTime;
+
+	setBusy(false);
 
 //	ui.browser->setZoomFactor(0.75);
 
@@ -121,6 +130,7 @@ MWBotWin::MWBotWin() {
 	connect(ui.tbBaraban,SIGNAL(clicked()),this,SLOT(playKub()));
 	connect(ui.tbTrainPet,SIGNAL(clicked()),this,SLOT(trainPet()));
 	connect(ui.tbArena,SIGNAL(clicked()),this,SLOT(arena()));
+	connect(ui.tbTaxi,SIGNAL(clicked()),this,SLOT(doTaxi()));
 
 	connect(ui.zoomSlider,SIGNAL(valueChanged(int)),this,SLOT(chZoom(int)));
 
@@ -194,6 +204,11 @@ void MWBotWin::timerEvent(QTimerEvent* ev) {
 	}
 
 	getFastRes();
+// open chests
+	if (opt.chest.open) {
+		openChests();
+	}
+
 // train battle pet
 	if (opt.bPet.train && \
 		(info.money >= opt.bPet.money + 200) && \
@@ -240,6 +255,10 @@ void MWBotWin::timerEvent(QTimerEvent* ev) {
 		} else {
 			goBankChange();
 		}
+	}
+// taxi
+	if (opt.taxi.enable && (curTime > opt.taxi.time) && (curTime.date().dayOfWeek() == 1)) {
+		doTaxi();
 	}
 }
 
@@ -318,12 +337,12 @@ void MWBotWin::onStart() {
 
 void MWBotWin::start() {
 	if (state.botWork) {
-		log(trUtf8("Бот остановлен"));
+		log(trUtf8("Бот остановлен"),"stop.png");
 		flag = 0;
 		state.botWork = 0;
 		ui.tbStart->setIcon(QIcon(":/images/start.png"));
 	} else {
-		log(trUtf8("Бот запущен"));
+		log(trUtf8("Бот запущен"),"start.png");
 		if (!ui.browser->isEnabled()) flag |= FL_STOP;
 		state.botWork = 1;
 		ui.tbStart->setIcon(QIcon(":/images/stop.png"));
@@ -470,6 +489,7 @@ mwItem namIcon[] = {
 
 	{QObject::trUtf8("expa"),":/images/lamp.png",0},
 	{QObject::trUtf8("tugriki"),":/images/money.png",0},
+	{QObject::trUtf8("монеты"),":/images/money.png",0},
 	{QObject::trUtf8("ruda"),":/images/ruda.png",0},
 	{QObject::trUtf8("neft"),":/images/neft.png",0},
 	{QObject::trUtf8("star"),":/images/star.png",0},
@@ -613,53 +633,6 @@ void MWBotWin::restoreHP() {
 	}
 }
 
-void MWBotWin::atkRat() {
-	QWebElement elm;
-	setBusy(true);
-	loadPath(QStringList() << "square" << "metro");
-	elm = frm->findFirstElement("div.metro-branch div.metro-rats-light__dark-block");
-	if (!elm.isNull()) {
-		if (opt.ratk.dark) {
-			elm = frm->findFirstElement("a.f[href='/metro/select/1/']");
-		} else {
-			elm = frm->findFirstElement("a.f[href='/metro/select/0/']");
-		}
-		elm = elm.findFirst("div.c");
-		if (elm.isNull()) {
-			log(QString("DEBUG: Rat selection error"));
-			return;
-		}
-		clickElement(elm);
-	}
-	int time = getRatTimer();
-	if (opt.ratk.ratlev > opt.ratk.maxlev) {
-		elm = frm->findFirstElement("div#action-rat-fight div small small.dashedlink");
-		if (elm.isNull()) {
-			time = 60;
-		} else {
-			time = elm.attribute("timer").toInt() + 60;
-		}
-		opt.ratk.time = QDateTime::currentDateTime().addSecs(time);
-		opt.ratk.ratlev = 1;
-		log(trUtf8("Хватит крыс. Ждём обвала. До обвала <b>%0</b> мин.").arg(time/60 + 1));
-	} else if (time < 1) {
-		log(trUtf8("Уровень крысы: <b>%0</b>").arg(opt.ratk.ratlev));
-		restoreHP();
-		clickElement("div#action-rat-fight div.button div.c");
-		clickElement("div#welcome-rat button.button div.c");
-		if (opt.ratk.ratlev % 5 == 0) {
-			groupFight();
-		} else {
-			fightResult();
-		}
-		getRatTimer();
-	} else {
-		time += 60;
-		opt.ratk.time = QDateTime::currentDateTime().addSecs(time);
-		log(trUtf8("До следующей крысы <b>%0</b> мин.").arg(time/60 + 1));
-	}
-	setBusy(false);
-}
 
 void MWBotWin::atackOil() {
 	return;
@@ -698,31 +671,44 @@ void MWBotWin::makePetrik() {
 	loadPath(QStringList() << "square" << "factory");
 	getFastRes();
 	curTime = QDateTime::currentDateTime();
-
-	elm = frm->findFirstElement("span#petriksprocess");
-	if (!elm.isNull() && (elm.attribute("timer").toInt() > 0)) {
-		int time = elm.attribute("timer").toInt() + 80;
-		opt.petrik.time = curTime.addSecs(time);
-		log(trUtf8("Петрики уже варятся, до окончания %0 минут").arg(time / 60 + 1));
-	} else {
+	int loop = 1;
+	int time;
+	do {
 		elm = frm->findFirstElement("form.factory-nanoptric button.button div.c");
 		if (elm.isNull()) {
-			log(trUtf8("Ошибка варки петриков. Следующая попытка через минуту."));
-			opt.petrik.time = curTime.addSecs(60);
-		} else {
-			elm = frm->findFirstElement("form.factory-nanoptric button.button div.c span.tugriki");
-			opt.petrik.money = elm.toPlainText().toInt();
-			elm = frm->findFirstElement("form.factory-nanoptric button.button div.c span.ruda");
-			opt.petrik.ore = elm.toPlainText().toInt();
-			if ((info.money > (opt.petrik.money + 199)) && (info.ore >= opt.petrik.ore)) {
-				clickElement("form.factory-nanoptric button.button div.c");
-				opt.petrik.time = curTime.addSecs(3700);
-				log(trUtf8("<img src=:/images/petrik.png>&nbsp;Начато производство петриков"));
+			elm = frm->findFirstElement("span#petriksprocess");
+			if (elm.isNull()) {
+				if (loop < 2) {
+					ui.browser->reload();
+					waitLoading();
+					loop++;
+				} else {
+					log(trUtf8("Ошибка варки петриков. Следующая попытка через минуту."),"petrik.png");
+					opt.petrik.time = curTime.addSecs(60 + (random() % 30));
+					loop = 0;
+				}
 			} else {
-				log(trUtf8("Для производства петриков недостаточно ресурсов"));
+				time = elm.attribute("timer").toInt() + 60 + (random() % 30);
+				opt.petrik.time = curTime.addSecs(time);
+				if (loop < 2) {
+					log(trUtf8("Петрики уже варятся, до окончания %0 минут").arg(time / 60 + 1),"petrik.png");
+				}
+				loop = 0;
+			}
+		} else {
+			opt.petrik.money = elm.findFirst("span.tugriki").toPlainText().remove(",").toInt();
+			opt.petrik.ore = elm.findFirst("span.ruda").toPlainText().remove(",").toInt();
+			getFastRes();
+			if ((info.money > (opt.petrik.money + 199)) && (info.ore >= opt.petrik.ore)) {
+				clickElement(elm);
+				log(trUtf8("Запущено производство петриков"),"petrik.png");
+				loop = 2;
+			} else {
+				log(trUtf8("Для производства петриков недостаточно ресурсов"),"petrik.png");
+				loop = 0;
 			}
 		}
-	}
+	} while (loop);
 	setBusy(false);
 }
 
@@ -802,8 +788,5 @@ int main(int ac,char** av) {
 // debug
 
 void MWBotWin::debug() {
-	getFastRes();
-	int games = 1;
-	int oldruda = 0;
-	log(trUtf8("<img src=:/images/ruda.png>&nbsp;Сыграно игр: %0. получено руды: %1").arg(games).arg(info.ore - oldruda));
+	openChests();
 }

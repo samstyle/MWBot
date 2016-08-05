@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>747</width>
-    <height>627</height>
+    <width>739</width>
+    <height>619</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -119,20 +119,6 @@
           </widget>
          </item>
          <item>
-          <widget class="QToolButton" name="tbThimble">
-           <property name="toolTip">
-            <string>Игра с моней</string>
-           </property>
-           <property name="text">
-            <string>Thimble</string>
-           </property>
-           <property name="icon">
-            <iconset resource="resources.qrc">
-             <normaloff>:/images/ruda.png</normaloff>:/images/ruda.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QToolButton" name="tbPetrik">
            <property name="toolTip">
             <string>Варка петриков</string>
@@ -143,6 +129,20 @@
            <property name="icon">
             <iconset resource="resources.qrc">
              <normaloff>:/images/petrik.png</normaloff>:/images/petrik.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="tbThimble">
+           <property name="toolTip">
+            <string>Игра с моней</string>
+           </property>
+           <property name="text">
+            <string>Thimble</string>
+           </property>
+           <property name="icon">
+            <iconset resource="resources.qrc">
+             <normaloff>:/images/monya.png</normaloff>:/images/monya.png</iconset>
            </property>
           </widget>
          </item>
@@ -207,6 +207,17 @@
            <property name="icon">
             <iconset resource="resources.qrc">
              <normaloff>:/images/medal.png</normaloff>:/images/medal.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="tbTaxi">
+           <property name="text">
+            <string>...</string>
+           </property>
+           <property name="icon">
+            <iconset resource="resources.qrc">
+             <normaloff>:/images/taxi.png</normaloff>:/images/taxi.png</iconset>
            </property>
           </widget>
          </item>
@@ -704,6 +715,31 @@
                 </widget>
                </item>
                <item>
+                <widget class="QCheckBox" name="cbTaxi">
+                 <property name="text">
+                  <string>Таксовать</string>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="resources.qrc">
+                   <normaloff>:/images/taxi.png</normaloff>:/images/taxi.png</iconset>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="cbChest">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="text">
+                  <string>Открывать сундуки</string>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="resources.qrc">
+                   <normaloff>:/images/chest.png</normaloff>:/images/chest.png</iconset>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_8">
                  <item>
                   <widget class="QCheckBox" name="cbRunner">
@@ -843,7 +879,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>747</width>
+     <width>739</width>
      <height>21</height>
     </rect>
    </property>
