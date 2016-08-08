@@ -44,6 +44,10 @@ MWBotWin::MWBotWin() {
 	opt.ratk.maxlev = 5;
 	opt.ratk.time = curTime;
 
+	opt.oil.enable = 1;
+	opt.oil.diceMax = 6;
+	opt.oil.time = curTime;
+
 	opt.chest.open = 1;
 	opt.chest.keyOil = -1;
 	opt.chest.keyRat = -1;
@@ -55,8 +59,9 @@ MWBotWin::MWBotWin() {
 
 	opt.run.enabled = 1;
 	opt.run.name.clear();
+	opt.run.time = curTime;
 
-	opt.kub.date = QDate::currentDate().addDays(-1);
+	opt.kub.date = curTime.date().addDays(-1);
 
 	opt.monya.play = 1;
 	opt.monya.buy = 1;
@@ -80,8 +85,6 @@ MWBotWin::MWBotWin() {
 	state.firstRun = 1;
 
 	goldType = 250;
-
-	runTime = curTime;
 
 	setBusy(false);
 
@@ -122,7 +125,7 @@ MWBotWin::MWBotWin() {
 	connect(ui.tbGipsy,SIGNAL(clicked()),this,SLOT(gipsy()));
 	connect(ui.tbAtack,SIGNAL(clicked()),this,SLOT(attack()));
 	connect(ui.tbRat,SIGNAL(clicked()),this,SLOT(atkRat()));
-//	connect(ui.tbOil,SIGNAL(clicked()),this,SLOT(atackOil()));
+	connect(ui.tbOil,SIGNAL(clicked()),this,SLOT(atackOil()));
 	connect(ui.tbPetrik,SIGNAL(clicked()),this,SLOT(makePetrik()));
 	connect(ui.tbSellLot,SIGNAL(clicked()),this,SLOT(sellLots()));
 	connect(ui.tbThimble,SIGNAL(clicked()),this,SLOT(goMonia()));
@@ -218,7 +221,7 @@ void MWBotWin::timerEvent(QTimerEvent* ev) {
 		trainPet();
 	}
 // send pet to arena
-	if (opt.run.enabled && (curTime > runTime)) {
+	if (opt.run.enabled && (opt.run.time < curTime)) {
 		arena();
 	}
 // play baraban
@@ -230,16 +233,11 @@ void MWBotWin::timerEvent(QTimerEvent* ev) {
 			}
 		}
 	}
-
-// make petriks
-	if (opt.petrik.make && \
-		(info.money > (opt.petrik.money + 200)) && \
-		(info.ore > opt.petrik.ore) && \
-		(opt.petrik.time < curTime)) {
-		makePetrik();
-	}
 // attack
 	if (opt.atk.time < curTime) {
+		if (opt.oil.enable && (opt.oil.time < curTime)) {
+			atackOil();
+		}
 		if (opt.ratk.enabled && (opt.ratk.time < curTime) && (opt.ratk.ratlev < opt.ratk.maxlev)) {
 			atkRat();
 		}
@@ -247,6 +245,13 @@ void MWBotWin::timerEvent(QTimerEvent* ev) {
 			attack();
 		}
 	}
+// make petriks
+		if (opt.petrik.make && \
+			(info.money > (opt.petrik.money + 200)) && \
+			(info.ore > opt.petrik.ore) && \
+			(opt.petrik.time < curTime)) {
+			makePetrik();
+		}
 // play with monya
 	getFastRes();
 	if (!opt.monya.block && opt.monya.play && (info.money > opt.monya.minPlaySum)) {
@@ -363,7 +368,12 @@ bool MWBotWin::loadPath(QStringList pth) {
 		if (cur == QUrl(fp)) pth = pth.mid(i);
 	}
 	bool res = true;
-	for (i = 0; i < pth.size(); i++) res &= loadPage(pth.at(i));
+	if (pth.size() == 0) {
+		ui.browser->reload();
+	} else {
+		for (i = 0; (i < pth.size()) && res; i++)
+			res &= loadPage(pth.at(i));
+	}
 	return res;
 }
 
@@ -399,8 +409,8 @@ void MWBotWin::clickElement(QString quer, int speed) {
 	if (!elm.isNull()) {
 		clickElement(elm, speed);
 	} else {
-		qDebug() << QString("элемент '%0' не найден").arg(quer);
-		log(trUtf8("DEBUG: элемент <b>%0</b> не нейден").arg(quer));
+		qDebug() << trUtf8("элемент '%0' не найден").arg(quer);
+		log(trUtf8("DEBUG: элемент <b>%0</b> не найден").arg(quer),"bug.png");
 	}
 }
 
@@ -422,11 +432,22 @@ void MWBotWin::waitLoading(int speed) {
 	}
 }
 
+void MWBotWin::doPause(int sec) {
+	int i;
+	while (sec > 0) {
+		for (i = 0; i < 20; i++) {
+			usleep(5e4);		// 0.05 sec
+			app->processEvents();
+		}
+		sec--;
+	}
+}
+
 // get numbers
 
 int MWBotWin::getAtackTimer() {
 	int res;
-	loadPage("alley/");
+	loadPage("alley");
 	QWebElement elm = frm->findFirstElement("div.need-some-rest div.holders span.timer");
 	opt.atk.time = QDateTime::currentDateTime();
 	if (elm.isNull()) {
@@ -436,7 +457,9 @@ int MWBotWin::getAtackTimer() {
 		if (res > 0) {
 			res += (5 + (rand() % 10));
 			opt.atk.time = opt.atk.time.addSecs(res);
-			log(trUtf8("%0 сек. до следующего нападения").arg(res));
+			log(trUtf8("%0 сек. до следующего нападения").arg(res),"punch.png");
+		} else {
+			res = 0;
 		}
 	}
 	return res;
@@ -502,9 +525,15 @@ mwItem namIcon[] = {
 	{QObject::trUtf8("badge"),":/images/badge.png",0},
 	{QObject::trUtf8("mobila"),":/images/mobila.png",0},
 	{QObject::trUtf8("party_signature"),":/images/party-signature.png",0},
+	{QObject::trUtf8("anabolic"),":/images/anabolic.png",0},
+	{QObject::trUtf8("партбилет"),":/images/partbilet.png",0},
 
 	{QObject::trUtf8("хвост крысомахи"),":/images/ratTail.png",0},
 	{QObject::trUtf8("рубль"),":/images/rubel.png",0},
+
+	{QObject::trUtf8("малая шкатулка партии"),":/images/boxes/box33.png",0},
+	{QObject::trUtf8("средняя шкатулка партии"),":/images/boxes/box34.png",0},
+	{QObject::trUtf8("большая шкатулка партии"),":/images/boxes/box35.png",0},
 
 	{QObject::trUtf8("малый ларец"),":/images/boxes/box_metro1.png",0},
 	{QObject::trUtf8("средний ларец"),":/images/boxes/box_metro2.png",0},
@@ -563,6 +592,7 @@ void MWBotWin::getFastRes() {
 	info.oil = frm->findFirstElement("li.neft-block").attribute("title").split(":").last().trimmed().toInt();
 	info.honey = frm->findFirstElement("li.med-block").attribute("title").split(":").last().trimmed().toInt();
 	info.wanted = frm->findFirstElement("div.wanted div.percent").attribute("style").split(QRegExp("[:%]")).at(1).toInt();
+	info.level = frm->findFirstElement("div#personal a.name b").toPlainText().split("[").last().split("]").first().toInt();
 }
 
 void MWBotWin::getBerezkaRes() {
@@ -629,31 +659,8 @@ void MWBotWin::restoreHP() {
 	getFastRes();
 	if (info.hp < info.maxhp * 0.95) {
 		clickElement("div.life i.plus-icon");
-		clickElement("div.actions button.button div.c");
+		clickElement("div.alert div.data div.actions button.button div.c");
 	}
-}
-
-
-void MWBotWin::atackOil() {
-	return;
-
-	getFastRes();
-	if (info.level < 10) return;
-	if (~flag & FL_OIL) return;
-
-	int time = getAtackTimer();
-	if (time > 0) return;
-
-	setBusy(true);
-
-	loadPath(QStringList() << "tverskaya" << "neft");
-
-//	clickElement("div.enemy div.action button.button div.c");
-//	if (fightResult() == 0) flag &= ~FL_OIL;
-
-//	getAtackTimer();
-
-	setBusy(false);
 }
 
 // click select lev-1..lev+1 in alley

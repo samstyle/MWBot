@@ -46,6 +46,9 @@ void MWBotWin::loadOpts() {
 					else if (opt.ratk.maxlev > 40) opt.ratk.maxlev = 40;
 				}
 
+				if (com == "oilpipe") opt.oil.enable = bval;
+				if (com == "oildice") opt.oil.diceMax = ival;
+
 //				if ((com == "digger") && bval) options |= FL_DIG;
 //				if ((com == "digrat") && bval) options |= FL_DIGRAT;
 
@@ -141,8 +144,8 @@ void MWBotWin::saveOpts() {
 		file.write(QString("ratmaxlev:%0\n").arg(opt.ratk.maxlev).toUtf8());
 		file.write(QString("ratdark:%0\n").arg(opt.ratk.dark ? "yes" : "no").toUtf8());
 
-//		file.write(QString("digger:").append((options & FL_DIG) ? "yes" : "no").append("\n").toUtf8());
-//		file.write(QString("digrat:").append((options & FL_DIGRAT) ? "yes" : "no").append("\n").toUtf8());
+		file.write(QString("oilpipe:%0\n").arg(opt.oil.enable ? "yes" : "no").toUtf8());
+		file.write(QString("oildice:%0\n").arg(opt.oil.diceMax).toUtf8());
 
 		file.write(QString("baraban:%0\n").arg(opt.kub.play ? "yes" : "no").toUtf8());
 		file.write(QString("kubDate:%0\n").arg(opt.kub.date.toString("dd-MM-yyyy")).toUtf8());
@@ -152,7 +155,6 @@ void MWBotWin::saveOpts() {
 		file.write(QString("minlev:%0\n").arg(QString::number(opt.atk.minLev)).toUtf8());
 		file.write(QString("maxlev:%0\n").arg(QString::number(opt.atk.maxLev)).toUtf8());
 		file.write(QString("statprc:%0\n").arg(QString::number(opt.atk.statPrc)).toUtf8());
-//		file.write(QString("checknpc:").append((options & FL_NONPC) ? "no" : "yes").append("\n").toUtf8());
 		file.write(QString("trainpet:%0\n").arg(opt.bPet.train ? "yes" : "no").toUtf8());
 		file.write(QString("tp-ruda:%0\n").arg(opt.bPet.useOre ? "yes" : "no").toUtf8());
 		file.write(QString("tp-oil:%0\n").arg(opt.bPet.useOil ? "yes" : "no").toUtf8());
@@ -186,7 +188,6 @@ void MWBotWin::apply() {
 	opt.atk.typeA = ui.cbAtackType->itemData(ui.cbAtackType->currentIndex()).toInt();
 	opt.atk.typeB = ui.cbAType2->itemData(ui.cbAType2->currentIndex()).toInt();
 	opt.atk.droped = ui.cbDrop->isChecked() ? 1 : 0;
-//	goldType = ui.boxGypsy->itemData(ui.boxGypsy->currentIndex()).toInt();
 	opt.petrik.make = ui.cbPetrik->isChecked() ? 1 : 0;
 	opt.monya.play = ui.gbMonya->isChecked() ? 1 : 0;
 	opt.monya.minPlaySum = ui.sbMoniaCoins->value();
@@ -197,8 +198,9 @@ void MWBotWin::apply() {
 	opt.ratk.enabled = ui.gbRats->isChecked() ? 1 : 0;
 	opt.ratk.maxlev = ui.sbRatMax->value();
 	opt.ratk.dark = ui.cbDarkTunnel->isChecked() ? 1 : 0;
-//	if (ui.cbDigger->isChecked()) options |= FL_DIG;
-//	if (ui.cbDigRat->isChecked()) options |= FL_DIGRAT;
+
+	opt.oil.enable = ui.oilBox->isChecked() ? 1 : 0;
+	opt.oil.diceMax = ui.sbMaxDice->value();
 
 	opt.kub.play = ui.gbBaraban->isChecked() ? 1 : 0;
 	opt.kub.buy = ui.cbBuyCaps->isChecked() ? 1 : 0;
@@ -207,7 +209,6 @@ void MWBotWin::apply() {
 	opt.atk.minLev = ui.sbMinLev->value();
 	opt.atk.maxLev = ui.sbMaxLev->value();
 	opt.atk.statPrc = ui.sbStatCheck->value();
-//	if (ui.cbNPCheck->isChecked()) options |= FL_NONPC;
 	opt.bPet.train = ui.gbFightPet->isChecked() ? 1 : 0;
 	opt.bPet.useOre = ui.cbTrainRuda->isChecked() ? 1 : 0;
 	opt.bPet.useOil = ui.cbTrainNeft->isChecked() ? 1 : 0;
@@ -227,7 +228,6 @@ void MWBotWin::setOpts() {
 	ui.cbAtackType->setCurrentIndex(ui.cbAtackType->findData(opt.atk.typeA));
 	ui.cbAType2->setCurrentIndex(ui.cbAType2->findData(opt.atk.typeB));
 	ui.cbDrop->setChecked(opt.atk.droped);
-//	ui.boxGypsy->setCurrentIndex(ui.boxGypsy->findData(goldType));
 	ui.cbPetrik->setChecked(opt.petrik.make);
 	ui.gbMonya->setChecked(opt.monya.play);
 	ui.sbMoniaCoins->setValue(opt.monya.minPlaySum);
@@ -238,8 +238,9 @@ void MWBotWin::setOpts() {
 	ui.gbRats->setChecked(opt.ratk.enabled);
 	ui.cbDarkTunnel->setChecked(opt.ratk.dark);
 	ui.sbRatMax->setValue(opt.ratk.maxlev);
-//	ui.cbDigger->setChecked(options & FL_DIG);
-//	ui.cbDigRat->setChecked(options & FL_DIGRAT);
+
+	ui.oilBox->setChecked(opt.oil.enable);
+	ui.sbMaxDice->setValue(opt.oil.diceMax);
 
 	ui.gbBaraban->setChecked(opt.kub.play);
 	ui.cbBuyCaps->setChecked(opt.kub.buy);
@@ -248,7 +249,6 @@ void MWBotWin::setOpts() {
 	ui.sbMinLev->setValue(opt.atk.minLev);
 	ui.sbMaxLev->setValue(opt.atk.maxLev);
 	ui.sbStatCheck->setValue(opt.atk.statPrc);
-//	ui.cbNPCheck->setChecked(options & FL_NONPC);
 	ui.gbFightPet->setChecked(opt.bPet.train);
 	ui.cbTrainRuda->setChecked(opt.bPet.useOre);
 	ui.cbTrainNeft->setChecked(opt.bPet.useOil);

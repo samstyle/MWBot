@@ -8,6 +8,7 @@ void MWBotWin::atkRat() {
 // select dark/normal rats
 	elm = frm->findFirstElement("div.metro-branch div.metro-rats-light__dark-block");
 	if (!elm.isNull()) {
+		log(trUtf8("Dark/Normal select"),"bug.png");
 		if (opt.ratk.dark) {
 			elm = frm->findFirstElement("a.f[href='/metro/select/1/']");
 		} else {
@@ -15,7 +16,7 @@ void MWBotWin::atkRat() {
 		}
 		elm = elm.findFirst("div.c");
 		if (elm.isNull()) {
-			log(QString("DEBUG: Rat selection error"));
+			log(trUtf8("DEBUG: Rat selection error"));
 			return;
 		}
 		clickElement(elm);
@@ -35,7 +36,7 @@ void MWBotWin::atkRat() {
 	} else if (time < 1) {
 		log(trUtf8("Уровень крысы: <b>%0</b>").arg(opt.ratk.ratlev),"rat.png");
 		restoreHP();
-		clickElement("div#action-rat-fight div.button div.c");
+		clickElement("div#action-rat-fight div.button-big div.c");
 		clickElement("div#welcome-rat button.button div.c");
 		if (opt.ratk.ratlev % 5 == 0) {
 			groupFight();

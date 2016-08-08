@@ -25,7 +25,8 @@ SOURCES += main.cpp \
     kubovich.cpp \
     chests.cpp \
     taxi.cpp \
-    rats.cpp
+    rats.cpp \
+    oilpipe.cpp
 
 FORMS += \
     mainwindow.ui \

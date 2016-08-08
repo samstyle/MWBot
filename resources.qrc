@@ -101,5 +101,11 @@
         <file>images/taxi.png</file>
         <file>images/punch.png</file>
         <file>images/monya.png</file>
+        <file>images/bug.png</file>
+        <file>images/anabolic.png</file>
+        <file>images/partbilet.png</file>
+        <file>images/boxes/box33.png</file>
+        <file>images/boxes/box34.png</file>
+        <file>images/boxes/box35.png</file>
     </qresource>
 </RCC>

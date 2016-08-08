@@ -18,21 +18,21 @@ void MWBotWin::arena() {
 	int prc = frm->findFirstElement("div.balance span#grayhound-tickets-num").toPlainText().toInt();
 	if (prc == 0) {
 		log(trUtf8("Билеты на забеги кончились. Продолжим завтра в 00:05"),"medal.png");
-		runTime = curTime;
-		runTime.setTime(QTime(0,5));		// 00:05 of tommorow
-		runTime = runTime.addDays(1);
+		opt.run.time = curTime;
+		opt.run.time.setTime(QTime(0,5));		// 00:05 of tommorow
+		opt.run.time = opt.run.time.addDays(1);
 	} else {
 // set 1st active pet
 		elm = frm->findFirstElement("div.pet-slider ul.lenta");
 		if (elm.isNull()) {
-			runTime = runTime.addSecs(300);
+			opt.run.time = opt.run.time.addSecs(300);
 		} else {
 			wtime = 20;
 			pets = elm.findAll("li.pet-object[data-id]");
-			qDebug() << pets.toList().size();
+			//qDebug() << pets.toList().size();
 			foreach(pet, pets) {
 				name = pet.attribute("data-pet-name");
-				qDebug() << name;
+				//qDebug() << name;
 				if (opt.run.name.isNull() || (name.toLower().contains(opt.run.name.toLower()))) {
 					if (pet.attribute("selected").isNull())
 						clickElement(pet);
@@ -49,7 +49,7 @@ void MWBotWin::arena() {
 							clickElement("div.center button#checkInEnabled div.c");
 						}
 						log(trUtf8("%0 записан на забег").arg(pet.attribute("data-pet-name")),"medal.png");
-						runTime = curTime.addSecs(600);		// +10 min
+						opt.run.time = curTime.addSecs(600);		// +10 min
 						wtime = 0;
 					} else {
 						if (wtime > (21 - prc)) wtime = (21 - prc) * 3;
@@ -58,7 +58,7 @@ void MWBotWin::arena() {
 			}
 			if (wtime != 0) {
 				log(trUtf8("До забегов %0 мин").arg(wtime),"medal.png");
-				runTime = curTime.addSecs(wtime * 60);		// 3min = 1%
+				opt.run.time = curTime.addSecs(wtime * 60);		// 3min = 1%
 			}
 		}
 	}

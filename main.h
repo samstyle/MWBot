@@ -101,6 +101,11 @@ class MWBotWin : public QMainWindow {
 		struct {
 			struct {
 				unsigned enable:1;
+				int diceMax;
+				QDateTime time;
+			} oil;
+			struct {
+				unsigned enable:1;
 				QDateTime time;
 			} taxi;
 			struct {
@@ -112,6 +117,7 @@ class MWBotWin : public QMainWindow {
 			struct {
 				unsigned enabled:1;
 				QString name;
+				QDateTime time;
 			} run;
 			struct {
 				unsigned enabled:1;
@@ -209,7 +215,7 @@ class MWBotWin : public QMainWindow {
 
 		QDateTime curTime;
 		QDateTime digTime;
-		QDateTime runTime;
+		// QDateTime runTime;
 
 		CharBox getStat(QString,QString);
 
@@ -232,6 +238,7 @@ class MWBotWin : public QMainWindow {
 		void clickElement(QWebElement&, int = 1000);
 
 		void waitLoading(int = 1000);
+		void doPause(int = 1);
 		int getAtackTimer();
 		int getRatTimer();
 		void restoreHP();
@@ -239,6 +246,9 @@ class MWBotWin : public QMainWindow {
 
 		void playMonia();
 		void goBankChange();
+
+		int oilGameEscape();
+		int checkSusp(int, int);
 
 		void checkPolice();
 
@@ -252,8 +262,8 @@ class MWBotWin : public QMainWindow {
 		int atkCheck(CharBox&,int);
 		bool atkResult();
 
-		void atkRat();
 		void atackOil();
+		void atkRat();
 		void goMonia();
 		void makePetrik();
 		void sellLots();
