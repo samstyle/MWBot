@@ -16,12 +16,16 @@ int MWBotWin::oilGameEscape() {
 	QWebElement blk, tlm;
 	blk = frm->findFirstElement("div#neftlenin_alert_mission div.content-block div.actions button.button div.c");
 	tlm = blk.findFirst("span.suspicion span.price_escape");
-	int need = tlm.toPlainText().toInt();
+	int need = 0;
+	if (!tlm.isNull()) {
+		need = tlm.toPlainText().toInt();
+	}
 	qDebug() << "need" << need << "susp";
 
 	if (need == 0) {
 		log(trUtf8("Патруль пройден успешно"),"neft.png");
 		fightResult();
+		clickElement(blk);
 	} else {
 		tlm = frm->findFirstElement("div.pipeline-actions table td.mc div.progress i.counter");
 		int susp = tlm.toPlainText().toInt();
@@ -88,6 +92,7 @@ void MWBotWin::atackOil() {
 		loadPath(QStringList() << "tverskaya" << "neftlenin");
 
 		while (opt.oil.time < curTime) {
+			restoreHP();
 			curTime = QDateTime::currentDateTime();
 			elm = frm->findFirstElement("div#neftlenin_alert_win");
 			if (elm.styleProperty("display",QWebElement::ComputedStyle).trimmed() != "none") {	// already win
@@ -115,7 +120,7 @@ void MWBotWin::atackOil() {
 					idx++;
 				} while (type < 0);
 
-				qDebug() << type;
+				// qDebug() << type;
 
 				switch (type) {
 					case preFight:			// start fight

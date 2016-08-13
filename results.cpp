@@ -32,7 +32,7 @@ FightBox MWBotWin::getGroupResult() {
 	res.enemy.level = -1;
 	res.result = str.contains("(0/") ? 1 : 0;
 	res.items = getGroupResultMain();
-	elm = frm->findFirstElement("div.result div.button div.c");
+	elm = frm->findFirstElement("td.log div.result div.button div.c");
 	if (!elm.isNull()) {
 		clickElement(elm);
 	}
@@ -157,6 +157,7 @@ int MWBotWin::fightResult() {
 void MWBotWin::logResult(FightBox res) {
 	QString tolog;
 	QString icn;
+	QString icon = "info.png";
 	QString fightres;
 	QString enname;
 	QString nname = getItemIcon(res.enemy.type);
@@ -166,17 +167,21 @@ void MWBotWin::logResult(FightBox res) {
 		enname = QString("%0 [%1]").arg(res.enemy.name).arg(res.enemy.level);
 	}
 	if (res.result == 2) {		// draw
-		tolog = QString("<img src=:/images/unknown.png>&nbsp;<img src=%0>&nbsp;<b>%1</b></font>").arg(nname).arg(enname);
+		tolog = QString("<img src=%0>&nbsp;<b>%1</b></font>").arg(nname).arg(enname);
+		icon = "unknown.png";
 	} else {
 		switch (res.result) {
 			case 0:		// lose
-				tolog = QString("<img src=:/images/stop.png>&nbsp;<img src=%0>&nbsp;<b>%1</b>&nbsp;").arg(nname).arg(enname);
+				tolog = QString("<img src=%0>&nbsp;<b>%1</b>&nbsp;").arg(nname).arg(enname);
+				icon = "no.png";
 				break;
 			case 1:		// win
-				tolog = QString("<img src=:/images/yes.png>&nbsp;<img src=%0>&nbsp;<b>%1</b>&nbsp;").arg(nname).arg(enname);
+				tolog = QString("<img src=%0>&nbsp;<b>%1</b>&nbsp;").arg(nname).arg(enname);
+				icon = "yes.png";
 				break;
 			case 3:		// chest
 				tolog = trUtf8("Открыт сундук <b>%0</b>&nbsp;").arg(res.enemy.name);
+				icon = "chest.png";
 				break;
 		}
 		fightres.append("<b>");
@@ -194,5 +199,5 @@ void MWBotWin::logResult(FightBox res) {
 		fightres.append("</b>");
 		tolog.append(fightres);
 	}
-	log(tolog);
+	log(tolog, icon);
 }

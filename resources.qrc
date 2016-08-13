@@ -107,5 +107,6 @@
         <file>images/boxes/box33.png</file>
         <file>images/boxes/box34.png</file>
         <file>images/boxes/box35.png</file>
+        <file>images/info.png</file>
     </qresource>
 </RCC>

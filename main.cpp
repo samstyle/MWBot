@@ -417,12 +417,19 @@ void MWBotWin::clickElement(QString quer, int speed) {
 void MWBotWin::waitLoading(int speed) {
 	if (speed < 0) speed = 1000;
 	QWebElement elm;
+	int count = 5000;
 	do {
-		usleep(1000);
-		app->processEvents();
-		elm = frm->findFirstElement("div.loading-top");
-		if (state.stop) break;
-	} while (state.loading || !elm.attribute("style").contains("none"));
+		do {
+			usleep(1000);
+			app->processEvents();
+			elm = frm->findFirstElement("div.loading-top");
+			if (state.stop) break;
+			count--;
+		} while ((count > 0) && (state.loading || !elm.attribute("style").contains("none")));
+		if (count > 0) break;
+		restoreHP();
+		count = 5000;
+	} while (1);
 	if (state.stop) return;
 	int sleeptime = 500 + (rand() % 1000);
 	while (sleeptime > 0) {
