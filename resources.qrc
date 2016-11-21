@@ -108,5 +108,6 @@
         <file>images/boxes/box34.png</file>
         <file>images/boxes/box35.png</file>
         <file>images/info.png</file>
+        <file>images/bomb.png</file>
     </qresource>
 </RCC>

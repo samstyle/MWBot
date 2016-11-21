@@ -1,5 +1,24 @@
 #include "main.h"
 
+void fillList(QStringList& list, QFile& file) {
+	QString line;
+	list.clear();
+	do {
+		line = QDialog::trUtf8(file.readLine()).remove("\r").remove("\n");
+		list.append(line);
+	} while (line != "}");
+	list.removeLast();
+}
+
+int inRange(int num, int min, int max) {
+	if (num < min) {
+		num = min;
+	} else if (num > max) {
+		num = max;
+	}
+	return num;
+}
+
 void MWBotWin::loadOpts() {
 	QFile file(workDir + "config.conf");
 	if (file.open(QFile::ReadOnly)) {
@@ -60,19 +79,8 @@ void MWBotWin::loadOpts() {
 					if (!opt.kub.date.isValid()) opt.kub.date = QDate::currentDate().addDays(-1);
 				}
 
-				if (com == "minlev") {
-					opt.atk.minLev = ival;
-					if (opt.atk.minLev > 50) {
-						opt.atk.minLev = 50;
-					} else if (opt.atk.minLev < -50) {
-						opt.atk.minLev = -50;
-					}
-				}
-				if (com == "maxlev") {
-					if (ival > 50) ival = 50;
-					if (ival < -50) ival = -50;
-					opt.atk.maxLev = ival;
-				}
+				if (com == "minlev") opt.atk.minLev = inRange(ival, -50, 50);
+				if (com == "maxlev") opt.atk.maxLev = inRange(ival, -50, 50);
 				if (com == "statprc") {
 					opt.atk.statPrc = val.toDouble();
 					if (opt.atk.statPrc <= 0) {
@@ -81,35 +89,24 @@ void MWBotWin::loadOpts() {
 						opt.atk.statPrc = 2;
 					}
 				}
-//				if ((com == "checknpc") && (val == "no")) options |= FL_NONPC;
 				if (com == "trainpet") opt.bPet.train = bval;
 				if (com == "tp-ruda") opt.bPet.useOre = bval;
 				if (com == "tp-oil") opt.bPet.useOil = bval;
 				if (com == "runner") opt.run.enabled = bval;
 				if (com == "runname") opt.run.name = val;
 				if (com == "goldplay") goldType = ival;
-				if (com == "useCheese") opt.group.cheese = bval;
-				if (com == "useHeal") opt.group.heal = bval;
 				if (com == "payfine") opt.police.fine = bval;
 				if (com == "setrel") opt.police.relations = bval;
 				if (com == "taxi") opt.taxi.enable = bval;
 
-				if (com == "cheeseList") {
-					cheeseList.clear();
-					do {
-						line = QDialog::trUtf8(file.readLine()).remove("\r").remove("\n");
-						cheeseList.append(line);
-					} while (line != "}");
-					cheeseList.removeLast();
-				}
-				if (com == "healList") {
-					healList.clear();
-					do {
-						line = QDialog::trUtf8(file.readLine()).remove("\r").remove("\n");
-						healList.append(line);
-					} while (line != "}");
-					healList.removeLast();
-				}
+				if (com == "useCheese") opt.group.cheese = bval;
+				if (com == "useHeal") opt.group.heal = bval;
+				if (com == "useBomb") opt.group.bomb = bval;
+				if (com == "bombChance") opt.group.bombPrc = inRange(ival, 0, 100);
+
+				if (com == "cheeseList") fillList(opt.group.cheeseList, file);
+				if (com == "healList") fillList(opt.group.healList, file);
+				if (com == "bombList") fillList(opt.group.bombList, file);
 			}
 		}
 		if (opt.atk.minLev > opt.atk.maxLev) {
@@ -121,9 +118,18 @@ void MWBotWin::loadOpts() {
 	setOpts();
 }
 
+void writeList(QFile& file, const char* name, QStringList& list) {
+	QString str;
+	file.write(QString("%0:{\n").arg(name).toUtf8());
+	foreach(str, list) {
+		str.append("\n");
+		file.write(str.toUtf8());
+	}
+	file.write("}\n");
+}
+
 void MWBotWin::saveOpts() {
 	QFile file(workDir + "config.conf");
-	QString str;
 	if (file.open(QFile::WriteOnly)) {
 		file.write(QString("atack:%0\n").arg(opt.atk.enabled ? "yes" : "no").toUtf8());
 		file.write(QString("atype:%0\n").arg(opt.atk.typeA).toUtf8());
@@ -132,6 +138,8 @@ void MWBotWin::saveOpts() {
 
 		file.write(QString("useCheese:%0\n").arg(opt.group.cheese ? "yes" : "no").toUtf8());
 		file.write(QString("useHeal:%0\n").arg(opt.group.heal ? "yes" : "no").toUtf8());
+		file.write(QString("useBomb:%0\n").arg(opt.group.bomb ? "yes" : "no").toUtf8());
+		file.write(QString("bombChance:%0\n").arg(opt.group.bombPrc).toUtf8());
 
 		file.write(QString("makepetrik:%0\n").arg(opt.petrik.make ? "yes" : "no").toUtf8());
 		file.write(QString("playmon:%0\n").arg(opt.monya.play ? "yes" : "no").toUtf8());
@@ -166,19 +174,9 @@ void MWBotWin::saveOpts() {
 		file.write(QString("openchest:%0\n").arg(opt.chest.open ? "yes" : "no").toUtf8());
 		file.write(QString("taxi:%0\n").arg(opt.taxi.enable ? "yes" : "no").toUtf8());
 
-		file.write(QString("cheeseList:{\n").toUtf8());
-		foreach(str, cheeseList) {
-			str.append("\n");
-			file.write(str.toUtf8());
-		}
-		file.write("}\n");
-		file.write(QString("healList:{\n").toUtf8());
-		foreach(str, healList) {
-			str.append("\n");
-			file.write(str.toUtf8());
-		}
-		file.write("}\n");
-
+		writeList(file, "cheeseList", opt.group.cheeseList);
+		writeList(file, "healList", opt.group.healList);
+		writeList(file, "bombList", opt.group.bombList);
 	}
 }
 
@@ -206,6 +204,11 @@ void MWBotWin::apply() {
 	opt.kub.buy = ui.cbBuyCaps->isChecked() ? 1 : 0;
 	opt.kub.caps = ui.sbCaps->value();
 
+	opt.group.cheese = ui.cbGFCheese->isChecked() ? 1 : 0;
+	opt.group.heal = ui.cbGFHeal->isChecked() ? 1 : 0;
+	opt.group.bomb = ui.cbGFBomb->isChecked() ? 1 : 0;
+	opt.group.bombPrc = ui.sbBombChance->value();
+
 	opt.atk.minLev = ui.sbMinLev->value();
 	opt.atk.maxLev = ui.sbMaxLev->value();
 	opt.atk.statPrc = ui.sbStatCheck->value();
@@ -214,8 +217,6 @@ void MWBotWin::apply() {
 	opt.bPet.useOil = ui.cbTrainNeft->isChecked() ? 1 : 0;
 	opt.run.enabled = ui.cbRunner->isChecked() ? 1 : 0;
 	opt.run.name = ui.leRunName->text();
-	opt.group.cheese = ui.cbGFCheese->isChecked() ? 1 : 0;
-	opt.group.heal = ui.cbGFHeal->isChecked() ? 1 : 0;
 	opt.police.fine = ui.cbPolFine->isChecked() ? 1 : 0;
 	opt.police.relations = ui.cbPolRelat->isChecked() ? 1 : 0;
 	opt.chest.open = ui.cbChest->isChecked() ? 1 : 0;
@@ -246,6 +247,11 @@ void MWBotWin::setOpts() {
 	ui.cbBuyCaps->setChecked(opt.kub.buy);
 	ui.sbCaps->setValue(opt.kub.caps);
 
+	ui.cbGFCheese->setChecked(opt.group.cheese);
+	ui.cbGFHeal->setChecked(opt.group.heal);
+	ui.cbGFBomb->setChecked(opt.group.bomb);
+	ui.sbBombChance->setValue(opt.group.bombPrc);
+
 	ui.sbMinLev->setValue(opt.atk.minLev);
 	ui.sbMaxLev->setValue(opt.atk.maxLev);
 	ui.sbStatCheck->setValue(opt.atk.statPrc);
@@ -254,8 +260,6 @@ void MWBotWin::setOpts() {
 	ui.cbTrainNeft->setChecked(opt.bPet.useOil);
 	ui.cbRunner->setChecked(opt.run.enabled);
 	ui.leRunName->setText(opt.run.name);
-	ui.cbGFCheese->setChecked(opt.group.cheese);
-	ui.cbGFHeal->setChecked(opt.group.heal);
 	ui.cbPolFine->setChecked(opt.police.fine);
 	ui.cbPolRelat->setChecked(opt.police.relations);
 	ui.cbChest->setChecked(opt.chest.open);

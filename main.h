@@ -34,6 +34,13 @@ struct CharBox{
 	int statsum;
 };
 
+enum {
+	resLose = 0,
+	resWin,
+	resDraw,
+	resChest
+};
+
 struct FightBox {
 	int result;	// 0:lost 1:win 2:draw 3:openchest
 	CharBox enemy;
@@ -75,12 +82,14 @@ struct CharInfo {
 #define FL_DIGGING	(1<<13)		// dig in process
 #define	FL_DIGRAT	(1<<14)		// atack rats during dig
 
-#define	ATK_EQUAL	1
-#define	ATK_WEAK	2
-#define	ATK_STRONG	3
-#define ATK_ENEMY	4
-#define	ATK_VICTIM	5
-#define	ATK_LEVEL	6
+enum {
+	ATK_EQUAL = 1,
+	ATK_WEAK,
+	ATK_STRONG,
+	ATK_ENEMY,
+	ATK_VICTIM,
+	ATK_LEVEL
+};
 
 class MWBotWin : public QMainWindow {
 	Q_OBJECT
@@ -132,6 +141,13 @@ class MWBotWin : public QMainWindow {
 			struct {
 				unsigned cheese:1;
 				unsigned heal:1;
+				unsigned bomb:1;
+				int cheesePrc;
+				int healPrc;
+				int bombPrc;
+				QStringList cheeseList;
+				QStringList healList;
+				QStringList bombList;
 			} group;
 			struct {
 				unsigned enabled:1;
@@ -209,8 +225,6 @@ class MWBotWin : public QMainWindow {
 		QNetworkAccessManager* mgr;
 		QNetworkDiskCache* cache;
 
-		QStringList cheeseList;
-		QStringList healList;
 		QStringList* editList;
 
 		QDateTime curTime;
@@ -279,6 +293,7 @@ class MWBotWin : public QMainWindow {
 		void apply();
 		void editCheese();
 		void editHeal();
+		void editBomb();
 		void setList();
 
 		void onStart();

@@ -139,6 +139,7 @@ MWBotWin::MWBotWin() {
 
 	connect(ui.tbCheeseList,SIGNAL(clicked(bool)),this,SLOT(editCheese()));
 	connect(ui.tbHealList,SIGNAL(clicked(bool)),this,SLOT(editHeal()));
+	connect(ui.tbBombList,SIGNAL(clicked(bool)),this,SLOT(editBomb()));
 	connect(tui.okButton,SIGNAL(clicked(bool)),this,SLOT(setList()));
 	connect(tui.cancelButton,SIGNAL(clicked(bool)),tedit,SLOT(hide()));
 
@@ -233,6 +234,22 @@ void MWBotWin::timerEvent(QTimerEvent* ev) {
 			}
 		}
 	}
+// make petriks
+	if (opt.petrik.make && \
+			(info.money > (opt.petrik.money + 200)) && \
+			(info.ore > opt.petrik.ore) && \
+			(opt.petrik.time < curTime)) {
+		makePetrik();
+	}
+// play with monya
+	getFastRes();
+	if (!opt.monya.block && opt.monya.play && (info.money > opt.monya.minPlaySum)) {
+		if (info.money < opt.monya.maxPlaySum) {
+			goMonia();
+		} else {
+			goBankChange();
+		}
+	}
 // attack
 	if (opt.atk.time < curTime) {
 		if (opt.oil.enable && (opt.oil.time < curTime)) {
@@ -243,22 +260,6 @@ void MWBotWin::timerEvent(QTimerEvent* ev) {
 		}
 		if (opt.atk.enabled) {
 			attack();
-		}
-	}
-// make petriks
-		if (opt.petrik.make && \
-			(info.money > (opt.petrik.money + 200)) && \
-			(info.ore > opt.petrik.ore) && \
-			(opt.petrik.time < curTime)) {
-			makePetrik();
-		}
-// play with monya
-	getFastRes();
-	if (!opt.monya.block && opt.monya.play && (info.money > opt.monya.minPlaySum)) {
-		if (info.money < opt.monya.maxPlaySum) {
-			goMonia();
-		} else {
-			goBankChange();
 		}
 	}
 // taxi
@@ -458,6 +459,8 @@ int MWBotWin::getAtackTimer() {
 	QWebElement elm = frm->findFirstElement("div.need-some-rest div.holders span.timer");
 	opt.atk.time = QDateTime::currentDateTime();
 	if (elm.isNull()) {
+		res = -1;
+	} else if (elm.styleProperty("display", QWebElement::ComputedStyle) == "none") {
 		res = -1;
 	} else {
 		res = elm.attribute("timer").toInt();
@@ -771,13 +774,19 @@ void MWBotWin::sellLots() {
 // edit lists
 
 void MWBotWin::editCheese() {
-	editList = &cheeseList;
+	editList = &opt.group.cheeseList;
 	tui.textArea->setPlainText(editList->join("\n"));
 	tedit->show();
 }
 
 void MWBotWin::editHeal() {
-	editList = &healList;
+	editList = &opt.group.healList;
+	tui.textArea->setPlainText(editList->join("\n"));
+	tedit->show();
+}
+
+void MWBotWin::editBomb() {
+	editList = &opt.group.bombList;
 	tui.textArea->setPlainText(editList->join("\n"));
 	tedit->show();
 }

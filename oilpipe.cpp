@@ -124,16 +124,20 @@ void MWBotWin::atackOil() {
 
 				switch (type) {
 					case preFight:			// start fight
-						elm = frm->findFirstElement("div#pipeline-scroll div.enemy-place.fight div.action button.button div.c");
-						clickElement(elm);
+						if (!checkSusp(susp, 30)) {
+							elm = frm->findFirstElement("div#pipeline-scroll div.enemy-place.fight div.action button.button div.c");
+							clickElement(elm);
+						}
 						break;
 					case preGame:			// start event
 						elm = frm->findFirstElement("div#pipeline-scroll div.enemy-place.mission div.action button.button div.c");
 						clickElement(elm);
 						break;
 					case preBoss:			// start boss
-						elm = frm->findFirstElement("div#pipeline-scroll div.enemy-place.fightboss div.action button.button div.c");
-						clickElement(elm);
+						if (!checkSusp(susp, 30)) {
+							elm = frm->findFirstElement("div#pipeline-scroll div.enemy-place.fightboss div.action button.button div.c");
+							clickElement(elm);
+						}
 						break;
 					case evDuel:			// go duel
 						elm = frm->findFirstElement("div#neftlenin_alert_d div.action button.button.first div.c");			// кнопка старта
@@ -193,7 +197,6 @@ void MWBotWin::atackOil() {
 									oilGameEscape();
 									work = 0;
 								}
-								doPause(2);
 							}
 						}
 						break;

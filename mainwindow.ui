@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>826</width>
-    <height>616</height>
+    <width>820</width>
+    <height>630</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -476,11 +476,29 @@
               <property name="title">
                <string>Групповые бои</string>
               </property>
-              <layout class="QGridLayout" name="gridLayout">
+              <layout class="QGridLayout" name="gridLayout" columnstretch="10,0,0">
+               <item row="1" column="0">
+                <widget class="QCheckBox" name="cbGFHeal">
+                 <property name="text">
+                  <string>Лечилки</string>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="resources.qrc">
+                   <normaloff>:/images/heal.png</normaloff>:/images/heal.png</iconset>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="2">
+                <widget class="QToolButton" name="tbHealList">
+                 <property name="text">
+                  <string>...</string>
+                 </property>
+                </widget>
+               </item>
                <item row="0" column="0">
                 <widget class="QCheckBox" name="cbGFCheese">
                  <property name="text">
-                  <string>Использовать сыр</string>
+                  <string>Сыр</string>
                  </property>
                  <property name="icon">
                   <iconset resource="resources.qrc">
@@ -488,28 +506,38 @@
                  </property>
                 </widget>
                </item>
-               <item row="0" column="1">
+               <item row="0" column="2">
                 <widget class="QToolButton" name="tbCheeseList">
                  <property name="text">
                   <string>...</string>
                  </property>
                 </widget>
                </item>
-               <item row="1" column="1">
-                <widget class="QToolButton" name="tbHealList">
+               <item row="2" column="0">
+                <widget class="QCheckBox" name="cbGFBomb">
+                 <property name="text">
+                  <string>Гранаты</string>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="resources.qrc">
+                   <normaloff>:/images/bomb.png</normaloff>:/images/bomb.png</iconset>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="2">
+                <widget class="QToolButton" name="tbBombList">
                  <property name="text">
                   <string>...</string>
                  </property>
                 </widget>
                </item>
-               <item row="1" column="0">
-                <widget class="QCheckBox" name="cbGFHeal">
-                 <property name="text">
-                  <string>Лечиться</string>
+               <item row="2" column="1">
+                <widget class="QSpinBox" name="sbBombChance">
+                 <property name="suffix">
+                  <string>%</string>
                  </property>
-                 <property name="icon">
-                  <iconset resource="resources.qrc">
-                   <normaloff>:/images/heal.png</normaloff>:/images/heal.png</iconset>
+                 <property name="maximum">
+                  <number>100</number>
                  </property>
                 </widget>
                </item>
@@ -926,7 +954,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>826</width>
+     <width>820</width>
      <height>21</height>
     </rect>
    </property>

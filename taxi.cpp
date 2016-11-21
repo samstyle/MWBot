@@ -24,7 +24,11 @@ void MWBotWin::doTaxi() {
 	}
 // check taxi timer, send a car & charge it if it needs
 	elm = frm->findFirstElement("div.auto-bombila table.process td#cooldown");
-	time = elm.attribute("timer").toInt();
+	if (elm.styleProperty("display",QWebElement::ComputedStyle) == "none") {
+		time = 0;
+	} else {
+		time = elm.attribute("timer").toInt();
+	}
 	if (time != 0) {
 		time += (30 + (random() % 30));
 		opt.taxi.time = curTime.addSecs(time);

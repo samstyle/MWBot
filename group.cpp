@@ -71,6 +71,7 @@ void MWBotWin::groupFight() {
 	QString target;
 	int res = 0;
 	int cnt;
+	int rnd;
 	int useCheese = 0;
 	if (opt.group.cheese) {
 		int enemyHp = getSumHp(frm,0);
@@ -78,6 +79,7 @@ void MWBotWin::groupFight() {
 		useCheese = (enemyHp > allyHp*2) ? 1 : 0;
 	}
 	int useHeal = opt.group.heal ? 1 : 0;
+	int useBomb = opt.group.bomb ? 1 : 0;
 	do {
 		cnt = getGroupCount(frm,1);
 		if (cnt == 0) {
@@ -88,20 +90,28 @@ void MWBotWin::groupFight() {
 				res = 1;	// win
 			} else {
 				target.clear();
+				rnd = rand() % 101;	// 0..100
 				cnt = getMyHp(frm);
 				if (useHeal && (cnt < 30)) {
-					target = searchFightSlot(frm, healList);
+					target = searchFightSlot(frm, opt.group.healList);
 					if (target.isEmpty()) {
 						useHeal = 0;
 					} else {
 						target.prepend("div.fight-slots li.filled input#");
 					}
 				} else if (useCheese) {
-					target = searchFightSlot(frm, cheeseList);
+					target = searchFightSlot(frm, opt.group.cheeseList);
 					if (!target.isEmpty()) {
 						target.prepend("div.fight-slots li.filled input#");
 					}
 					useCheese = 0;
+				} else if (useBomb && (rnd < opt.group.bombPrc)) {
+					target = searchFightSlot(frm, opt.group.bombList);
+					if (target.isEmpty()) {
+						useBomb = 0;
+					} else {
+						target.prepend("div.fight-slots li.filled input#");
+					}
 				} else {
 					target = getWeakest(frm,0);
 					target.prepend("input.radio-attack#");
