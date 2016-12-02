@@ -33,10 +33,11 @@ FightBox MWBotWin::getGroupResult() {
 	res.result = str.contains("(0/") ? 1 : 0;
 	res.items = getGroupResultMain();
 	elm = frm->findFirstElement("td.log div.result div.button div.c");
+	if (elm.isNull()) elm = frm->findFirstElement("td.log div.result span.button div.c");
 	if (!elm.isNull()) {
 		clickElement(elm);
+		res.items.append(getDuelResultExtra());
 	}
-	res.items.append(getDuelResultExtra());
 	return res;
 }
 
@@ -72,7 +73,7 @@ QList<mwItem> MWBotWin::getDuelResultMain() {
 		if (!elm.classes().contains("count") && (elm.classes().size() > 0)) {
 			if (elm.classes().contains("object-thumb")) {
 				obj.name = elm.findFirst("img").attribute("alt");
-				obj.count = elm.findFirst("span.count").toPlainText().toInt();
+				obj.count = elm.findFirst("span.count").toPlainText().remove("#").toInt();
 			} else {
 				obj.name = elm.classes().first();
 				obj.count = elm.toPlainText().remove(",").toInt();
@@ -122,13 +123,16 @@ QList<mwItem> MWBotWin::getGroupResultMain() {
 			if (elm.classes().contains("object-thumb")) {
 				obj.name = elm.findFirst("img").attribute("alt");
 				obj.count = elm.findFirst("span.count").toPlainText().toInt();
-			} else {
+			} else {			/* if (elm.parent().parent().attribute("id") == "alert-text") */
 				obj.name = elm.classes().first();
 				obj.count = elm.toPlainText().remove(",").toInt();
+			//} else {
+			//	obj.name.clear();
 			}
-			if (obj.count == 0)
-				obj.count = 1;
-			res.append(obj);
+			if (!obj.name.isEmpty()) {
+				if (obj.count == 0) obj.count = 1;
+				res.append(obj);
+			}
 		}
 	}
 	return res;
@@ -183,6 +187,8 @@ void MWBotWin::logResult(FightBox res) {
 				tolog = trUtf8("Открыт сундук <b>%0</b>&nbsp;").arg(res.enemy.name);
 				icon = "chest.png";
 				break;
+			case 4:
+				tolog = trUtf8("Патруль нефтепровода пройден&nbsp;");
 		}
 		fightres.append("<b>");
 		foreach(mwItem obj,res.items) {

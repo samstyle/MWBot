@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>820</width>
+    <width>818</width>
     <height>630</height>
    </rect>
   </property>
@@ -793,6 +793,24 @@
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_13">
                <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="0,10">
+                 <item>
+                  <widget class="QLabel" name="label_17">
+                   <property name="text">
+                    <string>Порядковый номер</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSpinBox" name="sbPetIndex">
+                   <property name="minimum">
+                    <number>1</number>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
                 <widget class="QCheckBox" name="cbTrainRuda">
                  <property name="text">
                   <string>за руду</string>
@@ -954,7 +972,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>820</width>
+     <width>818</width>
      <height>21</height>
     </rect>
    </property>

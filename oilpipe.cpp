@@ -1,5 +1,30 @@
 #include "main.h"
 
+QList<mwItem> oilGameItems(QWebFrame* frm) {
+	QWebElement elm = frm->findFirstElement("div.alert.alert1 div.neft-award");
+	QList<mwItem> res;
+	if (elm.isNull()) return res;
+	mwItem obj;
+	QWebElement e;
+	foreach(e, elm.findAll("span").toList()) {
+		obj.count = 0;
+		if (e.classes().contains("object-thumb")) {
+			obj.name = e.findFirst("img").attribute("alt");
+			obj.count = e.findFirst("span.count").toPlainText().remove("#").toInt();
+		} else {		// if (e.parent().classes().contains("neft-award"))
+			obj.name = e.classes().first();
+			obj.count = e.toPlainText().remove(",").toInt();
+		//} else {
+		//	obj.name.clear();
+		}
+		if (!obj.name.isEmpty()) {
+			if (obj.count == 0) obj.count++;
+			res.append(obj);
+		}
+	}
+	return res;
+}
+
 int MWBotWin::checkSusp(int susp, int need) {
 	if (susp + need > 150) {
 		need = susp + need - 150;
@@ -14,6 +39,7 @@ int MWBotWin::checkSusp(int susp, int need) {
 int MWBotWin::oilGameEscape() {
 	qDebug() << "oil game escape";
 	QWebElement blk, tlm;
+	FightBox res;
 	blk = frm->findFirstElement("div#neftlenin_alert_mission div.content-block div.actions button.button div.c");
 	tlm = blk.findFirst("span.suspicion span.price_escape");
 	int need = 0;
@@ -23,8 +49,9 @@ int MWBotWin::oilGameEscape() {
 	qDebug() << "need" << need << "susp";
 
 	if (need == 0) {
-		log(trUtf8("Патруль пройден успешно"),"neft.png");
-		fightResult();
+		res.result = 4;
+		res.items = oilGameItems(frm);
+		clickElement("div.alert.alert1 div.neft-award div.actions div.button div.c");
 		clickElement(blk);
 	} else {
 		tlm = frm->findFirstElement("div.pipeline-actions table td.mc div.progress i.counter");

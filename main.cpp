@@ -20,11 +20,9 @@ MWBotWin::MWBotWin() {
 	dir.mkpath(workDir);
 	dir.mkpath(workDir + "cache");
 
-	mgr = new QNetworkAccessManager(this);
 	cache = new QNetworkDiskCache(this);
 	cache->setCacheDirectory(workDir + "cache");
-	mgr->setCache(cache);
-	ui.browser->page()->setNetworkAccessManager(mgr);
+	ui.browser->page()->networkAccessManager()->setCache(cache);
 
 	options = 0;
 	flag = 0;//FL_TR_RUDA | FL_TR_OIL;

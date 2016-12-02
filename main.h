@@ -4,6 +4,7 @@
 #include <QtGui>
 #include <QNetworkCookie>
 #include <QtWebKit>
+#include <QWebFrame>
 #include <QDate>
 #include <QNetworkDiskCache>
 
@@ -178,6 +179,7 @@ class MWBotWin : public QMainWindow {
 				unsigned train:1;
 				unsigned useOre:1;
 				unsigned useOil:1;
+				int num;
 				int money;
 				int ore;
 				int oil;
@@ -222,7 +224,7 @@ class MWBotWin : public QMainWindow {
 		Ui::TEdit tui;
 		QEventLoop evloop;
 		QWebFrame* frm;
-		QNetworkAccessManager* mgr;
+		// QNetworkAccessManager* mgr;
 		QNetworkDiskCache* cache;
 
 		QStringList* editList;

@@ -6,7 +6,8 @@ TEMPLATE = app
 TARGET =
 DEPENDPATH += .
 INCLUDEPATH += .
-QT += webkit network
+QT += webkit network core gui widgets webkitwidgets
+TARGET = mwbot
 
 # Input
 HEADERS += main.h

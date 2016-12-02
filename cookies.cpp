@@ -11,17 +11,21 @@ void MWBotWin::loadCookies() {
 			list.append(QNetworkCookie::parseCookies(line));
 		}
 		file.close();
-		ui.browser->page()->networkAccessManager()->cookieJar()->setCookiesFromUrl(list,QUrl("http://moswar.ru"));
+		ui.browser->page()->networkAccessManager()->cookieJar()->setCookiesFromUrl(list,QUrl("http://www.moswar.ru/"));
 	}
 }
 
 void MWBotWin::saveCookies() {
-	QList<QNetworkCookie> cookies = ui.browser->page()->networkAccessManager()->cookieJar()->cookiesForUrl(QUrl("http://moswar.ru"));
-	QFile file(workDir + "cookie.txt");
-	file.open(QFile::WriteOnly);
-	for(int i = 0; i < cookies.size(); i++) {
-		file.write(cookies[i].toRawForm());
-		file.write("\n");
+	QList<QNetworkCookie> cookies = ui.browser->page()->networkAccessManager()->cookieJar()->cookiesForUrl(QUrl("http://www.moswar.ru"));
+	if (cookies.size() == 0) {
+		qDebug() << "empty cookies";
+	} else {
+		QFile file(workDir + "cookie.txt");
+		file.open(QFile::WriteOnly);
+		for(int i = 0; i < cookies.size(); i++) {
+			file.write(cookies[i].toRawForm());
+			file.write("\n");
+		}
+		file.close();
 	}
-	file.close();
 }

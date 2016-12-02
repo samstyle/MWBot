@@ -90,10 +90,13 @@ void MWBotWin::loadOpts() {
 					}
 				}
 				if (com == "trainpet") opt.bPet.train = bval;
+				if (com == "petnum") opt.bPet.num = inRange(ival, 1, 100);
 				if (com == "tp-ruda") opt.bPet.useOre = bval;
 				if (com == "tp-oil") opt.bPet.useOil = bval;
+
 				if (com == "runner") opt.run.enabled = bval;
 				if (com == "runname") opt.run.name = val;
+
 				if (com == "goldplay") goldType = ival;
 				if (com == "payfine") opt.police.fine = bval;
 				if (com == "setrel") opt.police.relations = bval;
@@ -163,9 +166,12 @@ void MWBotWin::saveOpts() {
 		file.write(QString("minlev:%0\n").arg(QString::number(opt.atk.minLev)).toUtf8());
 		file.write(QString("maxlev:%0\n").arg(QString::number(opt.atk.maxLev)).toUtf8());
 		file.write(QString("statprc:%0\n").arg(QString::number(opt.atk.statPrc)).toUtf8());
+
 		file.write(QString("trainpet:%0\n").arg(opt.bPet.train ? "yes" : "no").toUtf8());
+		file.write(QString("petnum:%0\n").arg(opt.bPet.num).toUtf8());
 		file.write(QString("tp-ruda:%0\n").arg(opt.bPet.useOre ? "yes" : "no").toUtf8());
 		file.write(QString("tp-oil:%0\n").arg(opt.bPet.useOil ? "yes" : "no").toUtf8());
+
 		file.write(QString("runner:%0\n").arg(opt.run.enabled ? "yes" : "no").toUtf8());
 		file.write(QString("runname:%0\n").arg(opt.run.name).toUtf8());
 		file.write(QString("goldplay:").append(QString::number(goldType)).append("\n").toUtf8());
@@ -212,9 +218,12 @@ void MWBotWin::apply() {
 	opt.atk.minLev = ui.sbMinLev->value();
 	opt.atk.maxLev = ui.sbMaxLev->value();
 	opt.atk.statPrc = ui.sbStatCheck->value();
+
 	opt.bPet.train = ui.gbFightPet->isChecked() ? 1 : 0;
+	opt.bPet.num = ui.sbPetIndex->value();
 	opt.bPet.useOre = ui.cbTrainRuda->isChecked() ? 1 : 0;
 	opt.bPet.useOil = ui.cbTrainNeft->isChecked() ? 1 : 0;
+
 	opt.run.enabled = ui.cbRunner->isChecked() ? 1 : 0;
 	opt.run.name = ui.leRunName->text();
 	opt.police.fine = ui.cbPolFine->isChecked() ? 1 : 0;
@@ -255,9 +264,12 @@ void MWBotWin::setOpts() {
 	ui.sbMinLev->setValue(opt.atk.minLev);
 	ui.sbMaxLev->setValue(opt.atk.maxLev);
 	ui.sbStatCheck->setValue(opt.atk.statPrc);
+
 	ui.gbFightPet->setChecked(opt.bPet.train);
+	ui.sbPetIndex->setValue(opt.bPet.num);
 	ui.cbTrainRuda->setChecked(opt.bPet.useOre);
 	ui.cbTrainNeft->setChecked(opt.bPet.useOil);
+
 	ui.cbRunner->setChecked(opt.run.enabled);
 	ui.leRunName->setText(opt.run.name);
 	ui.cbPolFine->setChecked(opt.police.fine);
