@@ -68,9 +68,6 @@ void MWBotWin::loadOpts() {
 				if (com == "oilpipe") opt.oil.enable = bval;
 				if (com == "oildice") opt.oil.diceMax = ival;
 
-//				if ((com == "digger") && bval) options |= FL_DIG;
-//				if ((com == "digrat") && bval) options |= FL_DIGRAT;
-
 				if (com == "baraban") opt.kub.play = bval;
 				if (com == "buycaps") opt.kub.buy = bval;
 				if (com == "caps") opt.kub.caps = ival;
@@ -100,7 +97,9 @@ void MWBotWin::loadOpts() {
 				if (com == "goldplay") goldType = ival;
 				if (com == "payfine") opt.police.fine = bval;
 				if (com == "setrel") opt.police.relations = bval;
+
 				if (com == "taxi") opt.taxi.enable = bval;
+				if (com == "ridecar") opt.car.ride = bval;
 
 				if (com == "useCheese") opt.group.cheese = bval;
 				if (com == "useHeal") opt.group.heal = bval;
@@ -110,6 +109,7 @@ void MWBotWin::loadOpts() {
 				if (com == "cheeseList") fillList(opt.group.cheeseList, file);
 				if (com == "healList") fillList(opt.group.healList, file);
 				if (com == "bombList") fillList(opt.group.bombList, file);
+				if (com == "rideList") fillList(opt.car.list, file);
 			}
 		}
 		if (opt.atk.minLev > opt.atk.maxLev) {
@@ -178,11 +178,14 @@ void MWBotWin::saveOpts() {
 		file.write(QString("payfine:%0\n").arg(opt.police.fine ? "yes" : "no").toUtf8());
 		file.write(QString("setrel:%0\n").arg(opt.police.relations ? "yes" : "no").toUtf8());
 		file.write(QString("openchest:%0\n").arg(opt.chest.open ? "yes" : "no").toUtf8());
+
 		file.write(QString("taxi:%0\n").arg(opt.taxi.enable ? "yes" : "no").toUtf8());
+		file.write(QString("ridecar:%0\n").arg(opt.car.ride ? "yes" : "no").toUtf8());
 
 		writeList(file, "cheeseList", opt.group.cheeseList);
 		writeList(file, "healList", opt.group.healList);
 		writeList(file, "bombList", opt.group.bombList);
+		writeList(file, "rideList", opt.car.list);
 	}
 }
 
@@ -229,7 +232,9 @@ void MWBotWin::apply() {
 	opt.police.fine = ui.cbPolFine->isChecked() ? 1 : 0;
 	opt.police.relations = ui.cbPolRelat->isChecked() ? 1 : 0;
 	opt.chest.open = ui.cbChest->isChecked() ? 1 : 0;
+
 	opt.taxi.enable = ui.cbTaxi->isChecked() ? 1 : 0;
+	opt.car.ride = ui.cbRide->isChecked() ? 1 : 0;
 	saveOpts();
 }
 
@@ -275,5 +280,7 @@ void MWBotWin::setOpts() {
 	ui.cbPolFine->setChecked(opt.police.fine);
 	ui.cbPolRelat->setChecked(opt.police.relations);
 	ui.cbChest->setChecked(opt.chest.open);
+
 	ui.cbTaxi->setChecked(opt.taxi.enable);
+	ui.cbRide->setChecked(opt.car.ride);
 }

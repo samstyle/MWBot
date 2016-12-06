@@ -13,17 +13,21 @@ void MWBotWin::trainPet() {
 		el2 = elm.findFirst("dt.selected.active");
 		if (el2.toPlainText().contains(trUtf8("Боевые питомцы"))) {
 			ls2 = elm.findAll("div.object-thumb").toList();
-			if (idx < ls2.size()) {
-				elm = ls2.at(idx).findFirst("div#train-parrot.action");
-				fnd = 1;
+			if (ls2.size() == 0) {
+				log(trUtf8("Нет боевых питомцев, тренировка отключена"),"bone.png");
+				opt.bPet.train = 0;
+				setOpts();
+			} else if (idx < ls2.size()) {
+				elm = ls2[idx].findFirst("div#train-parrot.action");
+				fnd = elm.isNull() ? 0 : 1;
 			}
 		}
 		if (fnd) break;
 	}
 	if (!fnd) {
-		log(trUtf8("Ошибка тренировки боевого питомца"),"bug.png");
-		opt.bPet.train = 0;
-		saveOpts();
+		log(trUtf8("Ошибка тренировки боевого питомца. +5 мин"),"bug.png");
+		curTime = QDateTime::currentDateTime();
+		opt.bPet.time = curTime.addSecs(300);
 	} else {
 		clickElement(elm);
 		elm = frm->findFirstElement("span[rel=name]");

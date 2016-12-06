@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>818</width>
-    <height>630</height>
+    <width>822</width>
+    <height>658</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,26 +22,30 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
-       <widget class="QToolButton" name="tbStart">
-        <property name="text">
-         <string>Start</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/images/start.png</normaloff>:/images/start.png</iconset>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QToolButton" name="tbSave">
-        <property name="text">
-         <string>...</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/images/save.png</normaloff>:/images/save.png</iconset>
-        </property>
-       </widget>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="0" column="0">
+         <widget class="QToolButton" name="tbStart">
+          <property name="text">
+           <string>Start</string>
+          </property>
+          <property name="icon">
+           <iconset resource="resources.qrc">
+            <normaloff>:/images/start.png</normaloff>:/images/start.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QToolButton" name="tbSave">
+          <property name="text">
+           <string>...</string>
+          </property>
+          <property name="icon">
+           <iconset resource="resources.qrc">
+            <normaloff>:/images/save.png</normaloff>:/images/save.png</iconset>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item>
        <widget class="QWidget" name="toolbar" native="true">
@@ -60,163 +64,150 @@
           </spacer>
          </item>
          <item>
-          <widget class="QToolButton" name="tbAtack">
-           <property name="toolTip">
-            <string>Атака</string>
-           </property>
-           <property name="text">
-            <string>Atack</string>
-           </property>
-           <property name="icon">
-            <iconset resource="resources.qrc">
-             <normaloff>:/images/atack.png</normaloff>:/images/atack.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QToolButton" name="tbRat">
-           <property name="toolTip">
-            <string>Охота на крыс</string>
-           </property>
-           <property name="text">
-            <string>Rat</string>
-           </property>
-           <property name="icon">
-            <iconset resource="resources.qrc">
-             <normaloff>:/images/rat.png</normaloff>:/images/rat.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QToolButton" name="tbDig">
-           <property name="toolTip">
-            <string>Копать в метро</string>
-           </property>
-           <property name="text">
-            <string>...</string>
-           </property>
-           <property name="icon">
-            <iconset resource="resources.qrc">
-             <normaloff>:/images/kirka.png</normaloff>:/images/kirka.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QToolButton" name="tbOil">
-           <property name="toolTip">
-            <string>Нефтепровод</string>
-           </property>
-           <property name="text">
-            <string>Neft</string>
-           </property>
-           <property name="icon">
-            <iconset resource="resources.qrc">
-             <normaloff>:/images/neft.png</normaloff>:/images/neft.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QToolButton" name="tbPetrik">
-           <property name="toolTip">
-            <string>Варка петриков</string>
-           </property>
-           <property name="text">
-            <string>Petrik</string>
-           </property>
-           <property name="icon">
-            <iconset resource="resources.qrc">
-             <normaloff>:/images/petrik.png</normaloff>:/images/petrik.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QToolButton" name="tbThimble">
-           <property name="toolTip">
-            <string>Игра с моней</string>
-           </property>
-           <property name="text">
-            <string>Thimble</string>
-           </property>
-           <property name="icon">
-            <iconset resource="resources.qrc">
-             <normaloff>:/images/monya.png</normaloff>:/images/monya.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QToolButton" name="tbGipsy">
-           <property name="text">
-            <string>Gipsy</string>
-           </property>
-           <property name="icon">
-            <iconset resource="resources.qrc">
-             <normaloff>:/images/gold.png</normaloff>:/images/gold.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QToolButton" name="tbBaraban">
-           <property name="text">
-            <string>...</string>
-           </property>
-           <property name="icon">
-            <iconset resource="resources.qrc">
-             <normaloff>:/images/baraban.png</normaloff>:/images/baraban.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QToolButton" name="tbSellLot">
-           <property name="toolTip">
-            <string>Продажа коктейлей</string>
-           </property>
-           <property name="text">
-            <string>Lots</string>
-           </property>
-           <property name="icon">
-            <iconset resource="resources.qrc">
-             <normaloff>:/images/cocktail.png</normaloff>:/images/cocktail.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QToolButton" name="tbTrainPet">
-           <property name="toolTip">
-            <string>Тренировка боевого пета</string>
-           </property>
-           <property name="text">
-            <string>Tr</string>
-           </property>
-           <property name="icon">
-            <iconset resource="resources.qrc">
-             <normaloff>:/images/bone.png</normaloff>:/images/bone.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QToolButton" name="tbArena">
-           <property name="toolTip">
-            <string>Забег на арене</string>
-           </property>
-           <property name="text">
-            <string>Arena</string>
-           </property>
-           <property name="icon">
-            <iconset resource="resources.qrc">
-             <normaloff>:/images/medal.png</normaloff>:/images/medal.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QToolButton" name="tbTaxi">
-           <property name="text">
-            <string>...</string>
-           </property>
-           <property name="icon">
-            <iconset resource="resources.qrc">
-             <normaloff>:/images/taxi.png</normaloff>:/images/taxi.png</iconset>
-           </property>
-          </widget>
+          <layout class="QGridLayout" name="gridLayout_3">
+           <item row="0" column="5">
+            <widget class="QToolButton" name="tbBaraban">
+             <property name="text">
+              <string>...</string>
+             </property>
+             <property name="icon">
+              <iconset resource="resources.qrc">
+               <normaloff>:/images/baraban.png</normaloff>:/images/baraban.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="9">
+            <widget class="QToolButton" name="tbTaxi">
+             <property name="text">
+              <string>...</string>
+             </property>
+             <property name="icon">
+              <iconset resource="resources.qrc">
+               <normaloff>:/images/taxi.png</normaloff>:/images/taxi.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QToolButton" name="tbRat">
+             <property name="toolTip">
+              <string>Охота на крыс</string>
+             </property>
+             <property name="text">
+              <string>Rat</string>
+             </property>
+             <property name="icon">
+              <iconset resource="resources.qrc">
+               <normaloff>:/images/rat.png</normaloff>:/images/rat.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QToolButton" name="tbAtack">
+             <property name="toolTip">
+              <string>Атака</string>
+             </property>
+             <property name="text">
+              <string>Atack</string>
+             </property>
+             <property name="icon">
+              <iconset resource="resources.qrc">
+               <normaloff>:/images/punch.png</normaloff>:/images/punch.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="4">
+            <widget class="QToolButton" name="tbPetrik">
+             <property name="toolTip">
+              <string>Варка петриков</string>
+             </property>
+             <property name="text">
+              <string>Petrik</string>
+             </property>
+             <property name="icon">
+              <iconset resource="resources.qrc">
+               <normaloff>:/images/petrik.png</normaloff>:/images/petrik.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="7">
+            <widget class="QToolButton" name="tbTrainPet">
+             <property name="toolTip">
+              <string>Тренировка боевого пета</string>
+             </property>
+             <property name="text">
+              <string>Tr</string>
+             </property>
+             <property name="icon">
+              <iconset resource="resources.qrc">
+               <normaloff>:/images/bone.png</normaloff>:/images/bone.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QToolButton" name="tbOil">
+             <property name="toolTip">
+              <string>Нефтепровод</string>
+             </property>
+             <property name="text">
+              <string>Neft</string>
+             </property>
+             <property name="icon">
+              <iconset resource="resources.qrc">
+               <normaloff>:/images/neft.png</normaloff>:/images/neft.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="6">
+            <widget class="QToolButton" name="tbGipsy">
+             <property name="text">
+              <string>Gipsy</string>
+             </property>
+             <property name="icon">
+              <iconset resource="resources.qrc">
+               <normaloff>:/images/gold.png</normaloff>:/images/gold.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="8">
+            <widget class="QToolButton" name="tbArena">
+             <property name="toolTip">
+              <string>Забег на арене</string>
+             </property>
+             <property name="text">
+              <string>Arena</string>
+             </property>
+             <property name="icon">
+              <iconset resource="resources.qrc">
+               <normaloff>:/images/medal.png</normaloff>:/images/medal.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="3">
+            <widget class="QToolButton" name="tbThimble">
+             <property name="toolTip">
+              <string>Игра с моней</string>
+             </property>
+             <property name="text">
+              <string>Thimble</string>
+             </property>
+             <property name="icon">
+              <iconset resource="resources.qrc">
+               <normaloff>:/images/monya.png</normaloff>:/images/monya.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="10">
+            <widget class="QToolButton" name="tbRide">
+             <property name="text">
+              <string>...</string>
+             </property>
+             <property name="icon">
+              <iconset resource="resources.qrc">
+               <normaloff>:/images/ride.png</normaloff>:/images/ride.png</iconset>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
         </layout>
        </widget>
@@ -854,6 +845,41 @@
              </layout>
             </item>
             <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_10">
+              <item>
+               <widget class="QCheckBox" name="cbRide">
+                <property name="text">
+                 <string>Поездки</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="resources.qrc">
+                  <normaloff>:/images/ride.png</normaloff>:/images/ride.png</iconset>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_5">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QToolButton" name="tbRideList">
+                <property name="text">
+                 <string>...</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
              <spacer name="verticalSpacer_3">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
@@ -867,19 +893,6 @@
              </spacer>
             </item>
            </layout>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_4">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
           </item>
          </layout>
         </item>
@@ -972,7 +985,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>818</width>
+     <width>822</width>
      <height>21</height>
     </rect>
    </property>

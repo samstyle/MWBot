@@ -39,11 +39,12 @@ enum {
 	resLose = 0,
 	resWin,
 	resDraw,
-	resChest
+	resChest,
+	resBonus
 };
 
 struct FightBox {
-	int result;	// 0:lost 1:win 2:draw 3:openchest
+	int result;
 	CharBox enemy;
 	QList<mwItem> items;
 };
@@ -172,10 +173,8 @@ class MWBotWin : public QMainWindow {
 				unsigned stars:1;
 				int minPlaySum;
 				int maxPlaySum;
-				//QDate date;
 			} monya;
 			struct {
-				//unsigned block:1;
 				unsigned train:1;
 				unsigned useOre:1;
 				unsigned useOil:1;
@@ -195,6 +194,12 @@ class MWBotWin : public QMainWindow {
 				int caps;
 				QDate date;
 			} kub;
+			struct {
+				unsigned ride:1;
+				QStringList list;
+				QDateTime time;
+//				QMap<QString,QDateTime> timeMap;
+			} car;
 		} opt;
 		struct {
 			unsigned busy:1;
@@ -202,7 +207,6 @@ class MWBotWin : public QMainWindow {
 			unsigned loading:1;
 			unsigned botWork:1;
 			unsigned firstRun:1;
-//			unsigned atkChillout:1;
 		} state;
 
 		QString getItemIcon(QString);
@@ -224,18 +228,14 @@ class MWBotWin : public QMainWindow {
 		Ui::TEdit tui;
 		QEventLoop evloop;
 		QWebFrame* frm;
-		// QNetworkAccessManager* mgr;
 		QNetworkDiskCache* cache;
 
 		QStringList* editList;
 
 		QDateTime curTime;
-		QDateTime digTime;
-		// QDateTime runTime;
 
 		CharBox getStat(QString,QString);
 
-		// FightBox getResult();
 		int fightResult();
 
 		FightBox getDuelResult();
@@ -267,6 +267,7 @@ class MWBotWin : public QMainWindow {
 		int checkSusp(int, int);
 
 		void checkPolice();
+		int checkCooldown(QWebElement&, QString);	// check ride cooldown
 
 		void log(QString, QString icon="");
 
@@ -284,18 +285,18 @@ class MWBotWin : public QMainWindow {
 		void makePetrik();
 		void sellLots();
 		void gipsy();
-		void dig();
-		void digEnd();
 		void playKub();
 		void trainPet();
 		void arena();
 		void openChests();
 		void doTaxi();
+		void rideCar();
 
 		void apply();
 		void editCheese();
 		void editHeal();
 		void editBomb();
+		void editRide();
 		void setList();
 
 		void onStart();
@@ -304,12 +305,12 @@ class MWBotWin : public QMainWindow {
 		void start();
 		void savePage();
 		void chZoom(int);
-	signals:
-		void digEnded();
 	protected:
 		void closeEvent(QCloseEvent*);
 		void timerEvent(QTimerEvent*);
 		void keyPressEvent(QKeyEvent*);
 };
+
+int eVisible(QWebElement&);
 
 #endif

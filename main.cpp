@@ -68,6 +68,7 @@ MWBotWin::MWBotWin() {
 //	opt.monya.date = curTime.date();
 
 	opt.bPet.train = 1;
+	opt.bPet.num = 1;
 	opt.bPet.useOre = 1;
 	opt.bPet.useOil = 0;
 	opt.bPet.money = 0;
@@ -77,6 +78,10 @@ MWBotWin::MWBotWin() {
 
 	opt.taxi.enable = 1;
 	opt.taxi.time = curTime;
+
+	opt.car.ride = 1;
+	opt.car.time = curTime;
+	opt.car.list.clear();
 
 	state.stop = 0;
 	state.botWork = 0;
@@ -125,23 +130,26 @@ MWBotWin::MWBotWin() {
 	connect(ui.tbRat,SIGNAL(clicked()),this,SLOT(atkRat()));
 	connect(ui.tbOil,SIGNAL(clicked()),this,SLOT(atackOil()));
 	connect(ui.tbPetrik,SIGNAL(clicked()),this,SLOT(makePetrik()));
-	connect(ui.tbSellLot,SIGNAL(clicked()),this,SLOT(sellLots()));
+//	connect(ui.tbSellLot,SIGNAL(clicked()),this,SLOT(sellLots()));
 	connect(ui.tbThimble,SIGNAL(clicked()),this,SLOT(goMonia()));
-	connect(ui.tbDig,SIGNAL(clicked()),this,SLOT(dig()));
+//	connect(ui.tbDig,SIGNAL(clicked()),this,SLOT(dig()));
 	connect(ui.tbBaraban,SIGNAL(clicked()),this,SLOT(playKub()));
 	connect(ui.tbTrainPet,SIGNAL(clicked()),this,SLOT(trainPet()));
 	connect(ui.tbArena,SIGNAL(clicked()),this,SLOT(arena()));
 	connect(ui.tbTaxi,SIGNAL(clicked()),this,SLOT(doTaxi()));
+	connect(ui.tbRide,SIGNAL(clicked()),this,SLOT(rideCar()));
 
 	connect(ui.zoomSlider,SIGNAL(valueChanged(int)),this,SLOT(chZoom(int)));
 
 	connect(ui.tbCheeseList,SIGNAL(clicked(bool)),this,SLOT(editCheese()));
 	connect(ui.tbHealList,SIGNAL(clicked(bool)),this,SLOT(editHeal()));
 	connect(ui.tbBombList,SIGNAL(clicked(bool)),this,SLOT(editBomb()));
+	connect(ui.tbRideList,SIGNAL(clicked(bool)),this,SLOT(editRide()));
 	connect(tui.okButton,SIGNAL(clicked(bool)),this,SLOT(setList()));
 	connect(tui.cancelButton,SIGNAL(clicked(bool)),tedit,SLOT(hide()));
 
-	ui.zoomSlider->setValue(75);
+	ui.zoomSlider->setValue(100);
+	resize(1030,-1);
 
 }
 
@@ -264,62 +272,10 @@ void MWBotWin::timerEvent(QTimerEvent* ev) {
 	if (opt.taxi.enable && (curTime > opt.taxi.time) && (curTime.date().dayOfWeek() == 1)) {
 		doTaxi();
 	}
-}
-
-// dig
-
-void MWBotWin::dig() {
-	setBusy(true);
-	loadPath(QStringList() << "square" << "metro");
-	clickElement("div.button[onclick='metroWork();'] div.c");
-	QWebElement elm = frm->findFirstElement("td#metrodig");
-	int sec = elm.attribute("timer").toInt() + 2;
-	curTime = QDateTime::currentDateTime();
-	digTime = curTime.addSecs(sec);
-	log(trUtf8("Копаем в метро, до окончания %0 сек").arg(sec));
-	flag |= FL_DIGGING;
-	setBusy(false);
-}
-
-void MWBotWin::digEnd() {
-	setBusy(true);
-	log(trUtf8("Раскопка окончена"));
-	loadPath(QStringList() << "square" << "metro");
-	QWebElement elm = frm->findFirstElement("button.button[onclick='metroDig();'] div.c");
-	if (elm.isNull()) {
-		QWebElementCollection elms = frm->findAllElements("button.button[onclick] div.c");
-		foreach(elm,elms) {
-			if ((options & FL_DIGRAT) && (elm.toPlainText().contains(trUtf8("Напасть")))) {
-				log(trUtf8("Атакуем крысу"));
-				restoreHP();
-				elm.setAttribute("id","clickthis");
-				clickElement("div#clickthis");
-				int res = fightResult();
-				switch (res) {
-					case 0: options &= ~FL_DIG; break;		// lose, don't dig anymore
-					case 1: break;
-					case 2: break;
-				}
-			}
-			if ((~options & FL_DIGRAT) && (elm.toPlainText().contains(trUtf8("убежать")))) {	// don't atack rat, don't dig
-				log(trUtf8("Убегаем от крысы"));
-				elm.setAttribute("id","clickthis");
-				clickElement("div#clickthis");
-				digEnd();
-				options &= ~FL_DIG;
-			}
-		}
-	} else {
-		clickElement("button.button[onclick='metroDig();'] div.c");
-		elm = frm->findFirstElement("div#content div.report div.success");
-		if (elm.isNull()) {
-			log(trUtf8("Ничего не выкопано"));
-		} else {
-			log(trUtf8("Раскопка удачна"));
-		}
+// car ride
+	if (opt.car.ride && (curTime > opt.car.time)) {
+		rideCar();
 	}
-	flag &= ~FL_DIGGING;
-	setBusy(false);
 }
 
 // gipsy
@@ -789,6 +745,12 @@ void MWBotWin::editBomb() {
 	tedit->show();
 }
 
+void MWBotWin::editRide() {
+	editList = &opt.car.list;
+	tui.textArea->setPlainText(editList->join("\n"));
+	tedit->show();
+}
+
 void MWBotWin::setList() {
 	*editList = tui.textArea->toPlainText().split("\n",QString::SkipEmptyParts);
 	tedit->hide();
@@ -809,5 +771,5 @@ int main(int ac,char** av) {
 // debug
 
 void MWBotWin::debug() {
-	openChests();
+	rideCar();
 }

@@ -48,7 +48,7 @@ void MWBotWin::arena() {
 							clickElement(QString("ul.lenta li.pet-object[data-id='").append(pet.attribute("data-id")).append("']"));
 							clickElement("div.center button#checkInEnabled div.c");
 						}
-						log(trUtf8("%0 записан на забег").arg(pet.attribute("data-pet-name")),"medal.png");
+						log(trUtf8("<b>%0</b> записан на забег").arg(pet.attribute("data-pet-name")),"medal.png");
 						opt.run.time = curTime.addSecs(600);		// +10 min
 						wtime = 0;
 					} else {

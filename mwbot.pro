@@ -27,7 +27,9 @@ SOURCES += main.cpp \
     chests.cpp \
     taxi.cpp \
     rats.cpp \
-    oilpipe.cpp
+    oilpipe.cpp \
+    carride.cpp \
+    common.cpp
 
 FORMS += \
     mainwindow.ui \

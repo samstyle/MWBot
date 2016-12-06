@@ -170,25 +170,26 @@ void MWBotWin::logResult(FightBox res) {
 	} else {
 		enname = QString("%0 [%1]").arg(res.enemy.name).arg(res.enemy.level);
 	}
-	if (res.result == 2) {		// draw
+	if (res.result == resDraw) {		// draw
 		tolog = QString("<img src=%0>&nbsp;<b>%1</b></font>").arg(nname).arg(enname);
 		icon = "unknown.png";
 	} else {
 		switch (res.result) {
-			case 0:		// lose
+			case resLose:		// lose
 				tolog = QString("<img src=%0>&nbsp;<b>%1</b>&nbsp;").arg(nname).arg(enname);
 				icon = "no.png";
 				break;
-			case 1:		// win
+			case resWin:		// win
 				tolog = QString("<img src=%0>&nbsp;<b>%1</b>&nbsp;").arg(nname).arg(enname);
 				icon = "yes.png";
 				break;
-			case 3:		// chest
+			case resChest:		// chest
 				tolog = trUtf8("Открыт сундук <b>%0</b>&nbsp;").arg(res.enemy.name);
 				icon = "chest.png";
 				break;
-			case 4:
-				tolog = trUtf8("Патруль нефтепровода пройден&nbsp;");
+			case resBonus:
+				tolog = trUtf8("Получены предметы: ");
+				break;
 		}
 		fightres.append("<b>");
 		foreach(mwItem obj,res.items) {
