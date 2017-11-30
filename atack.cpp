@@ -9,7 +9,7 @@
 
 void MWBotWin::attack() {
 	setBusy(true);
-	loadPage("alley/");
+	loadPage("alley");
 	int tim = getAtackTimer();
 	bool at = true;
 	int asel;
@@ -17,6 +17,7 @@ void MWBotWin::attack() {
 	QWebElement elm;
 	if (tim < 1) {
 		do {
+			tim = AT_OK;
 			at = true;
 			do {
 				restoreHP();
@@ -38,12 +39,12 @@ void MWBotWin::attack() {
 			}
 			tim = atkCheck(enstat, at ? opt.atk.typeA : opt.atk.typeB);			// AT_OK:victim found; AT_ERR:error; AT_STOP:stop
 			if (tim == AT_OK) {
-				elm = frm->findFirstElement("div#content div.report div.red");
-				if (!elm.isNull()) {
+				elm = frm->findFirstElement("div#alley-search-myself div.error");
+				if (eVisible(elm)) {
 					loadPage("alley");
-					tim = AT_ERR;
+					tim = AT_STOP;
 				} else {
-					clickElement("div.button.button-fight div.c");				// click atack
+					click(ui.browser, "div.button.button-fight div.c");				// click atack
 					do {
 						// if (flag & FL_STOP) {tim = 2; break;}
 						elm = frm->findFirstElement("div#content div.report div.red");
@@ -71,13 +72,13 @@ int MWBotWin::atkSelect(int type) {
 	int brk = 0;
 	switch (type) {
 		case ATK_WEAK:
-			clickElement("form.search-alley div.button-big.btn.f1");
+			click(ui.browser, "form.search-alley div.button-big.btn.f1");
 			break;
 		case ATK_EQUAL:
-			clickElement("form.search-alley div.button-big.btn.f2");
+			click(ui.browser, "form.search-alley div.button-big.btn.f2");
 			break;
 		case ATK_STRONG:
-			clickElement("form.search-alley div.button-big.btn.f3");
+			click(ui.browser, "form.search-alley div.button-big.btn.f3");
 			break;
 		case ATK_ENEMY:
 			brk = 1;
@@ -90,14 +91,14 @@ int MWBotWin::atkSelect(int type) {
 			elm.setAttribute("value",QString::number(opt.atk.minLev));
 			elm = frm->findFirstElement("input[name=maxlevel]");
 			elm.setAttribute("value",QString::number(opt.atk.maxLev));
-			clickElement("form#searchLevelForm div.button div.c");
+			click(ui.browser, "form#searchLevelForm div.button div.c");
 			break;
 	}
 	if (brk) return AT_ERR;
 	elm = frm->findFirstElement("div#alley-search-myself div.error");
-	if (!elm.isNull()) return AT_ERR;
+	if (eVisible(elm)) return AT_ERR;
 	elm = frm->findFirstElement("div#alley-search-myself p.error");
-	if (elm.isNull()) return AT_OK;
+	if (!eVisible(elm)) return AT_OK;
 	atkId = elm.toPlainText();
 	if (atkId.contains(trUtf8("чучело"))) return AT_NF;
 	if (atkId.contains(trUtf8("Вы заняты"))) return AT_BUSY;
@@ -110,6 +111,7 @@ int MWBotWin::atkCheck(CharBox& enstat, int type) {
 	int res = -1;
 	bool checkLev = false;
 	CharBox mystat = getStat("div.fighter1","td.fighter1-cell");
+	if (mystat.stat.zdor < 0) return AT_ERR;
 	int levLow = mystat.level + opt.atk.minLev;
 	int levHi = mystat.level + opt.atk.maxLev;
 	QWebElement elm;
@@ -128,9 +130,11 @@ int MWBotWin::atkCheck(CharBox& enstat, int type) {
 			if (opt.atk.droped && (enstat.type != "npc")) res = -1;
 		}
 		if (res < 0) {
-			clickElement("div.button.button-search div.c");
+			click(ui.browser, "div.button.button-search div.c");
 			elm = frm->findFirstElement("div#alley-search-myself p.error");
-			if (!elm.isNull()) res = AT_ERR;							// error
+			if (eVisible(elm)) res = AT_ERR;							// error
+			elm = frm->findFirstElement("div#alley-search-myself div.error");
+			if (eVisible(elm)) res = AT_ERR;
 		}
 	} while (res < 0);
 	return res;

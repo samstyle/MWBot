@@ -3,24 +3,24 @@
 QList<mwItem> oilGameItems(QWebFrame* frm) {
 	QWebElement elm = frm->findFirstElement("div.alert.alert1 div.neft-award");
 	QList<mwItem> res;
-	if (elm.isNull()) return res;
+	if (!eVisible(elm)) return res;
 	mwItem obj;
-	QWebElement e;
-	foreach(e, elm.findAll("span").toList()) {
-		obj.count = 0;
-		if (e.classes().contains("object-thumb")) {
-			obj.name = e.findFirst("img").attribute("alt");
-			obj.count = e.findFirst("span.count").toPlainText().remove("#").toInt();
-		} else {		// if (e.parent().classes().contains("neft-award"))
-			obj.name = e.classes().first();
-			obj.count = e.toPlainText().remove(",").toInt();
-		//} else {
-		//	obj.name.clear();
+	QWebElement e = elm.firstChild();
+	while (eVisible(e)) {
+		if (e.tagName() == "span") {
+			if (e.classes().contains("object-thumb")) {
+				obj.name = e.findFirst("img").attribute("alt");
+				obj.count = e.findFirst("span.count").toPlainText().remove(QRegExp("[#,\"]")).trimmed().toInt();
+			} else {
+				obj.name = e.classes().first();
+				obj.count = e.toPlainText().remove(QRegExp("[,#\"]")).trimmed().toInt();
+			}
+			if (!obj.name.isEmpty()) {
+				if (obj.count == 0) obj.count++;
+				res.append(obj);
+			}
 		}
-		if (!obj.name.isEmpty()) {
-			if (obj.count == 0) obj.count++;
-			res.append(obj);
-		}
+		e = e.nextSibling();
 	}
 	return res;
 }
@@ -36,34 +36,42 @@ int MWBotWin::checkSusp(int susp, int need) {
 	return need;
 }
 
-int MWBotWin::oilGameEscape() {
-	qDebug() << "oil game escape";
-	QWebElement blk, tlm;
+// input:
+// < 0 : lose - take susp from left field
+// = 0 : win - susp = 0
+// > 0 : escape, susp = input
+void MWBotWin::oilGameEscape(int result) {
+	// qDebug() << "oil game escape";
+	QWebElement tlm;
 	FightBox res;
-	blk = frm->findFirstElement("div#neftlenin_alert_mission div.content-block div.actions button.button div.c");
-	tlm = blk.findFirst("span.suspicion span.price_escape");
-	int need = 0;
-	if (!tlm.isNull()) {
-		need = tlm.toPlainText().toInt();
-	}
-	qDebug() << "need" << need << "susp";
 
-	if (need == 0) {
+	if (result < 0) {			// lose
+		tlm = frm->findFirstElement("div#neftlenin_alert_mission div.content-block div.start-block span.counter");
+		result = tlm.toPlainText().toInt();
+		if (result < 1) result = 60;
+		log(trUtf8("Игра на нефтепроводе проиграна"),"neft.png");
+	} else if (result == 0) {		// win
+		log(trUtf8("Игра на нефтепроводе выиграна"),"neft.png");
+		tlm = frm->findFirstElement("div#neftlenin_alert_mission div.content-block div.actions button.button div.c");
+		click(ui.browser, tlm);
 		res.result = 4;
 		res.items = oilGameItems(frm);
-		clickElement("div.alert.alert1 div.neft-award div.actions div.button div.c");
-		clickElement(blk);
-	} else {
-		tlm = frm->findFirstElement("div.pipeline-actions table td.mc div.progress i.counter");
-		int susp = tlm.toPlainText().toInt();
-
-		if (!checkSusp(susp, need)) {
-			clickElement(blk);
-			log(trUtf8("Уходим от патруля за %0 подозрительности").arg(need),"neft.png");
-			doPause(2);
-		}
+		click(ui.browser, "div.alert.alert1 div.neft-award div.actions div.button div.c");
+		tlm = frm->findFirstElement("div#neftlenin_alert_mission div.content-block div.actions button.button div.c");
+		click(ui.browser, tlm);
+		logResult(res);
+	} else {				// escape
+		log(trUtf8("Побег с игры на нефтепроводе"),"neft.png");
 	}
-	return need;
+
+	tlm = frm->findFirstElement("div.pipeline-actions table td.mc div.progress i.counter");		// текущая подозрительность
+	int susp = tlm.toPlainText().toInt();
+	if ((result > 0) && !checkSusp(susp, result)) {
+		tlm = frm->findFirstElement("div#neftlenin_alert_mission div.content-block div.actions button.button div.c");
+		click(ui.browser, tlm);
+		log(trUtf8("Уходим от патруля за %0 подозрительности").arg(result),"neft.png");
+		pause(2);
+	}
 }
 
 typedef struct {
@@ -105,8 +113,10 @@ void MWBotWin::atackOil() {
 	int time;
 	int susp;
 	int need;
+	int lose;
 	int type;
 	int work;
+	int step;
 	int idx;
 	QWebElement elm,blk,tlm;
 	curTime = QDateTime::currentDateTime();
@@ -116,7 +126,7 @@ void MWBotWin::atackOil() {
 		log(trUtf8("Нефтепровод доступен только с 10 уровня"),"neft.png");
 	} else {
 		restoreHP();
-		loadPath(QStringList() << "tverskaya" << "neftlenin");
+		loadPath("tverskaya:neftlenin");
 
 		while (opt.oil.time < curTime) {
 			restoreHP();
@@ -128,6 +138,17 @@ void MWBotWin::atackOil() {
 				opt.oil.time = QDateTime::currentDateTime().addSecs(time);
 				log(trUtf8("Нефтепровод будет доступен через %0 сек").arg(time),"neft.png");
 			} else {
+				elm = frm->findFirstElement("div.alert.infoalert div.data div.actions");
+				if (eVisible(elm)) {
+					if (false) {		// TODO: true on dark oilpipe
+						blk = elm.findAll("div.button").first();
+					} else {
+						blk = elm.findAll("div.button").last();
+					}
+					blk = blk.findFirst("span.f div.c");
+					click(ui.browser, blk);
+				}
+
 				// current suspicion
 				tlm = frm->findFirstElement("div.pipeline-actions table td.mc div.progress i.counter");
 				susp = tlm.toPlainText().toInt();
@@ -153,24 +174,24 @@ void MWBotWin::atackOil() {
 					case preFight:			// start fight
 						if (!checkSusp(susp, 30)) {
 							elm = frm->findFirstElement("div#pipeline-scroll div.enemy-place.fight div.action button.button div.c");
-							clickElement(elm);
+							click(ui.browser, elm);
 						}
 						break;
 					case preGame:			// start event
 						elm = frm->findFirstElement("div#pipeline-scroll div.enemy-place.mission div.action button.button div.c");
-						clickElement(elm);
+						click(ui.browser, elm);
 						break;
 					case preBoss:			// start boss
 						if (!checkSusp(susp, 30)) {
 							elm = frm->findFirstElement("div#pipeline-scroll div.enemy-place.fightboss div.action button.button div.c");
-							clickElement(elm);
+							click(ui.browser, elm);
 						}
 						break;
 					case evDuel:			// go duel
 						elm = frm->findFirstElement("div#neftlenin_alert_d div.action button.button.first div.c");			// кнопка старта
 						need = elm.findFirst("span.suspicion").toPlainText().remove("\"").toInt();					// надо подозрительности
 						if (!checkSusp(susp, need)) {
-							clickElement(elm);
+							click(ui.browser, elm);
 							fightResult();
 						}
 						break;
@@ -178,7 +199,7 @@ void MWBotWin::atackOil() {
 						elm = frm->findFirstElement("div#neftlenin_alert_g div.action button.button.first div.c");
 						need = elm.findFirst("span.suspicion").toPlainText().remove("\"").toInt();
 						if (!checkSusp(susp, need)) {
-							clickElement(elm);
+							click(ui.browser, elm);
 							groupFight();
 						}
 						break;
@@ -186,13 +207,13 @@ void MWBotWin::atackOil() {
 						elm = frm->findFirstElement("div#neftlenin_alert_b div.action.buttion.button.first div.c");
 						need = elm.findFirst("span.suspicion").toPlainText().remove("\"").toInt();
 						if (!checkSusp(susp, need)) {
-							clickElement(elm);
+							click(ui.browser, elm);
 							groupFight();
 						}
 						break;
 					case evGamePrepare:		// start event timer
 						elm = frm->findFirstElement("div#neftlenin_alert_prem_first div.action button.button div.c");
-						clickElement(elm);
+						click(ui.browser, elm);
 						break;
 					case evGameTimer:		// event timer
 						elm = frm->findFirstElement("div#neftlenin_alert_prem div.progress-wrapper span.timeleft");
@@ -204,25 +225,50 @@ void MWBotWin::atackOil() {
 						log(trUtf8("Начало игры на нефтепроводе"),"neft.png");
 						elm = frm->findFirstElement("div#neftlenin_alert_mission div.game-process div.progress-block");
 						work = 1;
+						step = 1;
 						while (work) {
-							blk = elm.findFirst("div.step-block.active");		// блок с кубиками
-							if (blk.isNull()) {
-								need = oilGameEscape();			// проигрыш или выигрыш
+							printf("step %i work %i\n",step,work);
+							if (step > 4) {								// win
+								oilGameEscape(0);
 								work = 0;
 							} else {
-								tlm = blk.findFirst("div.enemy-dice span.dice");	// текущий кубик
-								need = tlm.classes().filter("dice-").first().remove("dice-").toInt();	// число на кубике
-								//qDebug() << "cube" << need;
-								if (need == 0) {
-									qDebug() << "some error";
+								printf("elm : %i\n",eVisible(elm));
+								blk = elm.findFirst("div.step-block.active");
+								printf("blk : %i\n",eVisible(blk));
+								if (!eVisible(blk)) {
+									printf("Active dice not found\n");
+									oilGameEscape(-1);
 									work = 0;
-									opt.oil.time.addMonths(1);
-								} else if (need <= opt.oil.diceMax) {			// кликаем
-									tlm = blk.findFirst("div.action button.button div.c");
-									clickElement(tlm);
-								} else {						// убегаем
-									oilGameEscape();
-									work = 0;
+								} else {
+									tlm = blk.findFirst("div.enemy-dice span.dice");			// кубик противника
+									printf("tlm : %i\n",eVisible(tlm));
+									need = tlm.classes().filter("dice-").first().remove("dice-").toInt();	// число на кубике
+									printf("кубик противника %i\n",need);
+									tlm = blk.findFirst("div.block-wrapper div.counter");
+									lose = tlm.toPlainText().toInt();					// штраф за сбегание
+									printf("штраф %i\n",lose);
+									// need = 0;
+									if (need == 0) {
+										qDebug() << "some error";
+										log(trUtf8("Ошибка: кубик врага == 0", "bug.png"));
+										work = 0;
+										opt.oil.time = curTime.addSecs(1800);
+									} else if (need <= opt.oil.diceMax) {		// пробуем обыграть
+										tlm = blk.findFirst("div.action button.button div.c");
+										click(ui.browser, tlm);
+										tlm = blk.findFirst("div.player-dice span.dice");			// кубик игрока
+										lose = tlm.classes().filter("dice-").first().remove("dice-").toInt();	// число на кубике
+										if (lose < need) {			// проиграл
+											oilGameEscape(-1);
+											work = 0;
+										} else {				// выиграл - переход к следующему шагу
+											step++;
+										}
+									} else {					// убегаем
+										printf("escape\n");
+										oilGameEscape(lose);
+										work = 0;
+									}
 								}
 							}
 						}

@@ -29,7 +29,8 @@ SOURCES += main.cpp \
     rats.cpp \
     oilpipe.cpp \
     carride.cpp \
-    common.cpp
+    common.cpp \
+    duel.cpp
 
 FORMS += \
     mainwindow.ui \

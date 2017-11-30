@@ -7,6 +7,11 @@
 
 QApplication* app;
 
+void doLoop() {
+	usleep(1000);
+	app->processEvents();
+}
+
 MWBotWin::MWBotWin() {
 	ui.setupUi(this);
 
@@ -65,7 +70,11 @@ MWBotWin::MWBotWin() {
 	opt.monya.buy = 1;
 	opt.monya.stars = 0;
 	opt.monya.block = 0;
-//	opt.monya.date = curTime.date();
+	opt.monya.time = curTime;
+
+	opt.bank.buy = 1;
+	opt.bank.stars = 1;
+	opt.bank.time = curTime;
 
 	opt.bPet.train = 1;
 	opt.bPet.num = 1;
@@ -109,11 +118,6 @@ MWBotWin::MWBotWin() {
 	ui.cbAType2->addItem(trUtf8("по уровню"),ATK_LEVEL);
 	ui.cbAType2->setCurrentIndex(ui.cbAtackType->findData(opt.atk.typeB));
 
-//	ui.boxGypsy->addItem(QIcon(":/images/gold.png"),"250",250);
-//	ui.boxGypsy->addItem(QIcon(":/images/gold.png"),"750",750);
-//	ui.boxGypsy->addItem(QIcon(":/images/gold.png"),"150 + 2",150);
-//	ui.boxGypsy->setCurrentIndex(ui.boxGypsy->findData(goldType));
-
 	connect(ui.pbOptSave,SIGNAL(clicked()),this,SLOT(apply()));
 
 	connect(ui.browser,SIGNAL(loadStarted()),this,SLOT(onStart()));
@@ -121,7 +125,6 @@ MWBotWin::MWBotWin() {
 	connect(ui.browser,SIGNAL(loadFinished(bool)),this,SLOT(onLoad(bool)));
 	connect(ui.browser,SIGNAL(titleChanged(QString)),this,SLOT(setWindowTitle(QString)));
 
-//	connect(ui.tbStop,SIGNAL(released()),this,SLOT(stop()));
 	connect(ui.tbStart,SIGNAL(released()),this,SLOT(start()));
 	connect(ui.tbSave,SIGNAL(released()),this,SLOT(savePage()));
 
@@ -130,9 +133,7 @@ MWBotWin::MWBotWin() {
 	connect(ui.tbRat,SIGNAL(clicked()),this,SLOT(atkRat()));
 	connect(ui.tbOil,SIGNAL(clicked()),this,SLOT(atackOil()));
 	connect(ui.tbPetrik,SIGNAL(clicked()),this,SLOT(makePetrik()));
-//	connect(ui.tbSellLot,SIGNAL(clicked()),this,SLOT(sellLots()));
 	connect(ui.tbThimble,SIGNAL(clicked()),this,SLOT(goMonia()));
-//	connect(ui.tbDig,SIGNAL(clicked()),this,SLOT(dig()));
 	connect(ui.tbBaraban,SIGNAL(clicked()),this,SLOT(playKub()));
 	connect(ui.tbTrainPet,SIGNAL(clicked()),this,SLOT(trainPet()));
 	connect(ui.tbArena,SIGNAL(clicked()),this,SLOT(arena()));
@@ -168,9 +169,10 @@ void MWBotWin::prepare() {
 }
 
 void MWBotWin::closeEvent(QCloseEvent* ev) {
-	state.stop = 1;
 	killTimer(timerId);
-	waitLoading();
+	if (isLoading(frm))
+		waitLoading(ui.browser);
+	state.stop = 1;
 	ev->accept();
 }
 
@@ -202,11 +204,12 @@ void MWBotWin::timerEvent(QTimerEvent* ev) {
 	curTime = QDateTime::currentDateTime();
 	ev->accept();
 	if (!state.botWork) return;
-	if (state.loading) return;
+	if (isLoading(frm)) return;
 	if (state.busy) return;
 
 	QWebElement elm;
 	checkPolice();
+	getFastRes();
 
 	if (state.firstRun) {
 		getAtackTimer();
@@ -218,7 +221,6 @@ void MWBotWin::timerEvent(QTimerEvent* ev) {
 	if (opt.chest.open) {
 		openChests();
 	}
-
 // train battle pet
 	if (opt.bPet.train && \
 		(info.money >= opt.bPet.money + 200) && \
@@ -248,12 +250,13 @@ void MWBotWin::timerEvent(QTimerEvent* ev) {
 		makePetrik();
 	}
 // play with monya
-	getFastRes();
 	if (!opt.monya.block && opt.monya.play && (info.money > opt.monya.minPlaySum)) {
 		if (info.money < opt.monya.maxPlaySum) {
-			goMonia();
+			if (opt.monya.time < curTime)
+				goMonia();
 		} else {
-			goBankChange();
+			if (opt.bank.time < curTime)
+				goBankChange();
 		}
 	}
 // attack
@@ -278,21 +281,22 @@ void MWBotWin::timerEvent(QTimerEvent* ev) {
 	}
 }
 
-// gipsy
-
 void MWBotWin::setBusy(bool bsy) {
-//	if (flag & FL_BOT) bsy = true;
 	ui.browser->setDisabled(bsy);
 	ui.toolbar->setDisabled(bsy);
 	state.busy = bsy ? 1 : 0;
 }
 
-void MWBotWin::onLoad(bool) {
-	state.loading = 0;
+void MWBotWin::onLoad(bool f) {
+	if (!state.botWork || f) {
+		loading = 0;
+	} else {
+		ui.browser->update();
+	}
 }
 
 void MWBotWin::onStart() {
-	state.loading = 1;
+	loading = 1;
 }
 
 void MWBotWin::start() {
@@ -312,10 +316,11 @@ void MWBotWin::start() {
 
 // load - click
 
-bool MWBotWin::loadPath(QStringList pth) {
+bool MWBotWin::loadPath(QString path) {
+	QStringList pth = path.split(":",QString::SkipEmptyParts);
 	int i;
 	QString fp;
-	QUrl cur = ui.browser->page()->mainFrame()->url();
+	QUrl cur = ui.browser->url();
 	for (i = 0; i < pth.size(); i++) {
 		fp = pth.at(i);
 		fp.prepend("http://www.moswar.ru/");
@@ -325,6 +330,7 @@ bool MWBotWin::loadPath(QStringList pth) {
 	bool res = true;
 	if (pth.size() == 0) {
 		ui.browser->reload();
+		waitLoading(ui.browser);
 	} else {
 		for (i = 0; (i < pth.size()) && res; i++)
 			res &= loadPage(pth.at(i));
@@ -340,10 +346,11 @@ bool MWBotWin::loadPage(QString pth) {
 	rqst.setUrl(QUrl(pth));
 	rqst.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::PreferCache);
 	ui.browser->load(rqst);
-	waitLoading();
+	waitLoading(ui.browser);
 	return (ui.browser->page()->mainFrame()->url() == QUrl(pth));
 }
 
+/*
 QString clickq = "\
 var evt=document.createEvent('MouseEvents');\
 evt.initMouseEvent('click',true,true,window,0,0,0,0,0,false,false,false,false,0,null);\
@@ -351,36 +358,42 @@ var elst = document.querySelectorAll('[mustBeClicked]');\
 if (elst.length > 0) {elst[0].dispatchEvent(evt);}\
 ";
 
-void MWBotWin::clickElement(QWebElement& elm, int speed) {
+void MWBotWin::click(ui.browser, QWebElement& elm, double speed) {
+	if (!eVisible(elm)) return;
 	QString quer = clickq;
 	elm.setAttribute("mustBeClicked","1");
 	frm->evaluateJavaScript(quer);
 	elm.removeAttribute("mustBeClicked");
-	waitLoading(speed);
+	if (speed > 0)
+		waitLoading(frm, speed);
 }
 
-void MWBotWin::clickElement(QString quer, int speed) {
+void MWBotWin::click(ui.browser, QString quer, double speed) {
 	QWebElement elm = frm->findFirstElement(quer);
-	if (!elm.isNull()) {
-		clickElement(elm, speed);
+	if (eVisible(elm)) {
+		click(ui.browser, elm, speed);
 	} else {
 		qDebug() << trUtf8("элемент '%0' не найден").arg(quer);
 		log(trUtf8("DEBUG: элемент <b>%0</b> не найден").arg(quer),"bug.png");
 	}
 }
+*/
+
+/*
+int MWBotWin::isLoading() {
+	if (state.loading) return 1;
+	QWebElement elm = frm->findFirstElement("div.loading-top");
+	return eVisible(elm);
+}
 
 void MWBotWin::waitLoading(int speed) {
 	if (speed < 0) speed = 1000;
-	QWebElement elm;
 	int count = 5000;
 	do {
 		do {
-			usleep(1000);
-			app->processEvents();
-			elm = frm->findFirstElement("div.loading-top");
-			if (state.stop) break;
+			doLoop();
 			count--;
-		} while ((count > 0) && (state.loading || !elm.attribute("style").contains("none")));
+		} while (isLoading() && !state.stop);
 		if (count > 0) break;
 		restoreHP();
 		count = 5000;
@@ -388,22 +401,27 @@ void MWBotWin::waitLoading(int speed) {
 	if (state.stop) return;
 	int sleeptime = 500 + (rand() % 1000);
 	while (sleeptime > 0) {
-		usleep(speed);
-		app->processEvents();
+		doLoop();
 		sleeptime--;
 	}
+}
+
+void MWBotWin::waitReload() {
+	while (!isLoading(frm))
+		doLoop();
+	waitLoading(frm);
 }
 
 void MWBotWin::doPause(int sec) {
 	int i;
 	while (sec > 0) {
-		for (i = 0; i < 20; i++) {
-			usleep(5e4);		// 0.05 sec
-			app->processEvents();
+		for (i = 0; i < 1000; i++) {
+			doLoop();
 		}
 		sec--;
 	}
 }
+*/
 
 // get numbers
 
@@ -412,11 +430,7 @@ int MWBotWin::getAtackTimer() {
 	loadPage("alley");
 	QWebElement elm = frm->findFirstElement("div.need-some-rest div.holders span.timer");
 	opt.atk.time = QDateTime::currentDateTime();
-	if (elm.isNull()) {
-		res = -1;
-	} else if (elm.styleProperty("display", QWebElement::ComputedStyle) == "none") {
-		res = -1;
-	} else {
+	if (eVisible(elm)) {
 		res = elm.attribute("timer").toInt();
 		if (res > 0) {
 			res += (5 + (rand() % 10));
@@ -425,16 +439,22 @@ int MWBotWin::getAtackTimer() {
 		} else {
 			res = 0;
 		}
+	} else {
+		res = -1;
 	}
 	return res;
 }
 
 int MWBotWin::getRatTimer() {
-	loadPath(QStringList() << "square" << "metro");
-	QWebElement elm = frm->findFirstElement("div#timer-rat-fight td#ratfight");
-	int time = elm.attribute("timer").toInt();
+	loadPath("square:metro");
+	QWebElement elm = frm->findFirstElement("div#timer-rat-fight table tr td small.dashedlink[timer]");
+	if (!eVisible(elm)) {
+		ui.browser->reload();
+		waitLoading(ui.browser);
+	}
+	elm = frm->findFirstElement("div#timer-rat-fight td#ratfight");
+	int time = eVisible(elm) ? elm.attribute("timer").toInt() : 0;
 	opt.ratk.time = QDateTime::currentDateTime();
-
 	if (time > 0) {
 		time += 60;
 		opt.ratk.time = curTime.addSecs(time);
@@ -575,6 +595,10 @@ void MWBotWin::getBerezkaRes() {
 CharBox MWBotWin::getStat(QString querA, QString querB) {
 	CharBox res;
 	QWebElement elm = frm->findFirstElement(querA);
+	if (!eVisible(elm)) {
+		res.stat.zdor = -1;
+		return res;
+	}
 	QWebElement tmp = elm.findFirst("a[href]");
 	if (tmp.isNull()) {
 		res.clan.clear();
@@ -595,7 +619,7 @@ CharBox MWBotWin::getStat(QString querA, QString querB) {
 
 //	if (querB == "") querB = querA.replace("div","td").append("-cell");
 	elm = frm->findFirstElement(querB);
-	if (!elm.isNull()) {
+	if (eVisible(elm)) {
 		res.stat.zdor = elm.findFirst("li[data-type='health'] span.num").toPlainText().toInt();
 		res.stat.sila = elm.findFirst("li[data-type='strength'] span.num").toPlainText().toInt();
 		res.stat.lovk = elm.findFirst("li[data-type='dexterity'] span.num").toPlainText().toInt();
@@ -605,6 +629,7 @@ CharBox MWBotWin::getStat(QString querA, QString querB) {
 		res.stat.hari = elm.findFirst("li[data-type='charism'] span.num").toPlainText().toInt();
 		res.statsum = res.stat.zdor + res.stat.sila + res.stat.lovk + res.stat.vynos + res.stat.hitr + res.stat.vnim;
 	} else {
+		res.stat.zdor = -1;
 		printf("ZZZ\n");
 	}
 	return res;
@@ -622,8 +647,8 @@ void MWBotWin::switchAtack() {
 void MWBotWin::restoreHP() {
 	getFastRes();
 	if (info.hp < info.maxhp * 0.95) {
-		clickElement("div.life i.plus-icon");
-		clickElement("div.alert div.data div.actions button.button div.c");
+		click(ui.browser, "div.life i.plus-icon");
+		click(ui.browser, "div.alert div.data div.actions button.button div.c");
 	}
 }
 
@@ -639,7 +664,7 @@ void MWBotWin::restoreHP() {
 void MWBotWin::makePetrik() {
 	QWebElement elm;
 	setBusy(true);
-	loadPath(QStringList() << "square" << "factory");
+	loadPath("square:factory");
 	getFastRes();
 	curTime = QDateTime::currentDateTime();
 	int loop = 1;
@@ -651,7 +676,7 @@ void MWBotWin::makePetrik() {
 			if (elm.isNull()) {
 				if (loop < 2) {
 					ui.browser->reload();
-					waitLoading();
+					waitLoading(ui.browser);
 					loop++;
 				} else {
 					log(trUtf8("Ошибка варки петриков. Следующая попытка через минуту."),"petrik.png");
@@ -671,7 +696,7 @@ void MWBotWin::makePetrik() {
 			opt.petrik.ore = elm.findFirst("span.ruda").toPlainText().remove(",").toInt();
 			getFastRes();
 			if ((info.money > (opt.petrik.money + 199)) && (info.ore >= opt.petrik.ore)) {
-				clickElement(elm);
+				click(ui.browser, elm);
 				log(trUtf8("Запущено производство петриков"),"petrik.png");
 				loop = 2;
 			} else {
@@ -690,9 +715,7 @@ void MWBotWin::sellLots() {
 	setBusy(true);
 	QWebElement elm;
 	QWebElement tmp;
-	loadPage("square/");
-	loadPage("nightclub/");
-	loadPage("nightclub/vip/");
+	loadPath("square:nightclub:nightclub/vip");
 	elm = frm->findFirstElement("div.rating span.respect.value");
 	int resp = elm.toPlainText().trimmed().toInt();
 	if (resp < 2000) {
@@ -712,7 +735,7 @@ void MWBotWin::sellLots() {
 					if (!tmp.isNull()) {
 						tmp = tmp.findFirst("button.button div.c");
 						tmp.setAttribute("id","kzkz");
-						clickElement("div#kzkz");
+						click(ui.browser, "div#kzkz");
 						count++;
 						selled = true;
 						break;
@@ -771,5 +794,6 @@ int main(int ac,char** av) {
 // debug
 
 void MWBotWin::debug() {
-	rideCar();
+	loadPath("tverskaya:neftlenin");
+	oilGameEscape(0);
 }

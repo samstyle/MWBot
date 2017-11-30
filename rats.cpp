@@ -4,7 +4,7 @@ void MWBotWin::atkRat() {
 	QWebElement elm;
 	setBusy(true);
 // go to page
-	loadPath(QStringList() << "square" << "metro");
+	loadPath("square:metro");
 // select dark/normal rats
 	elm = frm->findFirstElement("div.metro-branch div.metro-rats-light__dark-block");
 	if (!elm.isNull()) {
@@ -19,7 +19,7 @@ void MWBotWin::atkRat() {
 			log(trUtf8("DEBUG: Rat selection error"));
 			return;
 		}
-		clickElement(elm);
+		click(ui.browser, elm);
 	}
 // check timer & atk rat
 	int time = getRatTimer();
@@ -36,8 +36,8 @@ void MWBotWin::atkRat() {
 	} else if (time < 1) {
 		log(trUtf8("Уровень крысы: <b>%0</b>").arg(opt.ratk.ratlev),"rat.png");
 		restoreHP();
-		clickElement("div#action-rat-fight div.button-big div.c");
-		clickElement("div#welcome-rat button.button div.c");
+		click(ui.browser, "div#action-rat-fight div.button-big div.c");
+		click(ui.browser, "div#welcome-rat button.button div.c");
 		if (opt.ratk.ratlev % 5 == 0) {
 			groupFight();
 		} else {
@@ -54,7 +54,7 @@ void MWBotWin::atkRat() {
 	if (!elm.isNull()) {
 		if (!elm.classes().contains("disabled")) {
 			elm = elm.findFirst("div.c");
-			clickElement(elm);
+			click(ui.browser, elm);
 			log(trUtf8("Получен приз за крысинные хвосты"),"rattail.png");
 		}
 	}

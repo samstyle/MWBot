@@ -1,5 +1,115 @@
 #include "main.h"
 
+// VERY NEW
+
+namespace test {
+
+mwItem getObject(QWebElement& elm) {
+	mwItem itm;
+	itm.name = elm.findFirst("img").attribute("title");
+	QWebElement cnt = elm.findFirst("div.count");
+	if (cnt.isNull()) {
+		itm.count = 1;
+	} else {
+		itm.count = toNumber(cnt.toPlainText());
+	}
+	return itm;
+}
+
+// get items list from 'info alert' window
+QList<mwItem> getPrize(QWebFrame* frm) {
+	QList<mwItem> res;
+	mwItem itm;
+	QWebElement box = frm->findFirstElement("div.alert.infoalert div#alert-text div.objects");
+	QWebElement elm = box.firstChild();
+	while (eVisible(elm)) {
+		itm = getObject(elm);
+		if (itm.count > 0)
+			res.append(itm);
+		elm = elm.nextSibling();
+	}
+	return res;
+}
+
+QList<mwItem> getChestItems(QWebFrame* frm) {
+	QWebElementCollection coll = frm->findAllElements("div.overtip.alert.1");
+	QWebElement elm;
+	QWebElement ch;
+	QList<mwItem> res;
+	mwItem itm;
+	foreach(elm, coll) {
+		if (eVisible(elm)) {
+			elm = elm.findFirst("div.help div.data");
+			ch = elm.firstChild();
+			while (eVisible(ch)) {
+				if (ch.tagName() == "span") {
+					itm.name = ch.classes().join(":");
+					itm.count = toNumber(ch.toPlainText());
+					res.append(itm);
+				} else if ((ch.tagName() == "div") && (ch.classes().contains("objects"))) {
+					elm = ch;
+					ch = elm.firstChild();
+					while (eVisible(ch)) {
+						if ((ch.tagName() == "span") && (ch.classes().contains("object-thumb"))) {
+							itm = getObject(ch);
+							if (itm.count > 0)
+								res.append(itm);
+						}
+						ch = ch.nextSibling();
+					}
+					break;
+				}
+				ch = ch.nextSibling();
+			}
+		}
+	}
+	return res;
+}
+
+QList<mwItem> getDuelResult(QWebFrame* frm) {
+	QList <mwItem> res;
+	mwItem itm;
+	QWebElement box = frm->findFirstElement("div#content table.data td.log ul.fight-log li.result");
+	if (!eVisible(box)) return res;
+	QWebElement ch = box.firstChild();
+	QWebElement sp;
+	while (eVisible(ch)) {
+		if ((ch.tagName() == "div") && !ch.classes().contains("actions")) {
+			sp = ch.findFirst("span");
+			while (!sp.isNull()) {
+				if (sp.classes().contains("object-thumb")) {
+					itm = getObject(sp);
+					res.append(itm);
+				} else if (sp.classes().contains("icon-bike")) {
+					// do nothing
+				} else {
+					itm.name = sp.classes().join(":");
+					itm.count = toNumber(sp.toPlainText());
+					res.append(itm);
+				}
+				sp = sp.nextSibling();
+			}
+		}
+		ch = ch.nextSibling();
+	}
+	return res;
+}
+
+// return
+//	-1 if no collection item found
+//	% of collection completion
+int getCollectionItem(QWebFrame* frm) {
+	int res = -1;
+	QWebElement elm = frm->findFirstElement("div.overtip.alert.alert-big");
+	if (eVisible(elm)) {
+		elm = elm.findFirst("div.help div.data p.holders");
+		res = elm.toPlainText().split(":").last().remove("%").trimmed().toInt();
+	}
+	return res;
+}
+
+}
+
 // NEW
 
 FightBox MWBotWin::getDuelResult() {
@@ -8,14 +118,14 @@ FightBox MWBotWin::getDuelResult() {
 	int enlife;
 	QWebElement elm;
 	res.enemy = getStat("div.fighter2","td.fighter2-cell");
-	clickElement("i.icon.icon-forward");				// forward button
+	click(ui.browser, "i.icon.icon-forward");				// forward button
 	mylife = frm->findFirstElement("span#fighter1-life").toPlainText().split("/").first().trimmed().toInt();
 	enlife = frm->findFirstElement("span#fighter2-life").toPlainText().split("/").first().trimmed().toInt();
 	res.result = (mylife > 0) ? 1 : ((enlife > 0) ? 0 : 2);		// duel result (0,1,2 = lose,win,draw)
 	res.items = getDuelResultMain();
 	elm = frm->findFirstElement("div.backlink div.button div.c");
 	if (!elm.isNull()) {
-		clickElement(elm);
+		click(ui.browser, elm);
 	}
 	res.items.append(getDuelResultExtra());
 	return res;
@@ -32,10 +142,15 @@ FightBox MWBotWin::getGroupResult() {
 	res.enemy.level = -1;
 	res.result = str.contains("(0/") ? 1 : 0;
 	res.items = getGroupResultMain();
+
 	elm = frm->findFirstElement("td.log div.result div.button div.c");
-	if (elm.isNull()) elm = frm->findFirstElement("td.log div.result span.button div.c");
-	if (!elm.isNull()) {
-		clickElement(elm);
+	qDebug() << 1 << eVisible(elm);
+	if (!eVisible(elm)) elm = frm->findFirstElement("td.log div.result span.button div.c");
+	qDebug() << 2 << eVisible(elm);
+	if (!eVisible(elm)) elm = frm->findFirstElement("td.log div.result div.backlink div.button div.c");
+	qDebug() << 3 << eVisible(elm);
+	if (eVisible(elm)) {
+		click(ui.browser, elm);
 		res.items.append(getDuelResultExtra());
 	}
 	return res;
@@ -147,7 +262,7 @@ bool MWBotWin::atkResult() {
 	if (res < 0) {
 		return false;
 	}
-	loadPage("alley/");
+	loadPage("alley");
 	getAtackTimer();
 	return true;
 }

@@ -31,7 +31,7 @@ void MWBotWin::doChest(int id) {
 	if (elm.isNull()) return;
 	QWebElement itm = elm.findFirst("div.action span");
 //	qDebug() << itm.toPlainText();
-	clickElement(itm);
+	click(ui.browser, itm);
 	FightBox res = getChestResult();
 	logResult(res);
 }

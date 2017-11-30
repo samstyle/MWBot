@@ -57,6 +57,9 @@ void MWBotWin::loadOpts() {
 				if (com == "buytickets") opt.monya.buy = bval;
 				if (com == "buytickets_star") opt.monya.stars = bval;
 
+				if (com == "bankticket") opt.bank.buy = bval;
+				if (com == "bankstar") opt.bank.stars = bval;
+
 				if (com == "rathunt") opt.ratk.enabled = bval;
 				if (com == "ratdark") opt.ratk.dark = bval;
 				if (com == "ratmaxlev") {
@@ -145,12 +148,17 @@ void MWBotWin::saveOpts() {
 		file.write(QString("bombChance:%0\n").arg(opt.group.bombPrc).toUtf8());
 
 		file.write(QString("makepetrik:%0\n").arg(opt.petrik.make ? "yes" : "no").toUtf8());
+
 		file.write(QString("playmon:%0\n").arg(opt.monya.play ? "yes" : "no").toUtf8());
 		file.write(QString("playsum:%0\n").arg(opt.monya.minPlaySum).toUtf8());
 		file.write(QString("maxplaysum:%0\n").arg(opt.monya.maxPlaySum).toUtf8());
 		file.write(QString("playtickets:%0\n").arg(opt.monya.tickets ? "yes" : "no").toUtf8());
 		file.write(QString("buytickets:%0\n").arg(opt.monya.buy ? "yes" : "no").toUtf8());
 		file.write(QString("buytickets_star:%0\n").arg(opt.monya.stars ? "yes" : "no").toUtf8());
+
+		file.write(QString("bankticket:%0\n").arg(opt.bank.buy ? "yes" : "no").toUtf8());
+		file.write(QString("bankstar:%0\n").arg(opt.bank.stars ? "yes" : "no").toUtf8());
+
 		file.write(QString("rathunt:%0\n").arg(opt.ratk.enabled ? "yes" : "no").toUtf8());
 		file.write(QString("ratmaxlev:%0\n").arg(opt.ratk.maxlev).toUtf8());
 		file.write(QString("ratdark:%0\n").arg(opt.ratk.dark ? "yes" : "no").toUtf8());
@@ -196,12 +204,17 @@ void MWBotWin::apply() {
 	opt.atk.typeB = ui.cbAType2->itemData(ui.cbAType2->currentIndex()).toInt();
 	opt.atk.droped = ui.cbDrop->isChecked() ? 1 : 0;
 	opt.petrik.make = ui.cbPetrik->isChecked() ? 1 : 0;
+
 	opt.monya.play = ui.gbMonya->isChecked() ? 1 : 0;
 	opt.monya.minPlaySum = ui.sbMoniaCoins->value();
 	opt.monya.maxPlaySum = ui.sbMaxMoneyPlay->value();
 	opt.monya.tickets = ui.cbPlayTickets->isChecked() ? 1 : 0;
 	opt.monya.buy = ui.cbBuyTickets->isChecked() ? 1 : 0;
-	opt.monya.stars = ui.cbTicketStars->isChecked() ? 1 : 0;
+	opt.monya.stars = ui.rbMonyaStar->isChecked() ? 1 : 0;
+
+	opt.bank.buy = ui.cbBankTicket->isChecked() ? 1 : 0;
+	opt.bank.stars = ui.rbBankStar->isChecked() ? 1 : 0;
+
 	opt.ratk.enabled = ui.gbRats->isChecked() ? 1 : 0;
 	opt.ratk.maxlev = ui.sbRatMax->value();
 	opt.ratk.dark = ui.cbDarkTunnel->isChecked() ? 1 : 0;
@@ -249,7 +262,11 @@ void MWBotWin::setOpts() {
 	ui.sbMaxMoneyPlay->setValue(opt.monya.maxPlaySum);
 	ui.cbPlayTickets->setChecked(opt.monya.tickets);
 	ui.cbBuyTickets->setChecked(opt.monya.buy);
-	ui.cbTicketStars->setChecked(opt.monya.stars);
+	if (opt.monya.stars) ui.rbMonyaStar->setChecked(true); else ui.rbMonyaTeeth->setChecked(true);
+
+	ui.cbBankTicket->setChecked(opt.bank.buy);
+	if (opt.bank.stars) ui.rbBankStar->setChecked(true); else ui.rbBankTeeth->setChecked(true);
+
 	ui.gbRats->setChecked(opt.ratk.enabled);
 	ui.cbDarkTunnel->setChecked(opt.ratk.dark);
 	ui.sbRatMax->setValue(opt.ratk.maxlev);

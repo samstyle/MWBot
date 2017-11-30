@@ -2,7 +2,7 @@
 
 void MWBotWin::arena() {
 	setBusy(true);
-	loadPath(QStringList() << "tverskaya" << "petrun");
+	loadPath("tverskaya:petrun");
 	curTime = QDateTime::currentDateTime();
 	QWebElementCollection pets;
 	QWebElement elm,pet;
@@ -11,8 +11,8 @@ void MWBotWin::arena() {
 // rewind record
 	elm = frm->findFirstElement("div#forward-btn");
 	if (!elm.isNull()) {
-		clickElement("div#forward-btn");				// rewind run
-		clickElement("div#result-block div.center div.button div.c");	// to arena
+		click(ui.browser, "div#forward-btn");				// rewind run
+		click(ui.browser, "div#result-block div.center div.button div.c");	// to arena
 	}
 // check tickets
 	int prc = frm->findFirstElement("div.balance span#grayhound-tickets-num").toPlainText().toInt();
@@ -35,18 +35,18 @@ void MWBotWin::arena() {
 				//qDebug() << name;
 				if (opt.run.name.isNull() || (name.toLower().contains(opt.run.name.toLower()))) {
 					if (pet.attribute("selected").isNull())
-						clickElement(pet);
+						click(ui.browser, pet);
 					elm = pet.findFirst("span.percent");
 					prc = elm.attribute("style").split(QRegExp("[:%;]"),QString::SkipEmptyParts).last().toInt();
 					if (prc > 19) {
-						clickElement(QString("ul.lenta li.pet-object[data-id='").append(pet.attribute("data-id")).append("']"));
-						clickElement("div.center button#checkInEnabled div.c");
+						click(ui.browser, QString("ul.lenta li.pet-object[data-id='%0']").arg(pet.attribute("data-id")));
+						click(ui.browser, "div.center button#checkInEnabled div.c");
 						elm = frm->findFirstElement("div.alert div#alert-text");
 						if (elm.toPlainText().contains(trUtf8("нужен билет"))) {
-							clickElement("div.alert div.button div.c");
-							clickElement("input[value=ticket]");	// select ticket
-							clickElement(QString("ul.lenta li.pet-object[data-id='").append(pet.attribute("data-id")).append("']"));
-							clickElement("div.center button#checkInEnabled div.c");
+							click(ui.browser, "div.alert div.button div.c");
+							click(ui.browser, "input[value=ticket]");	// select ticket
+							click(ui.browser, QString("ul.lenta li.pet-object[data-id='%0']").arg(pet.attribute("data-id")));
+							click(ui.browser, "div.center button#checkInEnabled div.c");
 						}
 						log(trUtf8("<b>%0</b> записан на забег").arg(pet.attribute("data-pet-name")),"medal.png");
 						opt.run.time = curTime.addSecs(600);		// +10 min

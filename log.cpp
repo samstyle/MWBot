@@ -5,5 +5,8 @@ void MWBotWin::log(QString text, QString icon) {
 	if (icon.isEmpty()) icon = "info.png";
 	res.append(QString("<img height=16 width=16 src=':/images/%0'>&nbsp;").arg(icon));
 	res.append(text);
+
 	ui.log->append(res);
+
+	qDebug() << res;
 }

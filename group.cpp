@@ -1,51 +1,76 @@
 #include "main.h"
 
-int getGroupCount(QWebFrame* frm, int ally) {
-	QWebElement elm = frm->findFirstElement(ally ? "div.group1" : "div.group2");
-	QString txt = elm.toPlainText();
-	int pos = txt.lastIndexOf("(");
-	txt = txt.mid(pos).remove(")").remove("(");
-	return txt.split("/").first().toInt();
+QList<grpChar> grpGetGroup(QWebFrame*, QWebElement& grp) {
+	QList<grpChar> list;
+	grpChar cha;
+	QWebElement echa = grp.findFirst("ul.list-users li");
+	QWebElement etmp;
+	QStringList tsl;
+	while (eVisible(echa)) {
+		cha.me = echa.classes().contains("me") ? 1 : 0;
+		cha.alive = echa.classes().contains("alive") ? 1 : 0;
+		cha.name = echa.findFirst("span.user").toPlainText();
+		etmp = echa.findFirst("input.radio-attack");
+		cha.id = etmp.attribute("value").toInt();
+		etmp = echa.findFirst("span.life span.number span.fighter_hp");
+		tsl = etmp.toPlainText().split("/");
+		cha.hp = toLarge(tsl.first());
+		cha.maxhp = toLarge(tsl.last());
+		list.append(cha);
+		echa = echa.nextSibling();
+	}
+	return list;
 }
 
-QString getWeakest(QWebFrame* frm, int ally) {
-	QString res;
-	QList<QWebElement> grps = frm->findAllElements("td.group").toList();
-	QWebElement grp = ally ? grps.first() : grps.last();
-	QList<QWebElement> flst = grp.findAll("li.alive").toList();
-	QWebElement fgt;
-	QString hps;
-	int minhp = 0;
-	int hp;
-	foreach(fgt, flst) {
-		hps = fgt.findFirst("span.life span.number span.fighter_hp").toPlainText();
-		hp = hps.split("/").first().replace("k","e3").replace(",",".").toDouble();
-		if ((minhp == 0) || (hp < minhp)) {
-			minhp = hp;
-			res = fgt.findFirst("label[for]").attribute("for");
-		}
+QList<grpChar> grpGetAllies(QWebFrame* frm) {
+	QWebElementCollection grps = frm->findAllElements("table.data td.group");
+	QWebElement grp = grps.first();
+	return grpGetGroup(frm, grp);
+}
+
+QList<grpChar> grpGetEnemies(QWebFrame* frm) {
+	QWebElementCollection grps = frm->findAllElements("table.data td.group");
+	QWebElement grp = grps.last();
+	return grpGetGroup(frm, grp);
+}
+
+int getGroupCount(QWebFrame* frm, int ally) {
+	QList<grpChar> grp = ally ? grpGetAllies(frm) : grpGetEnemies(frm);
+	int res = 0;
+	foreach(grpChar cha, grp) {
+		if (cha.alive)
+			res++;
 	}
 	return res;
 }
 
+int getWeakest(QWebFrame* frm, int ally) {
+	QList<grpChar> grp = ally ? grpGetAllies(frm) : grpGetEnemies(frm);
+	int hp = 0;
+	int id = 0;
+	foreach(grpChar cha, grp) {
+		if (cha.alive && cha.id && ((hp == 0) || (cha.hp < hp))) {
+			id = cha.id;
+			hp = cha.hp;
+		}
+	}
+	return id;
+}
+
 int getMyHp(QWebFrame* frm) {
 	QWebElement elm = frm->findFirstElement("td.group li.me span.fighter_hp");
-	QStringList lst = elm.toPlainText().replace("k","e3").replace(",",".").split("/");
+	QStringList lst = elm.toPlainText().replace("k","e3").replace("M","e6").replace(",",".").split("/");
 	int hp = lst.first().toDouble();
 	int maxhp = lst.last().toDouble();
 	return (hp * 100 / maxhp);
 }
 
 int getSumHp(QWebFrame* frm, int ally) {
-	QList<QWebElement> grps = frm->findAllElements("td.group").toList();
-	QWebElement grp = ally ? grps.first() : grps.last();
-	QList<QWebElement> flst = grp.findAll("li.alive").toList();
-	QWebElement fgt;
-	QStringList lst;
+	QList<grpChar> grp = ally ? grpGetAllies(frm) : grpGetEnemies(frm);
 	int res = 0;
-	foreach(fgt, flst) {
-		lst = fgt.findFirst("span.fighter_hp").toPlainText().replace("k","e3").replace(",",".").split("/");
-		res += lst.first().toDouble();
+	foreach (grpChar cha, grp) {
+		if (cha.alive)
+			res += cha.hp;
 	}
 	return res;
 }
@@ -71,7 +96,9 @@ void MWBotWin::groupFight() {
 	QString target;
 	int res = 0;
 	int cnt;
+	int ecnt;
 	int rnd;
+	int id;
 	int useCheese = 0;
 	if (opt.group.cheese) {
 		int enemyHp = getSumHp(frm,0);
@@ -81,14 +108,10 @@ void MWBotWin::groupFight() {
 	int useHeal = opt.group.heal ? 1 : 0;
 	int useBomb = opt.group.bomb ? 1 : 0;
 	do {
-		cnt = getGroupCount(frm,1);
-		if (cnt == 0) {
-			res = 2;		// lose
-		} else {
-			cnt = getGroupCount(frm,0);
-			if (cnt == 0) {
-				res = 1;	// win
-			} else {
+		cnt = getGroupCount(frm, 1);		// alive allies
+		ecnt = getGroupCount(frm, 0);		// alive enemies
+		if (cnt && ecnt) {			// both groups is active
+			if (getMyHp(frm)) {		// player is alive
 				target.clear();
 				rnd = rand() % 101;	// 0..100
 				cnt = getMyHp(frm);
@@ -105,7 +128,7 @@ void MWBotWin::groupFight() {
 						target.prepend("div.fight-slots li.filled input#");
 					}
 					useCheese = 0;
-				} else if (useBomb && (rnd < opt.group.bombPrc)) {
+				} else if (useBomb && (rnd < opt.group.bombPrc) && (ecnt > 1)) {
 					target = searchFightSlot(frm, opt.group.bombList);
 					if (target.isEmpty()) {
 						useBomb = 0;
@@ -113,20 +136,28 @@ void MWBotWin::groupFight() {
 						target.prepend("div.fight-slots li.filled input#");
 					}
 				} else {
-					target = getWeakest(frm,0);
-					target.prepend("input.radio-attack#");
-					// step++;
+					id = getWeakest(frm,0);
+					target = QString("input.radio-attack#attack-%0").arg(id);
 				}
 				if (!target.isEmpty()) {
-					clickElement(target);
+					qDebug() << target;
+					click(ui.browser, target);
 				}
-				state.loading = 1;
-				clickElement("div#fightAction span.f div.c");
+				qDebug() << QTime::currentTime() << "click";
+				click(ui.browser, "div#fightAction span.f div.c");
+				qDebug() << QTime::currentTime();
+			} else {
+				waitReload(ui.browser);	// player is dead: wait for reload
 			}
+		} else if (ecnt) {		// alive enemies
+			res = 2;		// lose
+		} else if (cnt) {		// alive allies
+			res = 1;		// win
+		} else {			// both is dead
+			res = 3;		// draw
 		}
 	} while (res == 0);
-	state.loading = 1;
-	waitLoading();
+	waitReload(ui.browser);
 	FightBox fb = getGroupResult();
 	logResult(fb);
 }

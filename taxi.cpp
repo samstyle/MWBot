@@ -19,7 +19,7 @@ void MWBotWin::doTaxi() {
 	}
 	if (count) {
 		sub = elm.findFirst("div.c");
-		clickElement(sub);
+		click(ui.browser, sub);
 		log(trUtf8("Забран сундук бомбилы"),"chest.png");
 	}
 // check taxi timer, send a car & charge it if it needs
@@ -37,7 +37,7 @@ void MWBotWin::doTaxi() {
 		do {
 			loop = 0;
 			elm= frm->findFirstElement("div.auto-bombila table.action button.ride-button span.f div.c");
-			clickElement(elm);
+			click(ui.browser, elm);
 			elm = frm->findFirstElement("div.alert.alert-error h2#alert-title");
 			if (elm.isNull()) {
 				elm = frm->findFirstElement("div.auto-bombila table.process td#cooldown");
@@ -58,7 +58,7 @@ void MWBotWin::doTaxi() {
 					count = 0;
 				}
 				if (count) {
-					clickElement(elm);
+					click(ui.browser, elm);
 					log(trUtf8("Машина заправлена"),"taxi.png");
 					loop = 1;
 				} else {

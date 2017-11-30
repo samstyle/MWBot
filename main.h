@@ -7,6 +7,7 @@
 #include <QWebFrame>
 #include <QDate>
 #include <QNetworkDiskCache>
+#include <QAbstractItemModel>
 
 #include "ui_mainwindow.h"
 #include "ui_textwindow.h"
@@ -15,6 +16,15 @@ struct mwItem {
 	QString name;
 	QString icn;
 	int count;
+};
+
+struct grpChar {
+	unsigned me:1;
+	unsigned alive:1;
+	QString name;
+	int id;
+	int maxhp;
+	int hp;
 };
 
 struct CharBox{
@@ -77,12 +87,7 @@ struct CharInfo {
 
 // end new
 
-#define	FL_OIL		(1<<5)
-#define	FL_SCAN		(1<<10)
 #define	FL_STOP		(1<<11)
-#define	FL_DIG		(1<<12)		// do dig
-#define FL_DIGGING	(1<<13)		// dig in process
-#define	FL_DIGRAT	(1<<14)		// atack rats during dig
 
 enum {
 	ATK_EQUAL = 1,
@@ -173,7 +178,13 @@ class MWBotWin : public QMainWindow {
 				unsigned stars:1;
 				int minPlaySum;
 				int maxPlaySum;
+				QDateTime time;
 			} monya;
+			struct {
+				unsigned buy:1;
+				unsigned stars:1;
+				QDateTime time;
+			} bank;
 			struct {
 				unsigned train:1;
 				unsigned useOre:1;
@@ -198,13 +209,12 @@ class MWBotWin : public QMainWindow {
 				unsigned ride:1;
 				QStringList list;
 				QDateTime time;
-//				QMap<QString,QDateTime> timeMap;
 			} car;
 		} opt;
 		struct {
 			unsigned busy:1;
 			unsigned stop:1;
-			unsigned loading:1;
+//			unsigned loading:1;
 			unsigned botWork:1;
 			unsigned firstRun:1;
 		} state;
@@ -249,12 +259,8 @@ class MWBotWin : public QMainWindow {
 
 		void groupFight();
 
-		bool loadPath(QStringList);
-		void clickElement(QString, int = 1000);
-		void clickElement(QWebElement&, int = 1000);
+		bool loadPath(QString);
 
-		void waitLoading(int = 1000);
-		void doPause(int = 1);
 		int getAtackTimer();
 		int getRatTimer();
 		void restoreHP();
@@ -263,7 +269,7 @@ class MWBotWin : public QMainWindow {
 		void playMonia();
 		void goBankChange();
 
-		int oilGameEscape();
+		void oilGameEscape(int);
 		int checkSusp(int, int);
 
 		void checkPolice();
@@ -305,12 +311,31 @@ class MWBotWin : public QMainWindow {
 		void start();
 		void savePage();
 		void chZoom(int);
+
 	protected:
 		void closeEvent(QCloseEvent*);
 		void timerEvent(QTimerEvent*);
 		void keyPressEvent(QKeyEvent*);
 };
 
+extern int loading;
+
+int toNumber(QString);
+int toLarge(QString);
+
+void doLoop();
 int eVisible(QWebElement&);
+
+int click(QWebView*, QString, double = 1.0);
+int click(QWebView*, QWebElement&, double = 1.0);
+
+int isLoading(QWebFrame*);
+int waitLoading(QWebView*, double = 1.0);
+void waitReload(QWebView*);
+void pause(double);
+
+// temp?
+QList<grpChar> grpGetAllies(QWebFrame*);
+QList<grpChar> grpGetEnemies(QWebFrame*);
 
 #endif

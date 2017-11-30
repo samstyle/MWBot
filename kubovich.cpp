@@ -2,7 +2,7 @@
 
 void MWBotWin::playKub() {
 	setBusy(true);
-	loadPath(QStringList() << "arbat" << "casino");
+	loadPath("arbat:casino");
 	QWebElement elm;
 	elm = frm->findFirstElement("div.balance span.fishki span#fishki-balance-num");
 	info.caps = elm.toPlainText().remove(",").toInt();
@@ -15,9 +15,9 @@ void MWBotWin::playKub() {
 		}
 		elm = frm->findFirstElement("input#stash-change-ore");
 		elm.setAttribute("value",QString::number(needore));
-		clickElement("button#button-change-ore div.c");
+		click(ui.browser, "button#button-change-ore div.c");
 	}
-	loadPage("/casino/kubovich/");
+	loadPage("casino/kubovich");
 	int rcaps = 0;
 	int price;
 	do {
@@ -25,10 +25,10 @@ void MWBotWin::playKub() {
 		info.caps = elm.toPlainText().remove(",").toInt();
 		elm = frm->findFirstElement("button#push-ellow");
 		if (!elm.classes().contains("disabled")) {
-			clickElement("button#push-ellow div.c");
-			clickElement("button#push div.c");
+			click(ui.browser, "button#push-ellow div.c");
+			click(ui.browser, "button#push div.c");
 			ui.browser->reload();
-			waitLoading();
+			waitLoading(ui.browser);
 		}
 		elm = frm->findFirstElement("div.controls button#push");
 		price = elm.findFirst("span.price").toPlainText().remove("\"").toInt();
@@ -36,9 +36,9 @@ void MWBotWin::playKub() {
 			break;
 		}
 		elm = frm->findFirstElement("button#push div.c");
-		clickElement(elm);
+		click(ui.browser, elm);
 		ui.browser->reload();
-		waitLoading();
+		waitLoading(ui.browser);
 		rcaps += price;
 	} while (rcaps < opt.kub.caps);
 	log(trUtf8("Покрутили барабан"),"baraban.png");

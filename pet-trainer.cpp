@@ -3,7 +3,7 @@
 void MWBotWin::trainPet() {
 	QWebElement elm;
 	setBusy(true);
-	loadPath(QStringList() << "tverskaya" << "petrun" << "petarena");
+	loadPath("tverskaya:petrun:petarena");
 	QList<QWebElement> lst = frm->findAllElements("dl#equipment-accordion").toList();
 	QList<QWebElement> ls2;
 	QWebElement el2;
@@ -26,17 +26,15 @@ void MWBotWin::trainPet() {
 	}
 	if (!fnd) {
 		log(trUtf8("Ошибка тренировки боевого питомца. +5 мин"),"bug.png");
-		curTime = QDateTime::currentDateTime();
 		opt.bPet.time = curTime.addSecs(300);
 	} else {
-		clickElement(elm);
+		click(ui.browser, elm);
 		elm = frm->findFirstElement("span[rel=name]");
 		QString name = elm.toPlainText();
 		elm = frm->findFirstElement("div.cure table.process td.value span#restore");
 		int time = elm.attribute("timer").toInt();
 		if (time > 0) {
 			time += 60 + random() % 30;
-			curTime = QDateTime::currentDateTime();
 			opt.bPet.time = curTime.addSecs(time);
 			log(trUtf8("<b>%0</b> в коме, выйдет через %1 мин").arg(name).arg(time/60),"bone.png");
 		} else {
@@ -44,7 +42,6 @@ void MWBotWin::trainPet() {
 			time = elm.attribute("timer").toInt();
 			if (time > 0) {
 				time += 60 + random() % 30;
-				curTime = QDateTime::currentDateTime();
 				opt.bPet.time = curTime.addSecs(time);
 				log(trUtf8("До следующей прокачки <b>%0</b> %1 мин").arg(name).arg(time/60),"bone.png");
 			} else {
@@ -87,8 +84,7 @@ void MWBotWin::trainPet() {
 						log(trUtf8("Не хватает нефти на тренировки"),"bone.png");
 					} else {
 						clk.append(" div.text button.button span.f div.c");
-						clickElement(clk);
-						curTime = QDateTime::currentDateTime();
+						click(ui.browser, clk);
 						time = frm->findFirstElement("span#trainpanel table.process td.value span#train").attribute("timer").toInt() + 10;
 						opt.bPet.time = curTime.addSecs(time);
 						log(trUtf8("Тренировка <b>%0</b> запущена. До следующей %1 мин").arg(name).arg(time/60),"bone.png");
