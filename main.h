@@ -126,9 +126,10 @@ class MWBotWin : public QMainWindow {
 			} taxi;
 			struct {
 				unsigned open:1;
-				int keyOil;
-				int keyRat;
-				int keyElect;
+				unsigned need:1;
+//				int keyOil;
+//				int keyRat;
+//				int keyElect;
 			} chest;
 			struct {
 				unsigned enabled:1;
@@ -294,9 +295,11 @@ class MWBotWin : public QMainWindow {
 		void playKub();
 		void trainPet();
 		void arena();
-		void openChests();
 		void doTaxi();
 		void rideCar();
+
+		void openChests();
+		void checkChests(FightBox);
 
 		void apply();
 		void editCheese();

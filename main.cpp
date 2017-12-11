@@ -52,8 +52,9 @@ MWBotWin::MWBotWin() {
 	opt.oil.time = curTime;
 
 	opt.chest.open = 1;
-	opt.chest.keyOil = -1;
-	opt.chest.keyRat = -1;
+	opt.chest.need = 1;
+//	opt.chest.keyOil = -1;
+//	opt.chest.keyRat = -1;
 
 	opt.petrik.make = 1;
 	opt.petrik.money = 0;
@@ -218,7 +219,7 @@ void MWBotWin::timerEvent(QTimerEvent* ev) {
 
 	getFastRes();
 // open chests
-	if (opt.chest.open) {
+	if (opt.chest.open && opt.chest.need) {
 		openChests();
 	}
 // train battle pet
@@ -428,8 +429,9 @@ void MWBotWin::doPause(int sec) {
 int MWBotWin::getAtackTimer() {
 	int res;
 	loadPage("alley");
-	QWebElement elm = frm->findFirstElement("div.need-some-rest div.holders span.timer");
+	QWebElement elm = frm->findFirstElement("div.alley-search-2 div.need-some-rest div.holders span.timer");
 	opt.atk.time = QDateTime::currentDateTime();
+	qDebug() << elm.isNull() << eVisible(elm) << opt.atk.time;
 	if (eVisible(elm)) {
 		res = elm.attribute("timer").toInt();
 		if (res > 0) {
@@ -440,7 +442,7 @@ int MWBotWin::getAtackTimer() {
 			res = 0;
 		}
 	} else {
-		res = -1;
+		res = 0;
 	}
 	return res;
 }

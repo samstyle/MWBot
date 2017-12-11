@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>822</width>
-    <height>634</height>
+    <width>820</width>
+    <height>632</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -851,9 +851,6 @@
                </item>
                <item>
                 <widget class="QCheckBox" name="cbChest">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
                  <property name="text">
                   <string>Открывать сундуки</string>
                  </property>
@@ -1054,8 +1051,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>822</width>
-     <height>21</height>
+     <width>820</width>
+     <height>22</height>
     </rect>
    </property>
   </widget>

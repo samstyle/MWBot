@@ -128,6 +128,7 @@ FightBox MWBotWin::getDuelResult() {
 		click(ui.browser, elm);
 	}
 	res.items.append(getDuelResultExtra());
+	checkChests(res);
 	return res;
 }
 
@@ -153,6 +154,7 @@ FightBox MWBotWin::getGroupResult() {
 		click(ui.browser, elm);
 		res.items.append(getDuelResultExtra());
 	}
+	checkChests(res);
 	return res;
 }
 
@@ -161,7 +163,7 @@ FightBox MWBotWin::getChestResult() {
 	mwItem item;
 	QWebElement elm,itm;
 	QWebElementCollection elms = frm->findAllElements("div#alert-text span.object-thumb");
-	res.result = 3;		// chest
+	res.result = resChest;
 	res.enemy.name = frm->findFirstElement("div#alert-text b").toPlainText();
 	foreach(elm, elms) {
 		itm = elm.findFirst("img");
@@ -175,6 +177,7 @@ FightBox MWBotWin::getChestResult() {
 		}
 		res.items.append(item);
 	}
+	checkChests(res);
 	return res;
 }
 
@@ -220,7 +223,7 @@ QList<mwItem> MWBotWin::getDuelResultExtra() {
 				obj.count = elm.toPlainText().remove("\"").remove(",").toInt();
 			}
 			if (obj.count == 0)
-				obj.count = 0;
+				obj.count = 1;
 			res.append(obj);
 		}
 	}

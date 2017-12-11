@@ -39,7 +39,67 @@ void MWBotWin::doChest(int id) {
 // 5573 : shaurma box
 // 5574 : shaurma key
 
+struct keyChestItem {
+	int chestId;
+	int keyId;
+	QString chestName;
+	QString keyName;
+};
+
+const keyChestItem kcTab[] = {
+	{4021, 4020, "Малая шкатулка партии", "Ключ партии"},
+	{4022, 4020, "Средняя шкатулка партии", "Ключ партии"},
+	{4023, 4020, "Большая шкатулка партии", "Ключ партии"},
+
+	{3348, 3347, "Малый ларец", "Ключ от шахтерского ларца"},
+	{3349, 3347, "Средний ларец", "Ключ от шахтерского ларца"},
+	{3350, 3347, "Большой ларец", "Ключ от шахтерского ларца"},
+
+	{5573, 5574, "Почтовый ящик", "Ключ от почтового ящика"},
+
+	{-1, -1, "", ""}
+};
+
+void MWBotWin::checkChests(FightBox res) {
+	int idx;
+	mwItem itm;
+	qDebug() << 1 << res.items.size();
+	foreach(itm, res.items) {
+		idx = 0;
+		while (kcTab[idx].chestId > 0) {
+			if (itm.name == kcTab[idx].chestName) {
+				qDebug() << "chest" << itm.name;
+				opt.chest.need = 1;
+			} else if (itm.name == kcTab[idx].keyName) {
+				qDebug() << "key" << itm.name;
+				opt.chest.need = 1;
+			}
+			idx++;
+		}
+	}
+	qDebug() << 2;
+}
+
 void MWBotWin::openChests() {
+	int cid,kid;
+	int ccn,kcn;
+	int idx = 0;
+	setBusy(true);
+	while (kcTab[idx].chestId > 0) {
+		cid = kcTab[idx].chestId;
+		kid = kcTab[idx].keyId;
+		ccn = getItem(cid);
+		kcn = getItem(kid);
+		if ((ccn > 0) && (kcn > 0)) {
+			doChest(cid);
+		}
+		idx++;
+	}
+	opt.chest.need = 0;
+	setBusy(false);
+}
+
+/*
 	if (!(opt.chest.keyOil || opt.chest.keyRat || opt.chest.keyElect)) return;		// no keys
 	setBusy(true);
 // get keys count if undef
@@ -68,3 +128,4 @@ void MWBotWin::openChests() {
 	}
 	setBusy(false);
 }
+*/

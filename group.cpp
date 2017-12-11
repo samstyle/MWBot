@@ -36,6 +36,7 @@ QList<grpChar> grpGetEnemies(QWebFrame* frm) {
 
 int getGroupCount(QWebFrame* frm, int ally) {
 	QList<grpChar> grp = ally ? grpGetAllies(frm) : grpGetEnemies(frm);
+	if (grp.size() == 0) return -1;
 	int res = 0;
 	foreach(grpChar cha, grp) {
 		if (cha.alive)
@@ -110,7 +111,9 @@ void MWBotWin::groupFight() {
 	do {
 		cnt = getGroupCount(frm, 1);		// alive allies
 		ecnt = getGroupCount(frm, 0);		// alive enemies
-		if (cnt && ecnt) {			// both groups is active
+		if ((cnt < 0) || (ecnt < 0)) {
+			waitReload(ui.browser);
+		} else if (cnt && ecnt) {			// both groups is active
 			if (getMyHp(frm)) {		// player is alive
 				target.clear();
 				rnd = rand() % 101;	// 0..100
