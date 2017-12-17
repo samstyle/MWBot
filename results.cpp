@@ -165,6 +165,7 @@ FightBox MWBotWin::getChestResult() {
 	QWebElementCollection elms = frm->findAllElements("div#alert-text span.object-thumb");
 	res.result = resChest;
 	res.enemy.name = frm->findFirstElement("div#alert-text b").toPlainText();
+	qDebug() << elms.count() << res.enemy.name;
 	foreach(elm, elms) {
 		itm = elm.findFirst("img");
 		item.name = itm.attribute("title");
@@ -175,6 +176,7 @@ FightBox MWBotWin::getChestResult() {
 		} else {
 			item.count = itm.toPlainText().remove("#").toInt();
 		}
+		if (item.count == 0) item.count = 1;
 		res.items.append(item);
 	}
 	checkChests(res);

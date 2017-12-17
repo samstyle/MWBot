@@ -229,7 +229,7 @@ class MWBotWin : public QMainWindow {
 
 		QWebElement getItemElement(int);
 		int getItem(int);
-		void doChest(int);
+		void doChest(int, int = 0);
 
 		int goldType;
 		int options;
@@ -298,7 +298,7 @@ class MWBotWin : public QMainWindow {
 		void doTaxi();
 		void rideCar();
 
-		void openChests();
+		void openChests(int = 0);
 		void checkChests(FightBox);
 
 		void apply();

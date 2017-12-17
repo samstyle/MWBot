@@ -55,7 +55,7 @@ void MWBotWin::atkRat() {
 		if (!elm.classes().contains("disabled")) {
 			elm = elm.findFirst("div.c");
 			click(ui.browser, elm);
-			log(trUtf8("Получен приз за крысинные хвосты"),"rattail.png");
+			log(trUtf8("Получен приз за крысинные хвосты"),"ratTail.png");
 		}
 	}
 

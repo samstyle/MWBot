@@ -58,11 +58,11 @@ int getWeakest(QWebFrame* frm, int ally) {
 	return id;
 }
 
-int getMyHp(QWebFrame* frm) {
+double getMyHp(QWebFrame* frm) {
 	QWebElement elm = frm->findFirstElement("td.group li.me span.fighter_hp");
 	QStringList lst = elm.toPlainText().replace("k","e3").replace("M","e6").replace(",",".").split("/");
-	int hp = lst.first().toDouble();
-	int maxhp = lst.last().toDouble();
+	double hp = lst.first().toDouble();
+	double maxhp = lst.last().toDouble();
 	return (hp * 100 / maxhp);
 }
 
@@ -101,6 +101,7 @@ void MWBotWin::groupFight() {
 	int rnd;
 	int id;
 	int useCheese = 0;
+	double hp;
 	if (opt.group.cheese) {
 		int enemyHp = getSumHp(frm,0);
 		int allyHp = getSumHp(frm,1);
@@ -112,13 +113,15 @@ void MWBotWin::groupFight() {
 		cnt = getGroupCount(frm, 1);		// alive allies
 		ecnt = getGroupCount(frm, 0);		// alive enemies
 		if ((cnt < 0) || (ecnt < 0)) {
+			ui.browser->reload();
+			pause(1.0);
 			waitReload(ui.browser);
 		} else if (cnt && ecnt) {			// both groups is active
-			if (getMyHp(frm)) {		// player is alive
+			if (getMyHp(frm) > 0) {		// player is alive
 				target.clear();
 				rnd = rand() % 101;	// 0..100
-				cnt = getMyHp(frm);
-				if (useHeal && (cnt < 30)) {
+				hp = getMyHp(frm);
+				if (useHeal && (hp < 30)) {
 					target = searchFightSlot(frm, opt.group.healList);
 					if (target.isEmpty()) {
 						useHeal = 0;

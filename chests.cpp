@@ -26,13 +26,18 @@ int MWBotWin::getItem(int id) {
 	return res;
 }
 
-void MWBotWin::doChest(int id) {
+void MWBotWin::doChest(int id, int dbg) {
 	QWebElement elm = getItemElement(id);
 	if (elm.isNull()) return;
 	QWebElement itm = elm.findFirst("div.action span");
-//	qDebug() << itm.toPlainText();
+	qDebug() << itm.toPlainText();
 	click(ui.browser, itm);
 	FightBox res = getChestResult();
+	if (res.items.isEmpty()) {
+		pause(1.0);
+		waitLoading(ui.browser);
+		res = getChestResult();
+	}
 	logResult(res);
 }
 
@@ -47,15 +52,15 @@ struct keyChestItem {
 };
 
 const keyChestItem kcTab[] = {
-	{4021, 4020, "Малая шкатулка партии", "Ключ партии"},
-	{4022, 4020, "Средняя шкатулка партии", "Ключ партии"},
-	{4023, 4020, "Большая шкатулка партии", "Ключ партии"},
+	{4021, 4020, QDialog::trUtf8("малая шкатулка партии"), QDialog::trUtf8("ключ партии")},
+	{4022, 4020, QDialog::trUtf8("средняя шкатулка партии"), QDialog::trUtf8("ключ партии")},
+	{4023, 4020, QDialog::trUtf8("большая шкатулка партии"), QDialog::trUtf8("ключ партии")},
 
-	{3348, 3347, "Малый ларец", "Ключ от шахтерского ларца"},
-	{3349, 3347, "Средний ларец", "Ключ от шахтерского ларца"},
-	{3350, 3347, "Большой ларец", "Ключ от шахтерского ларца"},
+	{3348, 3347, QDialog::trUtf8("малый ларец"), QDialog::trUtf8("ключ от шахтерского ларца")},
+	{3349, 3347, QDialog::trUtf8("средний ларец"), QDialog::trUtf8("ключ от шахтерского ларца")},
+	{3350, 3347, QDialog::trUtf8("большой ларец"), QDialog::trUtf8("ключ от шахтерского ларца")},
 
-	{5573, 5574, "Почтовый ящик", "Ключ от почтового ящика"},
+	{5573, 5574, "почтовый ящик", "ключ от почтового ящика"},
 
 	{-1, -1, "", ""}
 };
@@ -63,24 +68,23 @@ const keyChestItem kcTab[] = {
 void MWBotWin::checkChests(FightBox res) {
 	int idx;
 	mwItem itm;
-	qDebug() << 1 << res.items.size();
+//	qDebug() << 1 << res.items.size();
 	foreach(itm, res.items) {
 		idx = 0;
 		while (kcTab[idx].chestId > 0) {
-			if (itm.name == kcTab[idx].chestName) {
+			if (itm.name.toLower() == kcTab[idx].chestName) {
 				qDebug() << "chest" << itm.name;
 				opt.chest.need = 1;
-			} else if (itm.name == kcTab[idx].keyName) {
+			} else if (itm.name.toLower() == kcTab[idx].keyName) {
 				qDebug() << "key" << itm.name;
 				opt.chest.need = 1;
 			}
 			idx++;
 		}
 	}
-	qDebug() << 2;
 }
 
-void MWBotWin::openChests() {
+void MWBotWin::openChests(int dbg) {
 	int cid,kid;
 	int ccn,kcn;
 	int idx = 0;
@@ -90,8 +94,11 @@ void MWBotWin::openChests() {
 		kid = kcTab[idx].keyId;
 		ccn = getItem(cid);
 		kcn = getItem(kid);
+		if (dbg) {
+			qDebug() << "chest" << cid << ccn << "key" << kid << kcn;
+		}
 		if ((ccn > 0) && (kcn > 0)) {
-			doChest(cid);
+			doChest(cid, dbg);
 		}
 		idx++;
 	}

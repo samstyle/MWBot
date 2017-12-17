@@ -796,6 +796,7 @@ int main(int ac,char** av) {
 // debug
 
 void MWBotWin::debug() {
-	loadPath("tverskaya:neftlenin");
-	oilGameEscape(0);
+	qDebug() << "debug start";
+	openChests(1);
+	qDebug() << "debug end";
 }
