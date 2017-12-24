@@ -429,7 +429,7 @@ void MWBotWin::doPause(int sec) {
 int MWBotWin::getAtackTimer() {
 	int res;
 	loadPage("alley");
-	QWebElement elm = frm->findFirstElement("div.alley-search-2 div.need-some-rest div.holders span.timer");
+	QWebElement elm = frm->findFirstElement("div.alley-search-2 div#alley-search-myself div.need-some-rest div.holders span.timer");
 	opt.atk.time = QDateTime::currentDateTime();
 	qDebug() << elm.isNull() << eVisible(elm) << opt.atk.time;
 	if (eVisible(elm)) {

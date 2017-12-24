@@ -72,13 +72,13 @@ int MWBotWin::atkSelect(int type) {
 	int brk = 0;
 	switch (type) {
 		case ATK_WEAK:
-			click(ui.browser, "form.search-alley div.button-big.btn.f1");
+			brk = !click(ui.browser, "form.search-alley div.button-big.btn.f1");
 			break;
 		case ATK_EQUAL:
-			click(ui.browser, "form.search-alley div.button-big.btn.f2");
+			brk = !click(ui.browser, "form.search-alley div.button-big.btn.f2");
 			break;
 		case ATK_STRONG:
-			click(ui.browser, "form.search-alley div.button-big.btn.f3");
+			brk = !click(ui.browser, "form.search-alley div.button-big.btn.f3");
 			break;
 		case ATK_ENEMY:
 			brk = 1;

@@ -64,7 +64,6 @@ int click(QWebView* view, QWebElement& elm, double time) {
 	int res ;
 	QWebFrame* frm = view->page()->mainFrame();
 	if (!eVisible(elm)) {
-		qDebug() << "trying to click non-existing element";
 		res = 0;
 	} else {
 		elm.setAttribute("mustBeClicked","1");
@@ -78,14 +77,10 @@ int click(QWebView* view, QWebElement& elm, double time) {
 }
 
 int click(QWebView* view, QString query, double time) {
-	int res;
 	QWebFrame* frm = view->page()->mainFrame();
 	QWebElement elm = frm->findFirstElement(query);
-	if (eVisible(elm)) {
-		res = click(view, elm, time);
-	} else {
-		qDebug() << "element '" << query << "not found";
-		res = 0;
-	}
-	return res;
+	if (click(view, elm, time))
+		return 1;
+	qDebug() << "element '" << query << "not found";
+	return 0;
 }

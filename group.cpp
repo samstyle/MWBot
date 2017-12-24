@@ -150,7 +150,8 @@ void MWBotWin::groupFight() {
 					click(ui.browser, target);
 				}
 				qDebug() << QTime::currentTime() << "click";
-				click(ui.browser, "div#fightAction span.f div.c");
+				click(ui.browser, "div#fightAction span.f div.c", 5.0);
+//				waitReload(ui.browser);
 				qDebug() << QTime::currentTime();
 			} else {
 				waitReload(ui.browser);	// player is dead: wait for reload
