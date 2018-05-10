@@ -31,6 +31,11 @@ void MWBotWin::attack() {
 						asel = AT_STOP;
 						flag |= FL_STOP;
 						break;
+					case AT_ERR:
+						asel = AT_STOP;
+						flag |= FL_STOP;
+						break;
+
 				}
 			} while ((asel != AT_OK) && (asel != AT_STOP));
 			if (flag & FL_STOP) {

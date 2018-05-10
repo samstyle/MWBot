@@ -25,21 +25,30 @@ int isLoading(QWebFrame* frm) {
 	return eVisible(elm);
 }
 
-// wait max 30s for data loading finished
+// wait max 10s for data loading finished
 int waitLoading(QWebView* view, double time) {
 	QWebFrame* frm = view->page()->mainFrame();
-	while (isLoading(frm)) {
+	double crtime = 10.0;
+	int atempt = 0;
+	while (isLoading(frm) && (atempt < 5)) {
 		doLoop();
+		crtime -= 0.001;
+		if (crtime < 0) {
+			view->reload();
+			crtime = 10.0;
+			atempt++;
+		}
 	}
 	pause(time);
-	return 1;
+	return (atempt < 5);
 }
 
 // wait for data loading started, then finished
 void waitReload(QWebView* view) {
 	QWebFrame* frm = view->page()->mainFrame();
-	while(!isLoading(frm))
+	while(!isLoading(frm)) {
 		doLoop();
+	}
 	waitLoading(view);
 }
 
@@ -62,12 +71,11 @@ if (elst.length > 0) {elst[0].dispatchEvent(evt);}\
 
 int click(QWebView* view, QWebElement& elm, double time) {
 	int res ;
-	QWebFrame* frm = view->page()->mainFrame();
 	if (!eVisible(elm)) {
 		res = 0;
 	} else {
 		elm.setAttribute("mustBeClicked","1");
-		frm->evaluateJavaScript(clickjs);
+		view->page()->mainFrame()->evaluateJavaScript(clickjs);
 		elm.removeAttribute("mustBeClicked");
 		if (time > 0)
 			waitLoading(view, time);

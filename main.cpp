@@ -182,6 +182,9 @@ void MWBotWin::keyPressEvent(QKeyEvent* ev) {
 		case Qt::Key_F5:
 			ui.browser->reload();
 			break;
+		case Qt::Key_Escape:
+			ui.browser->stop();
+			break;
 		case Qt::Key_F2:
 			savePage();
 			break;
@@ -292,7 +295,7 @@ void MWBotWin::onLoad(bool f) {
 	if (!state.botWork || f) {
 		loading = 0;
 	} else {
-		ui.browser->update();
+		// ui.browser->update();
 	}
 }
 
@@ -694,10 +697,10 @@ void MWBotWin::makePetrik() {
 				loop = 0;
 			}
 		} else {
-			opt.petrik.money = elm.findFirst("span.tugriki").toPlainText().remove(",").toInt();
+			opt.petrik.money = elm.findFirst("span.tugriki").toPlainText().remove(",").toInt() + 5000;
 			opt.petrik.ore = elm.findFirst("span.ruda").toPlainText().remove(",").toInt();
 			getFastRes();
-			if ((info.money > (opt.petrik.money + 199)) && (info.ore >= opt.petrik.ore)) {
+			if ((info.money > (opt.petrik.money)) && (info.ore >= opt.petrik.ore)) {
 				click(ui.browser, elm);
 				log(trUtf8("Запущено производство петриков"),"petrik.png");
 				loop = 2;

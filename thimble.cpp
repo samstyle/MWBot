@@ -69,21 +69,25 @@ void MWBotWin::playMonia() {
 	QWebElement elm;
 	int oldruda = info.ore;
 	int games = 0;
-	while (info.money > 2100) {
+	QString arg;
+	// FIXME
+	while (info.money > 2600) {
 		elm = frm->findFirstElement("div#thimble-controls");
 		if (!elm.attribute("style").contains("none")) {
-			elm = frm->findFirstElement("div.button.thimble-play[data-count='9']");
+//			elm = frm->findFirstElement("div.button.thimble-play[data-count='9']");
 			click(ui.browser, "div.button.thimble-play[data-count='9']");
 			games++;
 		}
 		do {
 			do {
-				thimble = QString("i#thimble").append(QString::number(rand() % 9));
+				thimble = QString("i#thimble%0").arg(rand() % 9);
 				elm = frm->findFirstElement(thimble);
-			} while (elm.attribute("class") != "icon thimble-closed-active");
-			click(ui.browser, thimble, 0.5);
+				arg = elm.attribute("class");
+			} while (!arg.isEmpty() && (arg != "icon thimble-closed-active"));
+			if (!arg.isEmpty())
+				click(ui.browser, thimble, 0.5);
 			elm = frm->findFirstElement("div#thimble-controls");
-		} while(elm.attribute("style").contains("none"));
+		} while(!eVisible(elm) || elm.attribute("style").contains("none"));
 		getFastRes();
 	}
 	loadPage("thimble/leave");
