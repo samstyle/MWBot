@@ -27,7 +27,7 @@ void MWBotWin::loadOpts() {
 		QStringList pars;
 		QString com,val;
 		int ival;
-		int bval;
+		unsigned bval;
 		while (!file.atEnd()) {
 			line = QDialog::trUtf8(file.readLine()).remove("\r").remove("\n");
 			pars = line.split(":",QString::SkipEmptyParts);
@@ -97,6 +97,11 @@ void MWBotWin::loadOpts() {
 				if (com == "runner") opt.run.enabled = bval;
 				if (com == "runname") opt.run.name = val;
 
+				if (com == "patrol") opt.patrol.enabled = bval;
+				if (com == "patroltime") opt.patrol.period = ival;
+				if (com == "job") opt.job.enabled = bval;
+				if (com == "jobtime") opt.job.period = ival;
+
 				if (com == "goldplay") goldType = ival;
 				if (com == "payfine") opt.police.fine = bval;
 				if (com == "setrel") opt.police.relations = bval;
@@ -158,6 +163,11 @@ void MWBotWin::saveOpts() {
 
 		file.write(QString("bankticket:%0\n").arg(opt.bank.buy ? "yes" : "no").toUtf8());
 		file.write(QString("bankstar:%0\n").arg(opt.bank.stars ? "yes" : "no").toUtf8());
+
+		file.write(QString("patrol:%0\n").arg(opt.patrol.enabled ? "yes" : "no").toUtf8());
+		file.write(QString("patroltime:%0\n").arg(opt.patrol.period).toUtf8());
+		file.write(QString("job:%0\n").arg(opt.job.enabled ? "yes" : "no").toUtf8());
+		file.write(QString("jobtime:%0\n").arg(opt.job.period).toUtf8());
 
 		file.write(QString("rathunt:%0\n").arg(opt.ratk.enabled ? "yes" : "no").toUtf8());
 		file.write(QString("ratmaxlev:%0\n").arg(opt.ratk.maxlev).toUtf8());
@@ -246,6 +256,11 @@ void MWBotWin::apply() {
 	opt.police.relations = ui.cbPolRelat->isChecked() ? 1 : 0;
 	opt.chest.open = ui.cbChest->isChecked() ? 1 : 0;
 
+	opt.patrol.enabled = ui.cbPatrol->isChecked() ? 1 : 0;
+	opt.patrol.period = ui.cbPatrolTime->currentData().toInt();
+	opt.job.enabled = ui.cbWork->isChecked() ? 1 : 0;
+	opt.job.period = ui.cbWorkTime->currentData().toInt();
+
 	opt.taxi.enable = ui.cbTaxi->isChecked() ? 1 : 0;
 	opt.car.ride = ui.cbRide->isChecked() ? 1 : 0;
 	saveOpts();
@@ -297,6 +312,11 @@ void MWBotWin::setOpts() {
 	ui.cbPolFine->setChecked(opt.police.fine);
 	ui.cbPolRelat->setChecked(opt.police.relations);
 	ui.cbChest->setChecked(opt.chest.open);
+
+	ui.cbPatrol->setChecked(opt.patrol.enabled);
+	ui.cbPatrolTime->setCurrentIndex(ui.cbPatrolTime->findData(opt.patrol.period));
+	ui.cbWork->setChecked(opt.job.enabled);
+	ui.cbWorkTime->setCurrentIndex(ui.cbWorkTime->findData(opt.job.period));
 
 	ui.cbTaxi->setChecked(opt.taxi.enable);
 	ui.cbRide->setChecked(opt.car.ride);

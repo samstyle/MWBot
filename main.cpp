@@ -93,6 +93,13 @@ MWBotWin::MWBotWin() {
 	opt.car.time = curTime;
 	opt.car.list.clear();
 
+	opt.job.enabled = 0;
+	opt.job.period = 4;
+	opt.job.time = curTime;
+	opt.patrol.enabled = 0;
+	opt.patrol.period = 60;
+	opt.patrol.time = curTime;
+
 	state.stop = 0;
 	state.botWork = 0;
 	state.firstRun = 1;
@@ -118,6 +125,28 @@ MWBotWin::MWBotWin() {
 	ui.cbAType2->addItem(trUtf8("Врагов"),ATK_ENEMY);
 	ui.cbAType2->addItem(trUtf8("по уровню"),ATK_LEVEL);
 	ui.cbAType2->setCurrentIndex(ui.cbAtackType->findData(opt.atk.typeB));
+
+	ui.cbPatrolTime->addItem(trUtf8("10 минут"), 10);
+	ui.cbPatrolTime->addItem(trUtf8("20 минут"), 20);
+	ui.cbPatrolTime->addItem(trUtf8("30 минут"), 30);
+	ui.cbPatrolTime->addItem(trUtf8("40 минут"), 30);
+	ui.cbPatrolTime->addItem(trUtf8("50 минут"), 30);
+	ui.cbPatrolTime->addItem(trUtf8("60 минут"), 60);
+	ui.cbPatrolTime->addItem(trUtf8("70 минут"), 70);
+	ui.cbPatrolTime->addItem(trUtf8("80 минут"), 80);
+	ui.cbPatrolTime->addItem(trUtf8("90 минут"), 90);
+	ui.cbPatrolTime->addItem(trUtf8("100 минут"), 100);
+	ui.cbPatrolTime->addItem(trUtf8("110 минут"), 110);
+	ui.cbPatrolTime->addItem(trUtf8("120 минут"), 120);
+
+	ui.cbWorkTime->addItem(trUtf8("1 час"), 1);
+	ui.cbWorkTime->addItem(trUtf8("2 часа"), 2);
+	ui.cbWorkTime->addItem(trUtf8("3 часа"), 3);
+	ui.cbWorkTime->addItem(trUtf8("4 часа"), 4);
+	ui.cbWorkTime->addItem(trUtf8("5 часов"), 5);
+	ui.cbWorkTime->addItem(trUtf8("6 часов"), 6);
+	ui.cbWorkTime->addItem(trUtf8("7 часов"), 7);
+	ui.cbWorkTime->addItem(trUtf8("8 часов"), 8);
 
 	connect(ui.pbOptSave,SIGNAL(clicked()),this,SLOT(apply()));
 
@@ -221,6 +250,13 @@ void MWBotWin::timerEvent(QTimerEvent* ev) {
 	}
 
 	getFastRes();
+// go patrol
+	if (opt.patrol.enabled && (opt.patrol.time < curTime)) {
+		goPatrol();
+	}
+	if (opt.job.enabled && (opt.job.time < curTime)) {
+		goWork();
+	}
 // open chests
 	if (opt.chest.open && opt.chest.need) {
 		openChests();
@@ -800,6 +836,6 @@ int main(int ac,char** av) {
 
 void MWBotWin::debug() {
 	qDebug() << "debug start";
-	openChests(1);
+	goWork();
 	qDebug() << "debug end";
 }

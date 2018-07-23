@@ -138,6 +138,16 @@ class MWBotWin : public QMainWindow {
 			} run;
 			struct {
 				unsigned enabled:1;
+				int period;
+				QDateTime time;
+			} patrol;
+			struct {
+				unsigned enabled:1;
+				int period;
+				QDateTime time;
+			} job;
+			struct {
+				unsigned enabled:1;
 				unsigned droped:1;
 				int typeA;
 				int typeB;
@@ -272,6 +282,9 @@ class MWBotWin : public QMainWindow {
 
 		void oilGameEscape(int);
 		int checkSusp(int, int);
+
+		void goPatrol();
+		void goWork();
 
 		void checkPolice();
 		int checkCooldown(QWebElement&, QString);	// check ride cooldown

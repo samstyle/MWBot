@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>820</width>
-    <height>632</height>
+    <width>818</width>
+    <height>630</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -409,7 +409,7 @@
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_10">
                <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_19" stretch="0,10,0">
+                <layout class="QHBoxLayout" name="horizontalLayout_19" stretch="0,0,10">
                  <item>
                   <widget class="QLabel" name="label_15">
                    <property name="text">
@@ -462,7 +462,7 @@
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_14">
                <item>
-                <layout class="QGridLayout" name="gridLayout_2">
+                <layout class="QGridLayout" name="gridLayout_2" columnstretch="0,10">
                  <item row="0" column="0">
                   <widget class="QLabel" name="label_16">
                    <property name="text">
@@ -860,6 +860,34 @@
                  </property>
                 </widget>
                </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_2">
+                 <item>
+                  <widget class="QCheckBox" name="cbPatrol">
+                   <property name="text">
+                    <string>патрулировать</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="cbPatrolTime"/>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_13">
+                 <item>
+                  <widget class="QCheckBox" name="cbWork">
+                   <property name="text">
+                    <string>работать</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="cbWorkTime"/>
+                 </item>
+                </layout>
+               </item>
               </layout>
              </widget>
             </item>
@@ -1051,7 +1079,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>820</width>
+     <width>818</width>
      <height>22</height>
     </rect>
    </property>

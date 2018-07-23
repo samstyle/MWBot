@@ -6,7 +6,7 @@ TEMPLATE = app
 TARGET =
 DEPENDPATH += .
 INCLUDEPATH += .
-QT += webkit network core gui widgets webkitwidgets
+QT += network core gui widgets webkitwidgets
 TARGET = mwbot
 
 # Input
@@ -30,7 +30,8 @@ SOURCES += main.cpp \
     oilpipe.cpp \
     carride.cpp \
     common.cpp \
-    duel.cpp
+    duel.cpp \
+    job-patrol.cpp
 
 FORMS += \
     mainwindow.ui \
