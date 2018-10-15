@@ -28,7 +28,7 @@ int isLoading(QWebFrame* frm) {
 // wait max 10s for data loading finished
 int waitLoading(QWebView* view, double time) {
 	QWebFrame* frm = view->page()->mainFrame();
-	double crtime = 10.0;
+	double crtime = 5.0;
 	int atempt = 0;
 	while (isLoading(frm) && (atempt < 5)) {
 		doLoop();

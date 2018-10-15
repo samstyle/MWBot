@@ -135,11 +135,14 @@ int MWBotWin::atkCheck(CharBox& enstat, int type) {
 			if (opt.atk.droped && (enstat.type != "npc")) res = -1;
 		}
 		if (res < 0) {
-			click(ui.browser, "div.button.button-search div.c");
-			elm = frm->findFirstElement("div#alley-search-myself p.error");
-			if (eVisible(elm)) res = AT_ERR;							// error
-			elm = frm->findFirstElement("div#alley-search-myself div.error");
-			if (eVisible(elm)) res = AT_ERR;
+			if (click(ui.browser, "div.button.button-search div.c")) {
+				elm = frm->findFirstElement("div#alley-search-myself p.error");
+				if (eVisible(elm)) res = AT_ERR;							// error
+				elm = frm->findFirstElement("div#alley-search-myself div.error");
+				if (eVisible(elm)) res = AT_ERR;
+			} else {
+				res = AT_ERR;
+			}
 		}
 	} while (res < 0);
 	return res;

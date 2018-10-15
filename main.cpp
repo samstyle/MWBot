@@ -200,8 +200,10 @@ void MWBotWin::prepare() {
 
 void MWBotWin::closeEvent(QCloseEvent* ev) {
 	killTimer(timerId);
-	if (isLoading(frm))
+	if (isLoading(frm)) {
+		ui.browser->stop();
 		waitLoading(ui.browser);
+	}
 	state.stop = 1;
 	ev->accept();
 }
@@ -331,7 +333,7 @@ void MWBotWin::onLoad(bool f) {
 	if (!state.botWork || f) {
 		loading = 0;
 	} else {
-		// ui.browser->update();
+//		ui.browser->reload();
 	}
 }
 
